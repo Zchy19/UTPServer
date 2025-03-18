@@ -1,0 +1,48 @@
+<div>
+	<table class="table table-bordered table-striped table-hover">	
+		<thead>
+			<tr>
+				<th><small>名称</small></th>
+				<th>
+					<div class="box-tools pull-right">							
+						<button type="button" class="btn btn-box-tool" data-bind="click: enterAddItemMode" data-toggle="tooltip" title="新建标签"><i class="fa fa-plus"></i></button>
+					</div>
+				</th>
+			</tr>
+		</thead>
+		<tbody data-bind='foreach: customizedFields' data-bind="visible: customizedFields().length > 0">
+			<tr>
+				<td width="70%"><small><label data-bind='text: $data'></label></small></td>
+				<td width="30%">
+					<small data-bind='visible: $parent.isEditMode() == false'>
+						<button class="btn btn-danger btn-sm" data-toggle="tooltip"
+							title="删除标签" data-original-title="Delete"
+							data-bind="click: $parent.removeCustomizedField">
+							<i class="glyphicon glyphicon-trash"></i>
+						</button>
+					</small>
+				</td>
+			</tr>
+		</tbody>
+        <tr data-bind='visible: isEditMode() == true'>
+            <td width="70%"><small><input type="text" class="form-control" data-bind="value:currentCustomizedFild"></small></td>
+            <td width="30%">
+                <small>
+                    <button class="btn btn-success btn-sm" data-toggle="modal"
+                        title="增加" data-original-title="Add"
+                        data-bind="click: addCustomizedField">
+                        <i class="glyphicon glyphicon-ok"></i>
+                    </button>
+                    <button class="btn btn-default btn-sm" data-toggle="tooltip"
+                        title="取消" data-original-title="Cancel"
+                        data-bind="click: cancelCustomizedField">
+                        <i class="glyphicon glyphicon-remove"></i>
+                    </button>
+                </small>
+            </td>
+        </tr>	
+	</table>
+	<h5 class="text-center" style="color: grey; font-style: italic;" data-bind="visible: customizedFields().length == 0">
+		<small>暂无数据！</small>
+	</h5>
+</div>

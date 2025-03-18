@@ -1,0 +1,75 @@
+<div id="specialTestDiv" class="content-wrapper">
+    <section class="content-header" data-bind="visible:!loginManager.autoIntoSpecialTest()">
+        <a href="#" data-bind="click: goback"><i class="glyphicon glyphicon-hand-left"></i> 返回</a>
+    </section>
+    <!-- 单页面测试打开,此为 -->
+    <div class="row" data-bind="visible: viewManager.selectedSpecialTestsetActiveData.type == 1">
+        <h3 class="text-center mb-3" data-bind="text: viewManager.selectedSpecialTestsetActiveData.name"></h3>
+        <div id="specialTestcontrolinfo" class="tab-pane p-3 bg-light border rounded"
+            data-bind="compose: viewManager.specialTestControlActivePage"></div>
+    </div>
+    <!-- 多页面 -->
+    <div class="row" data-bind="visible: viewManager.selectedSpecialTestsetActiveData.type == 2">
+        <h3 class="text-center mb-3" data-bind="text: viewManager.selectedSpecialTestsetActiveData.name"></h3>
+        <div class="parent-container" style="width: 100%;">
+            <button id="satrt" class="btn btn-primary btn-lg"
+                data-bind="click: startpop, enable:!specialTestService.isExecuting(), text: specialTestService.isExecuting()? '正在执行中' : '开始测试'"
+                style="margin-left: 10%; margin-right: 10%; width: 80%;">start</button>
+        </div>
+        <div id="specialTestcontrolinfo" class="tab-pane p-3 bg-light border rounded"
+            data-bind="css: specialTestClass, compose: viewManager.specialTestOneControlActivePage"></div>
+        <div id="specialTestTwocontrolinfo" class="col-md-6 tab-pane p-3 bg-light border rounded"
+            data-bind="compose: viewManager.specialTestTwoControlActivePage ,visible: viewManager.selectedSpecialTestsetActiveData.subpageNumber >= 2">
+        </div>
+        <div id="specialTestThreecontrolinfo" class="col-md-6 tab-pane p-3 bg-light border rounded"
+            data-bind="compose: viewManager.specialTestThreeControlActivePage ,visible: viewManager.selectedSpecialTestsetActiveData.subpageNumber >= 3">
+        </div>
+        <div id="specialTestFourcontrolinfo" class="col-md-6 tab-pane p-3 bg-light border rounded"
+            data-bind="compose: viewManager.specialTestFourControlActivePage ,visible: viewManager.selectedSpecialTestsetActiveData.subpageNumber >= 4">
+        </div>
+    </div>
+    <!-- 新增自定义 -->
+    <div class="row" data-bind="visible: viewManager.selectedSpecialTestsetActiveData.type == 3">
+        <h3 class="text-center mb-3" data-bind="text: viewManager.selectedSpecialTestsetActiveData.name"></h3>
+        <div id="specialTestcontrolinfo" class="tab-pane p-3 bg-light border rounded"
+            data-bind="compose: viewManager.specialTestCustomizationControlActivePage"></div>
+    </div>
+</div>
+<style>
+    #specialTestDiv .text-center {
+        text-align: center;
+    }
+
+    #specialTestDiv .mb-3 {
+        margin-bottom: 1rem;
+    }
+
+    #specialTestDiv .p-3 {
+        padding: 1rem;
+    }
+
+    #specialTestDiv .bg-light {
+        background-color: #f8f9fa;
+    }
+
+    #specialTestDiv .border {
+        border: 1px solid #dee2e6;
+    }
+
+    #specialTestDiv .rounded {
+        border-radius: 0.25rem;
+    }
+
+    #specialTestDiv .parent-container .btn.btn-primary.btn-lg {
+        background-color: #3498db;
+        border-color: #3498db;
+        font-weight: bold;
+        padding: 20px 30px !important;
+        font-size: 4.5em;
+        letter-spacing: 1.1em;
+        color: #ffffff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+</style>

@@ -1,0 +1,437 @@
+<div>
+	<table class="table table-bordered table-striped table-hover" data-bind="visible: testsets().length > 0">
+		<thead>
+			<tr>
+				<th><small>测试集名称</small></th>
+				<th><small>测试集描述</small></th>
+				<th><small><span class="label label-success">运行实例</span></small></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody data-bind='foreach: testsets'>
+			<tr>
+				<td><small><label data-bind='text:name'></label></small></td>
+				<td><small><label data-bind='text:description'></label></small></td>
+				<td><small><a href="" data-bind="click: $parent.switchActiveExecution" title="查看执行"
+							data-toggle="tooltip"><label class="label label-success"
+								data-bind='text:activeExecutionCount' style="cursor: pointer;"></label></a></small></td>
+				<td>
+					<small>
+						<button class="btn btn-primary btn-sm" data-toggle="modal" title="编辑测试集"
+							data-original-title="Edit"
+							data-bind="click: $parent.enterEditItemMode, visible: $parent.systemConfig.getConfig('utpclient.testset_exec.edit')">
+							<i class="glyphicon glyphicon-edit"></i>
+						</button>
+						<button class="btn btn-danger btn-sm" data-toggle="tooltip" title="删除测试集" title=""
+							data-original-title="Delete"
+							data-bind="click: $parent.remove, visible: $parent.systemConfig.getConfig('utpclient.testset_exec.delete')">
+							<i class="glyphicon glyphicon-trash"></i>
+						</button>
+						<button class="btn btn-warning btn-sm" data-toggle="modal" title="设置触发器"
+							data-original-title="Edit"
+							data-bind="click: $parent.enterTriggerSettingMode, visible: $parent.systemConfig.getConfig('utpclient.testset_exec.timer')">
+							<i class="glyphicon glyphicon-time"></i>
+						</button>
+						<button class="btn btn-success btn-sm" data-toggle="modal" title="查看结果"
+							data-original-title="Edit" data-bind="click: $parent.viewResult">
+							<i class="glyphicon glyphicon-th-list"></i>
+						</button>
+						<button type="button" class="btn btn-info btn-sm" data-toggle="tooltip" title="执行测试集"
+							data-bind="click: $parent.execution">
+							<i class="glyphicon glyphicon-play"></i>
+						</button>
+						<!-- 导出压缩包功能,暂时关闭 -->
+						<!-- <button class="btn btn-success btn-sm" data-toggle="modal"
+							title="导出" data-original-title="Edit"
+							data-bind="click: $parent.derive">
+							<i class="glyphicon glyphicon-download-alt"></i>
+						</button> -->
+						<!-- 导入testsetResult -->
+
+						<!--  systemConfig.getConfig('utpclient.testset_exec.import_result')为falses时隐藏button-->
+						<button type="button" class="btn btn-secondary btn-sm" data-toggle="tooltip" title="导入测试结果"
+							data-original-title="Edit"
+							data-bind="click: $parent.testsetResult, visible: $parent.systemConfig.getConfig('utpclient.testset_exec.import_result')">
+							<i class="fa fa-upload"></i>
+						</button>
+					</small>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<h5 class="text-center" style="color: grey; font-style: italic;" data-bind="visible: testsets().length == 0">
+		<small>暂无数据！</small>
+	</h5>
+</div>
+
+<div class="modal fade" id="TestSetTriggerSettingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	data-backdrop="static">
+	<div class="modal-dialog">
+		<form id="testSetTriggerSettingForm" data-toggle="validator">
+			<div class="modal-content">
+				<div class="modal-header" data-bind="visible: inTriggerList() == true">
+					<h4 class="modal-title">触发器设置</h4>
+				</div>
+				<div class="modal-header" data-bind="visible: inTriggerList() == false">
+					<h4 class="modal-title pull-left">详细设置</h4>
+					<div class="pull-right">
+						<input type="checkbox" id="TriggerState" data-on-text="使用中" data-off-text="禁用中">
+					</div>
+				</div>
+				<div class="modal-body">
+					<div data-bind="visible: inTriggerList() == true">
+						<table class="table table-bordered table-striped table-hover"
+							data-bind="visible: triggers().length > 0">
+							<thead>
+								<tr>
+									<th width="25%"><small>开始日期</small></th>
+									<th width="40%"><small>表达式</small></th>
+									<th width="15%"><small>当前状态</small></th>
+									<th width="20%"></th>
+								</tr>
+							</thead>
+							<tbody data-bind='foreach: triggers'>
+								<tr>
+									<td width="25%"><small><label data-bind='text:startTime'></label></small></td>
+									<td width="40%"><small><label
+												data-bind='text:crontriggerExpression'></label></small></td>
+									<td width="15%">
+										<small>
+											<div data-bind="visible: isEnabled() == true" style='color: green'>使用中</div>
+											<div data-bind="visible: isEnabled() == false" style='color: red'>禁用中</div>
+										</small>
+									</td>
+									<td width="20%">
+										<small>
+											<button class="btn btn-primary btn-sm" data-toggle="modal" title="编辑定时器"
+												data-original-title="Edit" data-bind="click: $parent.editTrigger">
+												<i class="glyphicon glyphicon-edit"></i>
+											</button>
+											<button class="btn btn-danger btn-sm" data-toggle="tooltip" title="删除定时器"
+												title="" data-original-title="Delete"
+												data-bind="click: $parent.removeTrigger">
+												<i class="glyphicon glyphicon-trash"></i>
+											</button>
+										</small>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<!--  
+						<h5 class="text-center" style="color: grey; font-style: italic;" data-bind="visible: triggers().length == 0">
+							<small>暂无数据！</small>
+						</h5>
+						-->
+						<div class="box-footer clearfix text-center">
+							<button type="button" class="btn btn-success btn-sm" title="新建定时器"
+								data-bind="click: createTrigger">
+								<i class="glyphicon glyphicon-plus"></i> 新建定时器
+							</button>
+						</div>
+					</div>
+					<div data-bind="visible: inTriggerList() == false">
+						<div class="form-group">
+							<label class="control-label"><span>开始日期<font color="red">*</font></span></label>
+							<div class="input-group date form_datetime">
+								<div class="input-group-addon">
+									<i class="fa fa-calendar"></i>
+								</div>
+								<!-- http://blog.csdn.net/kenhins/article/details/50739171 -->
+								<input size="16" type="text" id="triggerStartTime" class="form-control"
+									data-bind="enable: editingTrigger.isEnabled()==true, value:editingTrigger.startTime"
+									required>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="testsetDescription" class="control-label">Cron表达式 <a
+									href="https://www.pppet.net/" target="_Blank">
+									<i class="fa fa-info-circle"></i></a>
+							</label>
+							<table class="table">
+								<tr>
+									<td width="45%"><input type="text" class="form-control pull-left"
+											id="TriggerCrontriggerExpression"
+											data-bind="enable: editingTrigger.isEnabled()==true, value:editingTrigger.crontriggerExpression">
+									</td>
+									<td width="10%"><span style="vertical-align: middle">示例:</span>
+									</td>
+									<td width="45%"><select class="form-control pull-right"
+											data-bind="enable: editingTrigger.isEnabled()==true, value: editingTrigger.sampleCronExpression, event: { change: selectedTriggerSampleChanged }">
+											<option value="0 0 1/1 * * ? *">每1小时触发</option>
+											<option value="0 15 10 * * ? *">每天10点15分触发</option>
+											<option value="0 15 10 ? * 6#3">每月第三周的星期五触发</option>
+										</select></td>
+								</tr>
+								<tr>
+									<td colspan="3"><span>
+											如果Cron表达式为空，该触发器仅在“开始日期”触发测试一次; </br>
+											如果Cron表达式不为空，该触发器会在“开始日期”之后，根据Cron表达式所指定的规则触发测试。
+										</span></td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="form-group" data-bind="visible: inTriggerList() == true">
+						<button type="button" class="btn btn-default pull-left" data-bind="click: closeTriggerDialog">
+							<span lang="en">关闭</span>
+						</button>
+					</div>
+					<div class="form-group"
+						data-bind="enable: editingTrigger.isEnabled()==true, visible: inTriggerList() == false">
+						<button type="button" class="btn btn-primary pull-right" data-bind="click: submitTrigger">
+							<span lang="en">提交</span>
+						</button>
+						<button type="button" class="btn btn-default pull-left" data-bind="click: cancelTrigger">
+							<span lang="en">取消</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="modal fade" id="TestSetLoadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	data-backdrop="static">
+	<div class="modal-dialog modal-lg">
+		<form id="testSetForm" data-toggle="validator">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">编辑测试集</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="testsetName" class="control-label"><span>测试集名称<font color="red">*</font>
+							</span></label> <input type="text" class="form-control" id="testsetName"
+							data-bind="value:editingTestSet.name" required />
+					</div>
+					<div class="form-group">
+						<label for="testsetDescription" class="control-label">测试集描述</label> <input type="text"
+							class="form-control" id="testsetDescription" data-bind="value:editingTestSet.description">
+					</div>
+					<div class="form-group" data-bind="visible:systemConfig.getConfig('utpclient.testset_exec.node')">
+						<label for="engineName" class="control-label"><span>UTP执行器</span>
+							<!--							<i class="fa fa-info-circle" title="节点说明" data-placement="top"></i>-->
+						</label>
+						<select class="form-control" data-bind="
+					                		    options: allEngineNames, 
+					                   			optionsText: 'engineName', 
+					                  			value:editingTestSet.engineName,
+												optionsCaption: '请选择执行器',
+												optionsValue: 'engineName'"></select>
+						<!-- <input type="text" class="form-control"id="engineName" data-bind="value:editingTestSet.engineName" /> -->
+						<!-- 下拉菜单输入框,暂时保留 -->
+						<!-- <input list="engineNames" class="form-control" id="engineName" data-bind="value: editingTestSet.engineName" />
+											 <datalist id="engineNames" data-bind="foreach: allEngineNames">
+												 <option data-bind="text: engineName, value: engineName"></option>
+											 </datalist> -->
+					</div>
+					<div class="form-group">
+						<label for="testsetActivate" class="control-label">是否激活使用</label>
+						<div class="form-check-container" style="display: flex; align-items: center;">
+							<div class="form-check" style="margin-right: 10px;">
+								<input class="form-check-input" type="radio" name="testsetActivate"
+									id="testsetActivate1" data-bind="checked: editingTestSet.activate, checkedValue: 1">
+								<label class="form-check-label" for="testsetActivate1">
+									激活
+								</label>
+							</div>
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="testsetActivate"
+									id="testsetActivate2" data-bind="checked: editingTestSet.activate, checkedValue: 0">
+								<label class="form-check-label" for="testsetActivate2">
+									不激活
+								</label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<table class="table">
+							<tr>
+								<td width="45%"><small><label class="control-label"><span>候选测试用例</span></label></small>
+								</td>
+								<td width="10%"></td>
+								<td width="45%"><small><label class="control-label"><span>目标测试用例<font color="red">*
+												</font></span></label></small>
+									<button type="button" class="btn btn-warning" style="margin: 0 1px 0 1px; float: right"
+										data-bind="click: removeAll">
+										<span lang="en">清空</span>
+									</button>
+								</td>
+							</tr>
+							<tr>
+								<td width="50%">
+									<div id="candidateTestsetTreeview" style="background-color: #ffffff; height: 260px">
+									</div>
+								</td>
+								<td width="10%" style="text-align: center;">
+									<div class="d-grid">
+									<button type="button" class="btn btn-primary" style="margin: 50px 1px 20px 1px;"
+										data-bind="click: candidateToTarget" title="添加">
+										<span lang="en">-></span>
+									</button>
+									</div>
+									<button type="button" class="btn btn-default" style="margin: 20px 1px 50px 1px;"
+										data-bind="click: targetToCandidate" title="移除">
+										<span lang="en"><-</span>
+									</button>
+								</td>
+								<td width="40%">
+									<div id="targetTestsetTreeview" style="background-color: #ffffff; height: 260px;">
+									</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<div class="form-group">
+						<div data-bind="visible: showEmptyRecordSet() == true">
+							<font color="red">测试用例不能为空！</font>
+						</div>
+					</div>
+					<div class="form-group">
+						<div data-bind="visible: showMaxRecordSet() == true">
+							<font color="red">测试步骤不能超过<label data-bind='text:maxSteps'></label>个！
+							</font>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary">
+							<span lang="en">确定</span>
+						</button>
+						<button type="button" class="btn btn-default pull-left" data-bind="click: cancel">
+							<span lang="en">取消</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="modal fade" id="selectExecutionModal" tabindex="-1" role="dialog" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<!-- 
+          <button type="button" class="close" data-dismiss="alert">x</button>
+           -->
+				<h4 class="modal-title">请选择一个测试执行实例:</h4>
+			</div>
+			<div class="modal-body">
+				<table class="table table-condensed">
+					<thead>
+						<tr>
+							<th>实例名称</th>
+							<th>执行人员</th>
+							<th>开始时间</th>
+							<th>状态</th>
+							<th />
+						</tr>
+					</thead>
+					<tbody data-bind='foreach: executionList'>
+						<tr>
+							<td><label data-bind="text: executionName"></label></td>
+							<td><label data-bind="text: executedByUserId"></label></td>
+							<td><label data-bind="text: startTime"></label></td>
+							<td>
+								<div data-bind="visible: status === 'Starting'" style='background-color: green'>启动中...
+								</div>
+								<div data-bind="visible: status === 'Running'" style='background-color: green'>执行中...
+								</div>
+								<div data-bind="visible: status === 'Pausing'" style='background-color: green'>暂停中...
+								</div>
+								<div data-bind="visible: status === 'Stopping'" style='background-color: green'>停止中...
+								</div>
+								<div data-bind="visible: status === 'Resuming'" style='background-color: green'>重启中...
+								</div>
+								<div data-bind="visible: status === 'Paused'" style='background-color: yellow'>已暂停</div>
+								<div data-bind="visible: status === 'ExceptionHandling'" style='background-color: red'>
+									异常处理中...</div>
+								<div data-bind="visible: status === 'ReconnectingNetwork'"
+									style='background-color: red'>网络重连中...</div>
+							</td>
+							<td><input type="radio" name="execution"
+									data-bind="checkedValue:executionId, checked: $root.selectedExecutionId" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" data-bind="click:selectExecution">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal modal-warning fade in" id="deleteTestSetModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">提醒</h4>
+			</div>
+			<div class="modal-body">
+				<div>删除该测试集？</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline" data-dismiss="modal">否</button>
+				<button type="button" class="btn btn-outline" data-dismiss="modal"
+					data-bind="click:deleteCurrentTestSet">是</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="importTestsetModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	data-backdrop="static">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="myModalLabel">测试集结果导入</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label>选择测试集结果文件</label> <input id="testsetInputFile" type="file"
+						data-bind="event: { change: function() { loadFromFile($element.files[0]) } }" />
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="form-group">
+					<button type="button" class="btn btn-primary" data-bind="click:submitImportedTestSet">
+						<span lang="en">上传</span>
+					</button>
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style type="text/css">
+	.my_custom_mark:before {
+		content: "";
+		display: block;
+		position: relative;
+		top: -1px;
+		height: 20px;
+		width: 100%;
+		background: blue;
+	}
+
+	.webix_drag_over {
+		border-top: 1px dashed orange;
+		position: relative;
+		top: -1px;
+		height: 19px;
+	}
+
+	.webix_view.webix_tree {
+		overflow-x: auto;
+		width: 204px;
+	}
+</style>

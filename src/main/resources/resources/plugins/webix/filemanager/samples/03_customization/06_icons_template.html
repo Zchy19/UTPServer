@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+	<title>Icons</title>
+	<meta  name = "viewport" content = "initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no">
+
+	<link rel="stylesheet" type="text/css" href="https://cdn.materialdesignicons.com/2.8.94/css/materialdesignicons.css?v=7.0.4">
+
+	<script src="../../codebase/webix/webix.js?v=7.0.4" type="text/javascript"></script>
+	<script src="../../codebase/filemanager.js?v=7.0.4" type="text/javascript"></script>
+
+	<link rel="stylesheet" type="text/css" href="../../codebase/webix/webix.css?v=7.0.4">
+	<link rel="stylesheet" type="text/css" href="../../codebase/filemanager.css?v=7.0.4">
+
+	<style>
+
+		.header div{
+			padding: 0 10px;
+		}
+
+	</style>
+</head>
+<body>
+<script type="text/javascript">
+	webix.ready(function(){
+		webix.ui({
+			view: "filemanager",
+			id: "fmanager",
+			url:"/filemanager/samples/server",
+			templateIcon: function(fileObj, common){
+				var icon = (fileObj.type == "folder"?"folder":"file-outline");
+				return "<span class='webix_fmanager_icon mdi mdi-"+icon+"'></span>";
+			}
+		});
+	});
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<div class="box box-primary">
+	<div class="box-header with-border">
+		<small>协议历史数据报告</small>
+		<div class="box-tools pull-right">
+			<button type="button" class="btn btn-box-tool" data-bind="click: protocolHistoryConditionSetting" data-toggle="tooltip"><i class="fa fa-wrench"></i></button>
+			<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>		                
+		 </div>		             
+	</div>				
+	<div class="box-body">
+		<div>
+			<h5 class="text-center" style="color: grey; font-style: italic;"
+				data-bind="visible: showHistory() == false">
+				<small>暂无数据，请设置分析条件！</small>
+			</h5>
+			<div id="protocolHistoryTable" data-bind="visible: showHistory() == true"></div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="protocolHistoryRawFrameModal"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">消息原始帧</h4>
+			</div>
+			<div class="modal-body">
+                <div>						
+                     <small><span data-bind='text:genericRawFrame()' style="background-color: #ffffff; max-height: 400px; overflow-y: auto;word-break: break-all; word-wrap: break-all;"></span> </small>						
+                </div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="protocolHistoryFieldModal"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">消息字段列表</h4>
+			</div>
+			<div class="modal-body">
+				<div>
+					<div class="form-group">
+						<label class="control-label">消息内容</label>
+						<div id="protocolHistoryFieldView"></div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="protocolHistoryConditionSettingModal" tabindex="-1" role="dialog"
+	aria-labelledby="protocolHistoryConditionSettingModalLabel" data-backdrop="static">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">协议历史数据查询设置</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label><span lang="en">开始时间</span></label>
+					<div class="input-group date" id="historySearchBeginDate">
+						<div class="input-group-addon">
+							<i class="fa fa-calendar"></i>
+						</div>
+						<input type="text" class="form-control" data-bind="value:startFromDate" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label><span lang="en">结束时间</span></label>
+					<div class="input-group date" id="historySearchEndDate">
+						<div class="input-group-addon">
+							<i class="fa fa-calendar"></i>
+						</div>
+						<input type="text" class="form-control" data-bind="value:endByDate">
+					</div>
+				</div>
+				<div class="form-group" data-bind="visible: protocolTypes().length > 0">
+					<label class="control-label">协议类型</label>
+					<small>
+						<select class="form-control" data-bind="options: protocolTypes,
+							optionsText: 'name',
+							value: selectedProtocolType,
+							event: { change: protocolTypeChanged }">
+						</select>
+					</small>
+				</div>
+				<div class="form-group" data-bind="visible: protocols().length > 0">
+					<label class="control-label">协议</label>
+					<small>
+						<select class="form-control" data-bind="options: protocols,
+							optionsText: 'fileName',
+							value: selectedProtocol, 
+							event: { change: protocolChanged }">
+						</select>
+					</small>
+				</div>
+				<div class="form-group" data-bind="visible: protocols().length == 0">
+					<h5 class="text-center" style="color: grey; font-style: italic;"
+						data-bind="visible: showHistory() == false">
+						<small>暂无该类型协议数据！</small>
+					</h5>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" data-bind="click: createProtocolFieldStatistics">查看</button>
+			</div>
+		</div>
+	</div>
+</div>
+<style type="text/css">
+    code {
+      background-color: #f5f5f5;
+    }
+
+    #protocolHistoryFieldView {
+      width: 95%;
+      height: 400px;
+    }
+</style>
+

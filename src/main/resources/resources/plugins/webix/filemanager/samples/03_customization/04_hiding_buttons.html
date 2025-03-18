@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+	<title>Hiding Buttons</title>
+	<meta  name = "viewport" content = "initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no">
+
+	<script src="../../codebase/webix/webix.js?v=7.0.4" type="text/javascript"></script>
+	<script src="../../codebase/filemanager.js?v=7.0.4" type="text/javascript"></script>
+
+	<link rel="stylesheet" type="text/css" href="../../codebase/webix/webix.css?v=7.0.4">
+	<link rel="stylesheet" type="text/css" href="../../codebase/filemanager.css?v=7.0.4">
+
+	<style>
+		.header{
+			background: #e5e5e5;
+		}
+		.header div{
+			padding: 0 10px;
+		}
+
+	</style>
+</head>
+<body>
+<script type="text/javascript">
+	webix.ready(function(){
+		webix.ui({
+			rows:[
+				{ view: "label", css: "header", label: "it is possible to delete 'menu' button by customizing cols array of 'toolbar' view" },
+				{
+					view:"filemanager",
+					url:"/filemanager/samples/server",
+					id:"files"
+				}
+			]
+		});
+		// hide 'menu' button
+		$$("files").$$("menu").hide();
+
+		// hide a spacer between 'menu' and 'back' buttons
+		$$("files").$$("menuSpacer").hide();
+	});
+</script>
+</body>
+</html>

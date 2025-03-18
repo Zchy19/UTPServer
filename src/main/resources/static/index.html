@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>UTP协同自动化测试平台</title>
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <meta name="keywords" content="UTP系统,嵌入式测试,CAN通信测试,串口通信测试, IO信号测试、PWM信号测试、模拟信号测试" />
+    <meta name="description" content="UTP协同自动测试系统是为各种嵌入式设备和软件提供全面的自动化测试支持，帮助客户搭建各类自动化测试环境" />
+    <link href="plugins/bootstrap-notify/animate.css" rel="stylesheet" type="text/css" />
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="dist/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="dist/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/morris/morris.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/jvectormap/jquery-jvectormap-1.2.2.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet"/>
+    <link href="plugins/bootstrap-datepicker/css/bootstrap-datepicker.css" rel="stylesheet"/>
+    <link href="plugins/bootstrap-switch/css/bootstrap-switch.css" rel="stylesheet"/>
+    <link href="dist/css/seatingChart.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/webix/webix/codebase/webix.min.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/webix/filemanager/codebase/filemanager.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/webix/spreadsheet/codebase/spreadsheet.min.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/datatables/datatables.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/datatables/DataTables-1.10.18/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <link href="dist/css/AdminLTE.css" rel="stylesheet" type="text/css" />
+    <link href="dist/css/skins/_all-skins.min.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/layui/css/layui.css" rel="stylesheet" type="text/css" />
+    <link href="plugins/jsoneditor/jsoneditor.min.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        body {
+            padding-right: 0 !important;
+        }
+
+        *.modal-open {
+            overflow-y: scroll;
+            padding-right: 0 !important;
+        }
+    </style>
+</head>
+<body class="skin-blue layout-top-nav" oncontextmenu="return false;">
+<div id="applicationHost"></div>
+<script src="plugins/scriptview/webfont.js"></script>
+<script src="plugins/webix/webix/codebase/webix.js"></script>
+<script src="plugins/webix/filemanager/codebase/filemanager.js"></script>
+<script src="plugins/webix/spreadsheet/codebase/spreadsheet.js"></script>
+<script src="plugins/echart/echarts.min.js"></script>
+<script src="plugins/layui/layui.js"></script>
+<script src="plugins/pdfobject/pdfobject.js"></script>
+<script src="plugins/echart/vintage.js"></script>
+<script src="plugins/blockly/blockly_compressed.js"></script>
+<script src="plugins/blockly/blocks_compressed.js"></script>
+<script src="plugins/blockly/antscript_compressed.js"></script>
+<script src="plugins/blockly/msg/messages.js"></script>
+<script src="dist/js/require.js" data-main="main"></script>
+<script type="text/javascript">
+    window.alert = function () {
+    };
+
+    function AdjustIframeHeightOnLoad() {
+        document.getElementById("scriptViewFrame").style.height = document.getElementById("scriptViewFrame").contentWindow.document.body.scrollHeight + "px";
+    }
+
+    function AdjustIframeHeight(i) {
+        document.getElementById("scriptViewFrame").style.height = parseInt(i) + "px";
+    }
+
+    setInterval(function () {
+        var fontColorChange = document.getElementById("fontColorChange");
+        if (fontColorChange != null && fontColorChange != undefined)
+            fontColorChange.style.color = "rgb(" + Math.round(Math.random() * 360) + "," + Math.round(Math.random() * 360) + "," + Math.round(Math.random() * 360) + ")";
+    }, 2000)
+</script>
+<script>
+    // var result = {}; // Replace with your actual model data, if needed.
+    // console.log(result);
+    document.cookie = "promoter=" + escape(JSON.stringify(result)) + ";";
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?f5dcfd07c5bc0a1335290e0c3333a428";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+</body>
+</html>

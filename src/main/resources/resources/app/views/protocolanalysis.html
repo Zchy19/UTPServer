@@ -1,0 +1,252 @@
+<div>
+	<section class="content-header">
+		<div class="row">
+			<div class="col-md-6">
+				<div class="box box-primary">
+					<div class="box-header with-border">
+						<h3 class="box-title">ICD文件</h3>
+					</div>
+					<div class="box-body">
+						<form name="myForm" enctype="multipart/form-data">
+							<div class="form-group">
+								<label for="exampleInputFile">选择文件</label> <input
+									id="icdInputFile" type="file"
+									data-bind="event: { change: function() { loadFromFile($element.files[0]) } }" />
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="box box-primary">
+					<div class="box-header with-border">
+						<h3 class="box-title">数据监测</h3>
+					</div>
+					<div class="box-body">
+						<div class="form-group">
+							<label>Icd: </label><span data-bind="text:selectedIcdId"></span>
+							<button class="btn btn-block btn-primary"
+								data-bind="click:showCurrentIcd">选择ICD</button>
+						</div>
+						<div class="form-group">
+							<label>通道:</label><span data-bind="text:selectedChannel"></span>
+							<select class="form-control" id="channelConfig"
+								data-bind="options: channelCandidates,
+								optionsText: 'name', 
+								optionsValue: 'value', 
+								value: selectedChannel, 
+								event: { change: selectedChanneChanged }
+								optionsCaption: '选择....'">
+							</select>
+						</div>
+					</div>
+					<div class="box-footer">
+						<button class="btn btn-success" data-bind="enable: canStart, click:prepareExecution">开始</button>
+						<button class="btn btn-danger pull-right"
+							data-bind="enable: canStop, click:stopExecution">停止</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="content">
+		<div class="row">
+			<div class="col-md-8">
+				<div class="box box-info">
+					<div class="box-header with-border">
+						<span class="label label-info"></span>
+					</div>
+					<div class="box-body" style="height: 550px; overflow-y: auto;" id="protocolAnalysisSteps">
+						<table class="table table-bordered"
+							style="word-break: break-all; word-wrap: break-all;">
+							<thead>
+								<tr>
+									<th width="10%"><small>序号</small></th>
+									<th width="10%"><small>通道</small></th>
+									<th width="15%"><small>标签</small></th>
+									<th width="10%"><small>十六进制</small></th>
+									<th width="25%"><small>二进制</small></th>
+									<th width="15%"><small>Bcd码</small></th>
+									<th width="15%"><small>时间</small></th>
+								</tr>
+							</thead>
+							<tbody data-bind='foreach: testResult'>
+								<tr data-bind="click:$root.showIcdDetail">
+									<td width="10"><small><span
+											data-bind='text:$index() + 1'></span></small></td>
+									<td width="10%"><small><span
+											data-bind='text:$root.selectedChannel'></span></small></td>
+									<td width="15%"><small><span
+											data-bind='text:labelIndex'></span>(<span
+											data-bind='text:labelName'></span>)</small></td>
+									<td width="10%"><small><span
+											data-bind='text:encodedString'></span></small></td>
+									<td width="25%"><small><span
+											data-bind='text:decodedBits'></span></small></td>
+									<td width="15%"><small><span
+											data-bind='text:bcdValue'></span>(<span
+											data-bind='text:units'></span>)</small></td>
+									<td width="15%"><small><span data-bind='text:time'></span></small></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="box box-info">
+					<div data-bind='visible: currentRecord.labelIndex() != ""'>
+						<div class="attachment">
+							<p class="filename">
+								<span> Time :</span><span data-bind='text:currentRecord.time'></span>
+								<span> Label </span><span
+									data-bind='text:currentRecord.labelIndex'></span> <span>
+									: </span> <span data-bind='text:currentRecord.encodedString'></span>
+							</p>
+							<p class="filename">
+								<span data-bind='text:currentRecord.labelName'></span> <br /> <span>P
+									SSM DDD DDDD DDDD DDDD DDDD SDI LLL LLL LL</span> <br /> <span
+									data-bind='text:currentRecord.decodedBits'></span>
+							</p>
+							<p class="filename">
+								<span data-bind='text:currentRecord.labelName'></span> <span>
+									= </span><span data-bind='text:currentRecord.bcdValue'></span> <span
+									data-bind='text:currentRecord.units'></span>
+							</p>
+							<p class="filename">
+								<span>SSM = </span><span data-bind='text:currentRecord.ssmValue'></span>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+
+<div class="modal fade" id="icdDetailModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">icd</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<div id="icdTreeview"
+						style="background-color: #ffffff; height: 260px;"></div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary"
+					data-bind="click:$root.selectIcd">确认</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="dynamicTargetObjectsModal" tabindex="-1"
+	role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">请选择被测对象:</h4>
+			</div>
+			<div class="modal-body">
+				<table class="table table-condensed"
+					data-bind='visible: targetObjectCandidates().length > 0'>
+					<thead>
+						<tr>
+							<th>被测对象</th>
+							<th>是否满足测试条件</th>
+						</tr>
+					</thead>
+					<tbody data-bind='foreach: targetObjectCandidates'>
+						<tr>
+							<td><input type="radio"
+								data-bind="value: targetObjectId, checked: $parent.selectTargetObjectId" /><span
+								data-bind="text: targetObjectId"></span></td>
+							<td><span data-bind="if:conditionMeet" style="color: #0F0"><i
+									class="fa fa-check"></i></span> <span
+								data-bind="ifnot:conditionMeet" style="color: #F00"><i
+									class="fa fa-times"></i></span></td>
+							<!-- 
+							<td
+								data-bind='visible: candidateAgents().length > 0, foreach: candidateAgents'>
+								[<span data-bind='text:agentName'></span>,<span
+								data-bind="text: agentDescription"></span>]
+							</td>
+							 -->
+							<td data-bind='visible: candidateAgents().length == 0'><span
+								style="color: red">测试对象和测试机器人名称不匹配，请慎重选用<!--（<a
+									href="app/help/index.html#1-4" target="_Blank">帮助</a>）-->！
+							</span>
+							<td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left"
+					data-bind="click: cancelExecution">取消</button>
+				<button type="button" class="btn btn-primary"
+					data-bind="enable: targetObjectSelectionDone, click:confirmTargetObject">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="dynamicAgentsModal" tabindex="-1"
+	role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">请配置所用测试机器人实例:</h4>
+			</div>
+			<div class="modal-body" align="center">
+				<table class="table table-condensed">
+					<tbody>
+						<tr>
+							<td><label>已选测试机器人 (请从备选列表中拖拽类型一致的测试机器人到此列表) </label></td>
+						</tr>
+						<tr>
+							<td>
+								<div data-bind='foreach: tables'>
+									<!-- https://github.com/rniemeyer/knockout-sortable  -->
+									<div class="sortabletable">
+										<span data-bind='text: antbotName'></span>(<span
+											data-bind='text: antbotType'></span>)
+										<div class="seats"
+											data-bind="sortable: { data: antbots, allowDrop: $parent.isTableFull, beforeMove:$parent.antbotTypeMatch }">
+											<div class="agent" data-bind="attr:{title:antbotDescription}">
+												<span data-bind='text: antbotName'></span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td><label>备选测试机器人</label></td>
+						</tr>
+						<tr>
+							<td>
+								<div class="new" data-bind='sortable: availableAgents'>
+									<div class="agent" data-bind="attr:{title: antbotDescription}">
+										<span data-bind='text: antbotName, attr:{title: antbotType}' style=" white-space: pre-wrap; word-break: break-word;"></span>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left"
+					data-bind="click: cancelExecution">取消</button>
+				<button type="button" class="btn btn-primary"
+					data-bind="enable: canStartExecution, click:startExecution">开始执行</button>
+			</div>
+		</div>
+	</div>
+</div>

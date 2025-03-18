@@ -1,0 +1,104 @@
+body {
+    font-family: arial;
+}
+
+.sortabletable {
+    float: left;
+    text-align: center;
+    margin-right: 5px;
+}
+
+.sortabletable span {
+    font-size: .75em;
+}
+
+.seats {
+    border: solid 3px #fff;
+    width: 100px;
+    height: 40px;
+    background-color: #fff;
+    margin: 5px;
+    padding: 2px;
+    border-radius: 5px;
+    box-shadow: 2px 2px 2px #999;
+}
+
+.ko_container {
+    border: solid 3px red;
+}
+
+.agent {
+    background-color: #3c8dbc;
+    color: #fff;
+    border-radius: 3px;
+    margin: 2px;
+    padding: 1px;
+    text-align: center;
+    width: 90px;
+    cursor: move;
+}
+
+.new {
+    border: solid 1px #444;
+    background-color: #fff;
+    height: 90px;
+    width: 500px;
+    padding: 2px;
+    border-radius: 5px;
+}
+
+.new div {
+    float: left;
+}
+
+.note {
+    font-style: italic;
+    font-size: .75em;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+.count {
+    color: #666;
+}
+
+.ready {
+    color: green;
+}
+
+#extra {
+    clear: both;
+    padding-top: 20px;
+}
+
+#master {
+    margin-top: 40px;
+}
+
+#master table {
+    font-size: .75em;
+    border: solid 1px black;
+    text-align: center;
+}
+
+#master th {
+    color: #666;
+}
+
+#message, #error {
+    font-size: .75em;
+    margin-top: 10px;
+    background-color: orange;
+    color: #444;
+    padding: 2px;
+    width: 500px;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 2px 2px 2px #999;
+    position: absolute;
+}
+
+#error {
+    background-color: #ff3333;
+    color: #ddd;
+}

@@ -1,0 +1,189 @@
+<link href="dist/css/index.css" rel="stylesheet" type="text/css" />
+<div class="pages nav" id="nav">
+
+	<div class="shell_btn" data-bind="visible:isAuthenticated()">
+		<a href="#" data-bind="click: gotoShell"><span>控制台</span></a>
+		<span data-bind="text:existUserName"></span>
+	</div>
+	<div class="guest_btn" data-bind="visible:!isAuthenticated() && loginManager.isCloud()">
+		<a href="#" data-bind="click: botValifyInit"><span id="fontColorChange" style="transition: all 2s; font-size: 22px; font-weight: bolder">游客试用</span></a>
+	</div>
+	<div class="signup_btn" data-bind="click: enableUserSignin,visible:!isAuthenticated()">
+		<a href="#" data-bind=""><span>登录</span></a>
+	</div>
+	<a class="signup_btn" href="#" data-bind="visible:!isAuthenticated()&&loginManager.isCloud(), click: enableUserSignup"><span>注册</span></a>
+</div>
+<div class="pages loginArea " id="loginArea">
+	<div class="pagecon entrance" style="top: 240px;">
+		<h2>
+			<span data-bind="visible:currentMode() == 'signin'">用户登录</span>
+			<!-- <span data-bind="visible:currentMode() == 'signup'">用户注册</span> -->
+			<!-- <span data-bind="visible:currentMode() == 'reset'">密码找回</span> -->
+			<!-- <span class="approach">
+				<a data-toggle="tooltip" title="账号" data-placement = "bottom"  data-bind=" click: enableEmailApproach">
+					<i id="emailApproachLink"  class="glyphicon glyphicon-envelope"></i>
+				</a> -->
+				<!-- <a data-toggle="tooltip" title="验证码" data-placement = "bottom"  data-bind="visible: xianshi(), click: enablePhoneApproach">
+					<i id="phoneApproachLink" class="glyphicon glyphicon-phone"></i>
+				</a> -->
+			<!-- </span> -->
+		</h2>
+		<div class="logincon clearfix">
+			<div class="wrongtip" data-bind="visible:enableErrorTip()">
+				<span data-bind="text: errorMessage"></span>
+			</div>
+			<div data-bind="visible:currentMode() == 'signin'">
+				<div data-bind="visible:currentApproach() == 'email'">
+					<input class="userEmail" placeholder="账号:" type="text" data-bind="value: account"/>
+					<input class="userpassword " placeholder="密码:" type="password" data-bind="value: password"/>
+				</div>
+				<div data-bind="visible:currentApproach() == 'phone'">
+					<input class="userEmail" placeholder="手机号:" type="text" data-bind="value: phone"/>
+					<div class="sms input-group">
+						<input class="userPhone" placeholder="验证码:" type="text" data-bind="value: smsCode"/>
+						<div class="smssubmit input-group-btn" data-bind="visible: !inCountDown(), click: getSmsCode">获取验证码</div>
+						<div class="smscountdown input-group-btn" data-bind="visible: inCountDown()"><span data-bind="text: currentCountDown"></span> 秒</div>
+					</div>
+				</div>
+				<div class="submit" data-bind="click: login">立即登录</div>
+				<div class="go">
+					<span style="padding-left: 400px;" data-bind="click: enableclose">关闭</span>
+				</div>
+			</div>
+
+			<div data-bind="visible:currentMode() == 'signup'">
+				<div class="sucesstip" data-bind="visible:enableSuccessTip()">
+					<div data-bind="visible:currentApproach() == 'email'">
+						<img src="dist/img/succes.png" alt=""/>
+						<p>注册成功,请查收邮件进行激活！</p>
+						<div class="submit">
+							<a href="" data-bind="click: gotoEmail">进入邮箱</a>
+						</div>
+					</div>
+					<div data-bind="visible:currentApproach() == 'phone'">
+						<img src="dist/img/succes.png" alt=""/>
+						<p style="margin: 20px">注册成功，请登录!</p>
+					</div>
+				</div>
+				<div data-bind="visible: !enableSuccessTip()">
+					<div style="text-align: right;">
+						<button type="button" style="background-color:white;border-radius: 3px;border: solid 1px #324784;margin-right: 100px;color: #324784;" data-bind="text:hasInvitationCode()?'有邀请码':'无邀请码', click: hasInvitationCodeChange, event:{change: isChecked}"></button>
+					</div>
+					<div data-bind="visible:currentApproach() == 'email'">
+						<input class="userEmail" placeholder="邮箱(必填):" type="text" data-bind="value: account"/>
+						<input class="userpassword " placeholder="密码(必填):" type="password" data-bind="value: password"/>
+						<input class="userpassword " placeholder="确认密码(必填):" type="password" data-bind="value: confirmpassword"/>
+						<input class="userEmail" placeholder="姓名(必填):" type="text" data-bind="value:nameOrRespectfully"/>
+						<input class="userEmail" placeholder="手机号(必填)" type="text" data-bind="value:phone"/>
+						<input class="userEmail" placeholder="企业名称(必填):" type="text" data-bind="value:weiBoNumber"/>
+						<input class="userEmail" placeholder="组织全称 （必填）" type="text" data-bind="visible: invitationOrgId().length>0, textInput: invitationOrgName"/>
+						<input class="userEmail" placeholder="部门:" type="text" data-bind="value:department">
+						<input class="userEmail" placeholder="职位:" type="text" data-bind="value:position1">
+						<input class="userEmail" placeholder="企业注册码 若无 可不填" type="text" data-bind="visible: hasInvitationCode(), textInput: invitationOrgId"/>
+
+						<div class="submit" data-bind="click: signup">注册</div>
+					</div>
+
+					<div data-bind="visible:currentApproach() == 'phone'">
+						<input class="userEmail" placeholder="手机号:" type="text" data-bind="value: phone"/>
+						<div class="sms input-group">
+							<input class="userPhone" placeholder="验证码:" type="text" data-bind="value: smsCode"/>
+							<div class="smssubmit input-group-btn" data-bind="visible: !inCountDown(), click: getSmsCode">获取验证码</div>
+							<div class="smscountdown input-group-btn" data-bind="visible: inCountDown()"><span data-bind="text: currentCountDown"></span> 秒</div>
+						</div>
+						<input class="userpassword " placeholder="密码:" type="password" data-bind="value: password"/>
+						<input class="userpassword " placeholder="确认密码:" type="password" data-bind="value: confirmpassword"/>
+						<input class="userEmail" placeholder="企业注册码 若无 可不填" type="text" data-bind="visible: hasInvitationCode(), textInput: invitationOrgId"/>
+						<input class="userEmail" placeholder="企业全称 （必填）" type="text" data-bind="visible: invitationOrgId().length>0, textInput: invitationOrgName"/>
+						<div class="submit" data-bind="click: signup">注册</div>
+					</div>
+				</div>
+                <div class="go">
+					&emsp; &emsp; &emsp; &emsp; &emsp; &emsp;&emsp; &emsp; &emsp; &emsp;
+                    <!-- <span data-bind="click: enableReset">密码找回</span> -->
+				  
+				   &emsp; &emsp; &emsp; &emsp; &emsp;&emsp; &emsp;   
+					  <span  data-bind="click: enableclose" >关闭</span>
+				  
+				  </div>
+			</div>
+
+			<div data-bind="visible:currentMode() == 'reset'">
+				<div class="sucesstip" data-bind="visible:enableSuccessTip()">
+					<div data-bind="visible:currentApproach() == 'email'">
+						<img src="dist/img/succes.png" alt="">
+						<p>密码重置链接已发送到您的邮箱！</p>
+						<div class="submit">
+							<a href="" data-bind="click: gotoEmail">进入邮箱</a>
+						</div>
+					</div>
+					<div data-bind="visible:currentApproach() == 'phone'">
+						<img src="dist/img/succes.png" alt="">
+						<p style="margin: 20px">密码重置成功，请重新登录！</p>
+					</div>
+				</div>
+				<div data-bind="visible: !enableSuccessTip()">
+					<div data-bind="visible:currentApproach() == 'email'">
+						<input class="userEmail" placeholder="请填写您的找回密码邮箱" type="text" data-bind="value: account"/>
+						<div class="submit" data-bind="click: findPassword">提交</div>
+					</div>
+
+					<div data-bind="visible:currentApproach() == 'phone'">
+						<input class="userEmail" placeholder="手机号:" type="text" data-bind="value: phone"/>
+						<div class="sms input-group">
+							<input class="userPhone" placeholder="验证码:" type="text" data-bind="value: smsCode"/>
+							<div class="smssubmit input-group-btn" data-bind="visible: !inCountDown(), click: getSmsCode">获取验证码</div>
+							<div class="smscountdown input-group-btn" data-bind="visible: inCountDown()"><span data-bind="text: currentCountDown"></span> 秒</div>
+						</div>
+						<input class="userpassword " placeholder="密码:" type="password" data-bind="value: password"/>
+						<input class="userpassword " placeholder="确认密码:" type="password" data-bind="value: confirmpassword"/>
+						<div class="submit" data-bind="click: findPassword">提交</div>
+					</div>
+				</div>
+				<div class="go">
+                    &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;&emsp; &emsp; &emsp; &emsp;
+                     <span data-bind="click: enableSignin">用户登录</span>
+                   &emsp; &emsp; &emsp; &emsp; &emsp;&emsp; &emsp; 
+                      <span  data-bind="click: enableclose" >关闭</span>	
+                     
+                  </div>   
+			</div>
+		</div>
+	</div>
+	<!-- 选择团队 -->
+	<div class="pagecon entrance select_organization" data-bind="visible: loginManager.orgsReady()==true">
+		<h2>选择团队</h2>
+		<div class="logincon clearfix">
+			<select class="organization"
+					data-bind="options: loginManager.orgs,  optionsText: 'name', value: loginManager.selectedOrg, optionsCaption: '选择团队'">
+			</select>
+			<div class="submit " data-bind="click: selectOrganization">进入</div>
+		</div>
+	</div>
+</div>
+
+<div class="pages page1" id="page1">
+	<div class="pagecon bannerTit active">
+
+		<div class="bannerTitcon  active">
+			<div class="tit">宏控协同自动化测试系统（UTP）</div>
+			<div class="subtit">全自动化测试执行 全场景测试仿真  全流程测试管理  </div>
+
+
+		</div>
+	</div>
+</div>
+<!--
+<div class="pages page1-2" id="page1-2">
+    <div class="pagecon maintit">
+        <div class="tit">产品介绍--产品应用</div>
+    </div>
+    <div class="pagecon maincon"></div>
+
+    <div class="pagecon downloadtest">
+        <div class="btn"><a	href="app/help/index.html#0-0" target="_Blank">更多应用介绍</a></div>
+    </div>
+
+</div> -->
+
+

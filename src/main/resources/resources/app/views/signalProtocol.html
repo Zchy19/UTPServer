@@ -1,0 +1,390 @@
+<div class="box box-primary">
+	<div class="box-header with-border">
+		<small>
+			<select style="color: black" data-bind="
+				options: projectManager.projects(), 
+				value: selectedTargetProject,
+				optionsText: 'name',
+				optionsCaption: '全部信号表',
+				event: { change: onProjectSelected }">
+			</select>
+		</small>
+		<div class="box-tools pull-right">
+			<button type="button" class="btn btn-box-tool" data-bind="click: enterAddItemMode" data-toggle="tooltip"
+				title="新建信号表"><i class="fa fa-plus"></i></button>
+			<button type="button" class="btn btn-box-tool" data-bind="click: signalEnterImportProtocolMode"
+				data-toggle="tooltip" title="导入信号表"><i class="fa fa-upload"></i></button>
+			<button type="button" class="btn btn-box-tool" data-bind="click: refreshProtocols" data-toggle="tooltip"
+				title="刷新"><i class="fa fa-refresh"></i></button>
+		</div>
+	</div>
+
+	<div class="box-body" style="min-height: 450px; max-height: 550px; overflow-y: auto;">
+		<table class="table table-bordered table-striped table-hover">
+			<thead>
+				<tr>
+					<th><small>名称 </small></th>
+					<!-- <th>
+						<small>
+							<select class="form-control"
+								data-bind="options: protocolTypes,
+								optionsText: 'name',
+								value: selectedProtocolType,
+								event: { change: protocolTypeChanged }">
+							</select>
+						</small>
+					</th> -->
+					<th><small>时间</small></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody data-bind='foreach: protocols' data-bind="visible: protocols().length > 0">
+				<tr>
+					<td><small><label data-bind='text:fileName'></label></small></td>
+					<!-- <td><small><label data-bind='text:dataType'></label></small></td> -->
+					<td><small><label data-bind='text:createdAt'></label></small></td>
+					<td>
+						<small>
+							<button class="btn btn-primary btn-sm" data-toggle="tooltip" title="编辑"
+								data-bind="click: $parent.signalEditProtocol">
+								<i class="glyphicon glyphicon-edit"></i>
+							</button>
+							<button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="导出"
+								data-bind="click: $parent.exportProtocol">
+								<i class="glyphicon glyphicon-download-alt"></i>
+							</button>
+							<!-- <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="消息模板" data-bind="click: $parent.viewMessageTemplate">
+								<i class="glyphicon glyphicon-list-alt"></i>
+							</button> -->
+							<button class="btn btn-danger btn-sm" data-toggle="tooltip" title="删除信号表"
+								data-original-title="Delete" data-bind="click: $parent.remove">
+								<i class="glyphicon glyphicon-trash"></i>
+							</button>
+						</small>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<h5 class="text-center" style="color: grey; font-style: italic;" data-bind="visible: protocols().length == 0">
+			<small>暂无数据！</small>
+		</h5>
+	</div>
+</div>
+
+<div class="modal fade" id="signalProtocolImportModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	data-backdrop="static">
+	<div class="modal-dialog modal-fullscreen" role="document">
+		<form id="signalProtocolImportForm" data-toggle="validator" enctype="multipart/form-data">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="mySingnalModalLabel">信号表配置信息</h4>
+				</div>
+				<div class="modal-body" style="height: auto;">
+					<!-- <div class="form-group">
+						<label for="protocolType" class="control-label">类型<font
+							color="red">*</font></label>
+							<select class="form-control"
+								id="protocolType"
+								data-bind="options: protocolTypes,
+								optionsText: 'name',
+								value: selectedProtocolType, 
+								optionsCaption: '选择....'">
+							</select>
+					</div> -->
+					<div class="form-group">
+						<label for="exampleInputFile">选择文件</label> <input id="icdInputFile" type="file"
+							data-bind="event: { change: function() { loadFromFile($element.files[0]) } }" />
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary">
+							<span lang="en">确定</span>
+						</button>
+						<button type="button" class="btn btn-default pull-left"
+							data-bind="click: cancelImportProtocol">取消</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="modal fade" id="signalProtocolEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	data-backdrop="static" style="padding-right: 0px">
+
+	<div class="modal-dialog" role="document" style="width: 100%;margin: 0 auto;">
+		<form id="protocolSignalForm" data-toggle="validator" enctype="multipart/form-data">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="myModalLabel">信号表配置信息</h4>
+				</div>
+				<div class="modal-body mainModal">
+					<!-- <div class="form-group">
+						<label for="protocolType" class="control-label">类型<font
+							color="red">*</font></label>
+							<select class="form-control"
+								id="protocolType"
+								data-bind="
+								enable: isEditMode() == false,
+								options: protocolTypes,
+								optionsText: 'name',
+								value: selectedProtocolType, 
+								optionsCaption: '选择....'">
+							</select>
+					</div> -->
+					<div class="form-group">
+						<label for="protocolName" class="control-label">名称<font color="red">*</font></label> <input
+							type="text" class="form-control" id="protocolName"
+							data-bind="enable: isEditMode() == false, value:selectedProtocolName" required>
+					</div>
+
+					<div class="form-group" style="border: 1px solid #000; padding: 20px;">
+						<!-- <div class="container" style="width: 100%;height: 100%; margin-left: 0px; padding-left: 0px; margin-right: 0px; padding-right: 30px;"> -->
+
+						<!-- 消息名称输入框 -->
+						<!-- <div class="form-group">
+							<label for="description">description:</label>
+							<input type="text" class="form-control" id="description" placeholder="输入消息名称"
+								data-bind="value:description">
+						</div>
+						<div class="form-group">
+							<label for="signalTableVersion">signalTableVersion:</label>
+							<input type="text" class="form-control" id="signalTableVersion" placeholder="输入消息名称"
+								data-bind="value:signalTableVersion">
+						</div>
+						<div class="form-group">
+							<label for="templateVersion">templateVersion:</label>
+							<input type="text" class="form-control" id="templateVersion" placeholder="输入消息名称"
+								data-bind="value:templateVersion">
+						</div> -->
+						<div class="form-group">
+							<label for="signalDevice">设备名称:</label>
+							<input type="text" class="form-control" id="signalDevice" placeholder="输入设备名称"
+								data-bind="value:signalDevice">
+						</div>
+						<div class="form-group">
+							<label for="signalType">设备类型:</label>
+							<select class="form-control" id="signalType" data-bind="value:signalType">
+								<option value="" disabled selected style="display:none;">请选择设备类型</option>
+								<option value="DIO">DIO</option>
+								<option value="AI">AI</option>
+								<option value="AO">AO</option>
+								<option value="PWM">PWM</option>
+							</select>
+						</div>
+
+						<!-- 表格容器 -->
+						<div class="table-container" id="tableContainer">
+							<table id="myTable" class="display" style="width:100%">
+								<thead>
+									<tr>
+										<th>编号</th>
+										<th>逻辑地址</th>
+										<th>物理地址</th>
+										<th>组别</th>
+										<th>详细信息</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+							<!-- 表格将在这里动态生成 -->
+						</div>
+						<!-- 按钮容器 -->
+						<div class="btn-container"
+							style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+							<button class="btn btn-primary" id="addFieldBtn" data-bind="click:addModal">增加字段</button>
+							<button class="btn btn-primary" id="addGroupBtn"
+								data-bind="click:addGroupModal">编辑分组</button>
+						</div>
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<div class="form-group">
+						<button type="button" class="btn btn-primary"
+							data-bind="visible:isEditMode() == false, click: submitProtocol">
+							<span lang="en">提交</span>
+						</button>
+						<button type="button" class="btn btn-primary"
+							data-bind="visible:isEditMode(), click: updateSignalProtocol">
+							<span lang="en">提交</span>
+						</button>
+						<button type="button" class="btn btn-default pull-left"
+							data-bind="click: cancelProtocol">取消</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="modal modal-warning fade in" id="signalDeleteProtocolModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">提醒</h4>
+			</div>
+			<div class="modal-body">
+				<div>删除信号表，有可能导致与此相关联的脚本及历史记录显示不准确，确认删除该信号表？</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline" data-bind="click: clearRemoveNotification">否</button>
+				<button type="button" class="btn btn-outline" data-bind="click:deleteCurrentProtocol">是</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="addNumberModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	data-backdrop="static">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">请输入添加行数</h4>
+			</div>
+			<div class="modal-body">
+				<input type="text" class="form-control" data-bind="value:addNumber">
+			</div>
+			<div class="modal-footer">
+				<div class="form-group">
+					<button type="button" class="btn btn-primary" data-bind="click: sureAddFiled">
+						<span lang="en">确定</span>
+					</button>
+					<button type="button" class="btn btn-default pull-left"
+						data-bind="click: cancelAddFiled">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="signalDetailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">详细信息</h4>
+			</div>
+			<div class="modal-body" style="overflow: auto;">
+				<div data-bind="foreach:channelParams">
+					<div class="col-md-5">
+						<div class="form-group">
+							<label for="protocolName" class="control-label">名称</label>
+							<select class="form-control" data-bind="options: $parent.detailName,
+									   value: name, 
+									   optionsCaption: '选择....'">
+							</select>
+						</div>
+					</div>
+					<div class="col-md-5">
+						<div class="form-group">
+							<label for="protocolName" class="control-label">值</label>
+							<input type="text" class="form-control" data-bind="value:value">
+						</div>
+					</div>
+					<div class="col-md-2">
+						<label class="control-label" style="visibility: hidden;">操作</label>
+						<div class="form-group">
+							<button type="button" class="btn btn-danger"
+								data-bind="click: $parent.removeSignalDetail.bind($data)">删除</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="form-group">
+					<button type="button" class="btn btn-primary" data-bind="click: addSignalDetail">
+						<span lang="en">添加</span>
+					</button>
+					<button type="button" class="btn btn-primary" data-bind="click: updateSignalDetail">
+						<span lang="en">保存</span>
+					</button>
+					<button type="button" class="btn btn-default pull-left"
+						data-bind="click: cancelDetailModal">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="signalGroupModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">分组信息</h4>
+			</div>
+			<div class="modal-body" style="overflow: auto;">
+				<div data-bind="foreach:signalGroupDemo">
+					<div class="col-md-10">
+						<div class="form-group">
+							<label for="protocolName" class="control-label">名称</label>
+							<input type="text" class="form-control" data-bind="value:groupName">
+						</div>
+					</div>
+					<div class="col-md-2">
+						<label class="control-label" style="visibility: hidden;">操作</label>
+						<div class="form-group">
+							<button type="button" class="btn btn-danger"
+								data-bind="click: $parent.removeSignalGroup.bind($data)">删除</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="form-group">
+					<button type="button" class="btn btn-primary" data-bind="click: addSignalGroup">
+						<span lang="en">添加</span>
+					</button>
+					<button type="button" class="btn btn-primary" data-bind="click: updateSignalGroup">
+						<span lang="en">保存</span>
+					</button>
+					<button type="button" class="btn btn-default pull-left"
+						data-bind="click: cancelGroupModal">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<style type="text/css">
+	/* 居中对齐编号,按钮 */
+    #myTable thead th:first-child,
+    #myTable tbody td:first-child,
+	#myTable tbody td:nth-child(5),
+	#myTable tbody td:nth-child(6) {
+        text-align: center;
+    }
+
+	code {
+		background-color: #f5f5f5;
+	}
+
+	#protocolEditor {
+		width: 100%;
+		height: 400px;
+	}
+
+	.modal.fade.in {
+		padding-right: 0 !important;
+	}
+
+	.modal-body.mainModal {
+		overflow-y: auto;
+		/* 允许模态框内容区域垂直滚动 */
+		height: calc(100% - 120px);
+		/* 调整高度以适应头部和底部 */
+		min-height: 450px;
+		max-height: 550px;
+	}
+
+	.modal-header,
+	.modal-footer {
+		height: 60px;
+		/* 固定头部和底部的高度 */
+	}
+
+</style>

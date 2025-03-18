@@ -1,0 +1,80 @@
+<div class="box box-primary">
+	<div class="box-header with-border">
+		<small>检查点统计图</small>
+		<div class="box-tools pull-right">
+			<button type="button" class="btn btn-box-tool" data-bind="click: protocolConditionSetting" data-toggle="tooltip"><i class="fa fa-wrench"></i></button>
+			<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>		                
+		 </div>	
+	</div>				
+	<div class="box-body" id="testPointWidth">
+			<h5 class="text-center" style="color: grey; font-style: italic;"
+				data-bind="visible: showChart() == false">
+				<small>暂无数据，请设置分析条件！</small>
+			</h5>
+            <div id="testPoint" style="height: 300px;" data-bind="visible: showChart() == true"></div>
+	</div>
+</div>
+<div class="modal fade" id="testsetCheckPointSettingModal" tabindex="-1" role="dialog"
+	aria-labelledby="testsetCheckPointSettingModalLabel"  data-backdrop="static">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">报告过滤设置</h4>
+            </div>
+            <div class="modal-body">
+                <!-- <div class="form-group">
+                    <label><span lang="en">测试集类型</span></label>
+                    <select class="form-control" data-bind="options: testsetsType,
+            						optionsText: 'description',
+            						value: selectedTestsetType, 
+            						optionsCaption: '选择....'">
+                    </select>
+                </div> -->
+                <div class="form-group">
+                    <label><span lang="en">开始时间</span></label>
+                    <div class="input-group date" id="testPointSearchBeginDate">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <input type="text" class="form-control" data-bind="value:startFromDate" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><span lang="en">结束时间</span></label>
+                    <div class="input-group date" id="testPointSearchEndDate">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <input type="text" class="form-control" data-bind="value:endByDate">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="testPointDefaultCheck" data-bind="checked: testPointAutoFlag">
+                        <label class="form-check-label" for="testPointDefaultCheck">
+                            是否自动获取数据
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group" data-bind="visible: testPointAutoFlag">
+                    <label><span lang="en">时间段</span></label>
+                    <select class="form-control" data-bind="options: autoRefreshTimeOptions,
+            						value: selectedAutoRefreshTime, 
+            						optionsCaption: '选择....',
+            						event: { change: autoRefreshTimeChanged }">
+                    </select>
+                </div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" data-bind="click: createtestPointStatistics">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+<style type="text/css">
+    code {
+      background-color: #f5f5f5;
+    }
+</style>
+

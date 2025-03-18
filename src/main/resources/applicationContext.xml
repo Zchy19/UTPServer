@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:websocket="http://www.springframework.org/schema/websocket"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+
+<!--	<annotation-driven />-->
+
+	<!-- Handles HTTP GET requests for /** by efficiently serving
+		up static resources in the ${webappRoot}/resources directory -->
+<!--	<resources mapping="/favicon.ico" location="/"/>-->
+<!--	<resources mapping="/**" location="/" />-->
+<!--	<resources mapping="/swagger/**" location="/WEB-INF/swagger/" />-->
+<!--	<resources mapping="/api-docs/**" location="/api-docs/" />-->
+<!--	<resources mapping="/.well-known/**" location="/.well-known/" />-->
+<!--	<resources mapping="/reports/**" location="/WEB-INF/reports/" />-->
+<!--	<resources mapping="/projects/**" location="/WEB-INF/projects/" />-->
+<!--	<resources mapping="/file_download/**" location="/WEB-INF/file_download/" />-->
+<!--	<resources mapping="/downloads/**" location="/WEB-INF/downloads/" />-->
+	
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
+		in the /WEB-INF/views directory -->
+<!--	<beans:bean-->
+<!--		class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
+<!--		<beans:property name="prefix" value="/WEB-INF/views/" />-->
+<!--		<beans:property name="suffix" value=".jsp" />-->
+<!--	</beans:bean>-->
+
+<!--	<beans:bean class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />-->
+
+<!--	<beans:bean class="com.macrosoft.configuration.SwaggerConfig"/>-->
+	
+	<!-- Configure to plugin JSON as request and response in method handler -->
+<!--	<beans:bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">-->
+<!--		<beans:property name="messageConverters">-->
+<!--			<beans:list>-->
+<!--				<beans:ref bean="jsonMessageConverter"/>-->
+<!--			</beans:list>-->
+<!--		</beans:property>-->
+<!--	</beans:bean>-->
+	
+<!--	&lt;!&ndash; Configure bean to convert JSON to POJO and vice versa &ndash;&gt;-->
+<!--    <beans:bean id="jsonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">-->
+<!--    </beans:bean> -->
+    
+<!--     <beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->
+<!--     	<beans:property name="maxUploadSize" value="268435456"/>-->
+<!-- 	</beans:bean>-->
+
+	<!-- Hibernate 4 SessionFactory Bean definition -->
+<!--	<beans:bean id="sessionFactory"-->
+<!--		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">-->
+<!--		&lt;!&ndash; <beans:property name="dataSource" ref="dataSource" /> &ndash;&gt;-->
+<!--		<beans:property name="annotatedClasses">-->
+<!--			<beans:list>-->
+<!--				<beans:value>com.macrosoft.model.UserRole</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.Requirement</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.TestCaseRequirementMappingng</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.Project</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.AgentConfig</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.ScriptGroup</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.TestSet</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.ScriptLink</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.Script</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.Recorder</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.BigData</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.ExecutionStatus</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.ExecutionResult</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.ExecutionTestCaseResult</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.TestsetExecutionTrigger</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.RecoverSubscriptReference</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.SubscriptReference</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.MonitorData</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.JsonStorage</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.BigdataStorage</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.MessageTemplate</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.MonitoringTestSet</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.MonitoringExecutionDetail</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.MonitoringExecution</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.ProtocolSignal</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.ExecutionData</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.SpecialTest</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.SpecialTestData</beans:value>-->
+<!--				<beans:value>com.macrosoft.model.ExecutionCheckPoint</beans:value>-->
+
+<!--			</beans:list>-->
+<!--		</beans:property>-->
+<!--		<beans:property name="hibernateProperties">-->
+<!--			<beans:map> -->
+<!--		     <beans:entry key="hibernate.multi_tenant_connection_provider" value-ref="multitenancyConnectionProvider"/> -->
+<!--		     <beans:entry key="hibernate.tenant_identifier_resolver" value="com.macrosoft.datasource.CurrentTenantIdentifierResolverImpl"/>        -->
+<!--		     <beans:entry key="hibernate.multiTenancy" value="DATABASE"/>-->
+<!--		     <beans:entry key="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/> -->
+<!--		     <beans:entry key="hibernate.show_sql" value="false"/> -->
+<!--		     <beans:entry key="hibernate.format_sql" value="false"/> -->
+<!--			 -->
+<!--		    </beans:map>-->
+<!--		</beans:property>-->
+<!--	</beans:bean>-->
+
+
+	
+<!--	<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"-->
+<!--		destroy-method="close">-->
+<!--		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />-->
+<!--		<beans:property name="url"-->
+<!--			value="jdbc:mysql://localhost:3306/utp_master?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&amp;serverTimezone=UTC&amp;userSSL=false" />-->
+<!--		<beans:property name="username" value="root" />-->
+<!--		<beans:property name="password" value="root" />-->
+<!--		<beans:property name="testOnBorrow" value="true"/>  -->
+<!--        <beans:property name="validationQuery" value="select 1"/>-->
+<!--	</beans:bean>-->
+	
+	<!-- It defines sessionfactory for master database -->
+<!--	<beans:bean id="masterSessionFactory"-->
+<!--		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">-->
+<!--		<beans:property name="dataSource" ref="dataSource" />-->
+<!--		<beans:property name="annotatedClasses">-->
+<!--			<beans:list>-->
+<!--				<beans:value>com.macrosoft.master.ClientDbConnection</beans:value>-->
+<!--			</beans:list>-->
+<!--		</beans:property>-->
+<!--		<beans:property name="hibernateProperties">-->
+<!--			<beans:props>-->
+<!--				<beans:prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</beans:prop>-->
+<!--				<beans:prop key="hibernate.show_sql">false</beans:prop>-->
+<!--			</beans:props>-->
+<!--		</beans:property>-->
+<!--	</beans:bean>-->
+<!--	-->
+<!--	<beans:bean id="masterService" class="com.macrosoft.master.MasterServiceImpl">-->
+<!--		<beans:property name="masterSessionFactory" ref="masterSessionFactory"></beans:property>-->
+<!--	</beans:bean>-->
+	
+<!--	<beans:bean id="multitenancyConnectionProvider" class="com.macrosoft.datasource.MultiTenantConnectionProviderImpl">-->
+<!--		<beans:property name="masterService" ref="masterService" />-->
+<!--	</beans:bean>-->
+	
+	<!--  ************* *************User Role Beans  ************* *************-->
+<!--	<beans:bean id="userRoleDAO" class="com.macrosoft.dao.impl.UserRoleDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+<!--	<beans:bean id="userRoleService" class="com.macrosoft.service.impl.UserRoleServiceImpl">-->
+<!--		<beans:property name="userRoleDAO" ref="userRoleDAO"></beans:property>-->
+<!--	</beans:bean>-->
+	
+	<!--  ************* *************Requirement Beans  ************* *************-->
+<!--	<beans:bean id="requirementDAO" class="com.macrosoft.dao.impl.RequirementDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+	
+<!--	<beans:bean id="requirementService" class="com.macrosoft.service.impl.RequirementServiceImpl">-->
+<!--		<beans:property name="requirementDAO" ref="requirementDAO"></beans:property>-->
+<!--		<beans:property name="projectDAO" ref="projectDAO"></beans:property>-->
+<!--	</beans:bean>-->
+	<!--  ************* *************Agent Configuration Beans  ************* *************-->
+<!--	<beans:bean id="agentConfigDAO" class="com.macrosoft.dao.impl.AgentConfigDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+<!--	-->
+<!--	<beans:bean id="agentConfigService" class="com.macrosoft.service.impl.AgentConfigServiceImpl">-->
+<!--		<beans:property name="agentConfigDAO" ref="agentConfigDAO"></beans:property>-->
+<!--	</beans:bean>-->
+
+
+<!--	<beans:bean id="icdDocumentService" class="com.macrosoft.service.impl.IcdDocumentServiceImpl">-->
+<!--	</beans:bean>-->
+	
+
+	<!--  ************* *************JsonStorage Configuration Beans  ************* *************-->
+<!--	<beans:bean id="jsonStorageDAO" class="com.macrosoft.dao.impl.JsonStorageDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+	
+<!--	<beans:bean id="jsonStorageService" class="com.macrosoft.service.impl.JsonStorageServiceImpl">-->
+<!--		<beans:property name="jsonStorageDAO" ref="jsonStorageDAO"></beans:property>-->
+<!--	</beans:bean>-->
+	<!--  ************* *************protocolSignal Configuration Beans  ************* *************-->
+<!--	<beans:bean id="protocolSignalDAO" class="com.macrosoft.dao.impl.ProtocolSignalDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+<!--	<beans:bean id="protocolSignalService" class="com.macrosoft.service.impl.ProtocolSignalServiceImpl">-->
+<!--		<beans:property name="protocolSignalDAO" ref="protocolSignalDAO"></beans:property>-->
+<!--		<beans:property name="messageTemplateDAO" ref="messageTemplateDAO"></beans:property>-->
+<!--	</beans:bean>-->
+	<!--  ************* *************BigDataStorage Configuration Beans  ************* *************-->
+<!--	<beans:bean id="bigdataStorageDAO" class="com.macrosoft.dao.impl.BigdataStorageDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+	
+<!--	<beans:bean id="bigdataStorageService" class="com.macrosoft.service.impl.BigdataStorageServiceImpl">-->
+<!--		<beans:property name="bigdataStorageDAO" ref="bigdataStorageDAO"></beans:property>-->
+<!--		<beans:property name="messageTemplateDAO" ref="messageTemplateDAO"></beans:property>-->
+<!--		<beans:property name="protocolSignalDAO" ref="protocolSignalDAO"></beans:property>-->
+<!--	</beans:bean>-->
+<!--    <beans:bean id="messageTemplateDAO" class="com.macrosoft.dao.impl.MessageTemplateDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+	
+<!--	<beans:bean id="messageTemplateService" class="com.macrosoft.service.impl.MessageTemplateServiceImpl">-->
+<!--		<beans:property name="messageTemplateDAO" ref="messageTemplateDAO"></beans:property>-->
+<!--	</beans:bean>-->
+    
+	<!-- ******* *******************Execution Beans ************* ************* -->
+		
+	
+	
+<!--	<beans:bean id="ursConfig" class="com.macrosoft.configuration.UrsConfigurationImpl">-->
+<!--		&lt;!&ndash;<beans:property name="ipAddress" value="https://www.macrosoftsys.com"/>&ndash;&gt;-->
+<!--		<beans:property name="ipAddress" value="http://localhost:8080/URS_war_exploded/" />-->
+<!--	</beans:bean>-->
+	
+	
+<!--	<beans:bean id="utpAdapterFactoryManager" class="com.macrosoft.utp.adapter.UtpAdapterFactoryManager">-->
+<!--		<beans:property name="projectService" ref="projectService"></beans:property>-->
+<!--		<beans:property name="recoverSubscriptReferenceService" ref="recoverSubscriptReferenceService"></beans:property>-->
+<!--		<beans:property name="subscriptReferenceService" ref="subscriptReferenceService"></beans:property>-->
+<!--		<beans:property name="agentConfigService" ref="agentConfigService"></beans:property>-->
+<!--		<beans:property name="scriptService" ref="scriptService"></beans:property>-->
+<!--		<beans:property name="scriptGroupService" ref="scriptGroupService"></beans:property>-->
+<!--		<beans:property name="testSetService" ref="testSetService"></beans:property>-->
+<!--		<beans:property name="scriptLinkService" ref="scriptLinkService"></beans:property>-->
+<!--		<beans:property name="monitoringExecutionService" ref="monitoringExecutionService"></beans:property>-->
+<!--	</beans:bean>-->
+	
+	
+<!--	<beans:bean id="utpEngineControllerManager" class="com.macrosoft.utp.adatper.utpengine.UtpEngineControllerManager">-->
+<!--		<beans:property name="utpAdapterFactoryManager" ref="utpAdapterFactoryManager"></beans:property>-->
+<!--		<beans:property name="executionStatusService" ref="executionStatusService"></beans:property>-->
+<!--		<beans:property name="executionResultService" ref="executionResultService"></beans:property>-->
+<!--		<beans:property name="monitorDataService" ref="monitorDataService"></beans:property>-->
+<!--		<beans:property name="executionTestCaseResultService" ref="executionTestCaseResultService"></beans:property>-->
+<!--		<beans:property name="bigdataStorageService" ref="bigdataStorageService"></beans:property>-->
+<!--		<beans:property name="protocolSignalService" ref="protocolSignalService"></beans:property>-->
+<!--		<beans:property name="monitoringExecutionService" ref="monitoringExecutionService"></beans:property>-->
+<!--	</beans:bean>-->
+	
+<!--	<beans:bean id="utpEngineExecutor" class="com.macrosoft.utp.adatper.utpengine.UtpEngineExecutor">-->
+<!--		<beans:property name="utpEngineControllerManager" ref="utpEngineControllerManager"></beans:property>-->
+<!--		<beans:property name="executionStatusService" ref="executionStatusService"></beans:property>-->
+<!--	</beans:bean>-->
+	
+<!--	<beans:bean id="executionService" class="com.macrosoft.service.impl.ExecutionServiceImpl">-->
+<!--		<beans:property name="utpEngineExecutor" ref="utpEngineExecutor"></beans:property>-->
+<!--	</beans:bean>-->
+	
+	<!-- ************* ************* Database Utilities Beans  ************* *************-->
+<!--	<beans:bean id="dbUtilsDAO" class="com.macrosoft.dao.impl.DbUtilsDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+	
+<!--	<beans:bean id="dbUtilsService" class="com.macrosoft.service.impl.DbUtilsServiceImpl">-->
+<!--		<beans:property name="dbUtilsDAO" ref="dbUtilsDAO"></beans:property>-->
+<!--	</beans:bean>-->
+	<!--  ************* *************antbotSocketHandler Beans  ************* *************-->
+<!--	<beans:bean id="antbotSocketHandler" class="com.macrosoft.webserver.AntbotSocketHandler">-->
+<!--	</beans:bean>-->
+
+<!--	<beans:bean id="utpClientSocketHandler" class="com.macrosoft.webserver.UtpClientSocketHandler">-->
+<!--	</beans:bean>-->
+
+<!--<beans:bean id="antbotMessageRouter" class="com.macrosoft.webserver.AntbotMessageRouter">-->
+<!--    <beans:property name="utpClientSocketHandler" ref="utpClientSocketHandler"></beans:property>-->
+<!--</beans:bean>-->
+
+	<!--  ************* *************Project Beans  ************* *************-->
+<!--	<beans:bean id="projectDAO" class="com.macrosoft.dao.impl.ProjectDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+
+	
+<!--	<beans:bean id="projectService" class="com.macrosoft.service.impl.ProjectServiceImpl">-->
+<!--		<beans:property name="projectDAO" ref="projectDAO"></beans:property>-->
+<!--		<beans:property name="requirementDAO" ref="requirementDAO"></beans:property>-->
+<!--		<beans:property name="scriptDAO" ref="scriptDAO"></beans:property>-->
+<!--		<beans:property name="testSetDAO" ref="testSetDAO"></beans:property>-->
+<!--		<beans:property name="scriptGroupDAO" ref="scriptGroupDAO"></beans:property>-->
+<!--		<beans:property name="agentConfigDAO" ref="agentConfigDAO"></beans:property>-->
+<!--		<beans:property name="subscriptReferenceDAO" ref="subscriptReferenceDAO"></beans:property>-->
+<!--		<beans:property name="recoverSubscriptReferenceDAO" ref="recoverSubscriptReferenceDAO"></beans:property>-->
+<!--		<beans:property name="scriptLinkDAO" ref="scriptLinkDAO"></beans:property>-->
+<!--		<beans:property name="recorderDAO" ref="recorderDAO"></beans:property>-->
+<!--		<beans:property name="bigDataDAO" ref="bigDataDAO"></beans:property>-->
+<!--&lt;!&ndash;		<beans:property name="bigdataStorageDAO" ref="bigdataStorageDAO"></beans:property>&ndash;&gt;-->
+<!--		<beans:property name="protocolSignalDAO" ref="protocolSignalDAO"></beans:property>-->
+<!--		<beans:property name="messageTemplateDAO" ref="messageTemplateDAO"></beans:property>-->
+<!--		<beans:property name="monitoringTestSetDAO" ref="monitoringTestSetDAO"></beans:property>-->
+<!--		<beans:property name="specialTestDAO" ref="specialTestDAO"></beans:property>-->
+<!--		-->
+<!--	</beans:bean>-->
+	
+	<!--  ************* *************Script Beans  ************* ************* *************-->
+<!--	<beans:bean id="scriptDAO" class="com.macrosoft.dao.impl.ScriptDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+
+
+<!--	<beans:bean id="scriptService" class="com.macrosoft.service.impl.ScriptServiceImpl">-->
+<!--		<beans:property name="projectDAO" ref="projectDAO"></beans:property>-->
+<!--		<beans:property name="scriptDAO" ref="scriptDAO"></beans:property>-->
+<!--		<beans:property name="requirementDAO" ref="requirementDAO"></beans:property>-->
+<!--		<beans:property name="subscriptReferenceService" ref="subscriptReferenceService"></beans:property>-->
+<!--		<beans:property name="scriptLinkDAO" ref="scriptLinkDAO"></beans:property>-->
+<!--		<beans:property name="testSetDAO" ref="testSetDAO"></beans:property>-->
+<!--		<beans:property name="recoverSubscriptReferenceDAO" ref="recoverSubscriptReferenceDAO"></beans:property>-->
+<!--	</beans:bean>-->
+	
+	<!--  ************* *************Script Group Beans  ************* ************* *************-->
+<!--	<beans:bean id="scriptGroupDAO" class="com.macrosoft.dao.impl.ScriptGroupDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+
+<!--	<beans:bean id="scriptGroupService" class="com.macrosoft.service.impl.ScriptGroupServiceImpl">-->
+<!--		<beans:property name="projectDAO" ref="projectDAO"></beans:property>-->
+<!--		<beans:property name="requirementDAO" ref="requirementDAO"></beans:property>-->
+<!--		<beans:property name="scriptGroupDAO" ref="scriptGroupDAO"></beans:property>-->
+<!--	</beans:bean>-->
+	
+	<!--  ************* *************TestSet Beans  ************* ************* *************-->
+<!--	<beans:bean id="testSetDAO" class="com.macrosoft.dao.impl.TestSetDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+
+<!--	<beans:bean id="testSetService" class="com.macrosoft.service.impl.TestSetServiceImpl">-->
+<!--		<beans:property name="projectDAO" ref="projectDAO"></beans:property>-->
+<!--		<beans:property name="testSetDAO" ref="testSetDAO"></beans:property>-->
+<!--		<beans:property name="scriptDAO" ref="scriptDAO"></beans:property>-->
+<!--		<beans:property name="scriptLinkDAO" ref="scriptLinkDAO"></beans:property>-->
+<!--		<beans:property name="bigdataStorageDAO" ref="bigdataStorageDAO"></beans:property>-->
+<!--		<beans:property name="protocolSignalDAO" ref="protocolSignalDAO"></beans:property>-->
+<!--		<beans:property name="executionResultDAO" ref="executionResultDAO"></beans:property>-->
+<!--		<beans:property name="executionStatusDAO" ref="executionStatusDAO"></beans:property>-->
+<!--		<beans:property name="executionTestCaseResultDAO" ref="executionTestCaseResultDao"></beans:property>-->
+
+<!--	</beans:bean>-->
+	
+			
+	<!--  ************* *************TestLink Beans  ************* ************* *************-->
+<!--	<beans:bean id="scriptLinkDAO" class="com.macrosoft.dao.impl.ScriptLinkDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+
+<!--	<beans:bean id="scriptLinkService" class="com.macrosoft.service.impl.ScriptLinkServiceImpl">-->
+<!--		<beans:property name="scriptLinkDAO" ref="scriptLinkDAO"></beans:property>-->
+<!--		<beans:property name="projectDAO" ref="projectDAO"></beans:property>-->
+<!--	</beans:bean>-->
+	
+	<!--  ************* *************Recorder Beans  ************* ************* *************-->
+<!--	<beans:bean id="bigDataDAO" class="com.macrosoft.dao.impl.BigDataDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+<!--	<beans:bean id="recorderDAO" class="com.macrosoft.dao.impl.RecorderDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+	
+<!--	<beans:bean id="recorderService" class="com.macrosoft.service.impl.RecorderServiceImpl">-->
+<!--		<beans:property name="bigDataDAO" ref="bigDataDAO"></beans:property>-->
+<!--		<beans:property name="recorderDAO" ref="recorderDAO"></beans:property>-->
+<!--	</beans:bean>-->
+	
+	<!--  ************* *************Monitoring Execution Beans  ************* ************* *************-->
+<!--	<beans:bean id="monitoringExecutionDAO" class="com.macrosoft.dao.impl.MonitoringExecutionDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+	
+<!--	<beans:bean id="monitoringExecutionService" class="com.macrosoft.service.impl.MonitoringExecutionServiceImpl">-->
+<!--		<beans:property name="utpEngineExecutor" ref="utpEngineExecutor"></beans:property>-->
+<!--		<beans:property name="monitoringTestSetDAO" ref="monitoringTestSetDAO"></beans:property>-->
+<!--		<beans:property name="monitoringExecutionDAO" ref="monitoringExecutionDAO"></beans:property>-->
+<!--	</beans:bean>-->
+
+<!--	<beans:bean id="monitoringTestSetDAO" class="com.macrosoft.dao.impl.MonitoringTestSetDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+	
+<!--	<beans:bean id="monitoringTestSetService" class="com.macrosoft.service.impl.MonitoringTestSetServiceImpl">-->
+<!--		<beans:property name="projectDAO" ref="projectDAO"></beans:property>-->
+<!--		<beans:property name="monitoringTestSetDAO" ref="monitoringTestSetDAO"></beans:property>-->
+<!--	</beans:bean>-->
+	<!--  ************* ************* SpecialTest Beans  ************* ************* *************-->
+
+<!--	<beans:bean id="specialTestService" class="com.macrosoft.service.impl.SpecialTestServiceImpl">-->
+<!--		<beans:property name="projectDAO" ref="projectDAO"></beans:property>-->
+<!--		<beans:property name="specialTestDAO" ref="specialTestDAO"></beans:property>-->
+<!--	</beans:bean>-->
+<!--	<beans:bean id="specialTestDAO" class="com.macrosoft.dao.impl.SpecialTestDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+<!--	<beans:bean id="specialTestDataService" class="com.macrosoft.service.impl.SpecialTestDataServiceImpl">-->
+<!--		<beans:property name="projectDAO" ref="projectDAO"></beans:property>-->
+<!--		<beans:property name="specialTestDataDAO" ref="specialTestDataDAO"></beans:property>-->
+<!--	</beans:bean>-->
+<!--	<beans:bean id="specialTestDataDAO" class="com.macrosoft.dao.impl.SpecialTestDataDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+	<!--  ************* *************ExecutionData Beans  ************* ************* *************-->
+<!--	<beans:bean id="executionDataService" class="com.macrosoft.service.impl.ExecutionDataServiceImpl">-->
+<!--		<beans:property name="executionDataDao" ref="executionDataDao"></beans:property>-->
+<!--	</beans:bean>-->
+<!--	<beans:bean id="executionDataDao" class="com.macrosoft.dao.impl.ExecutionDataDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+	<!--  ************* *************ExecutionCheckPoint Beans  ************* ************* *************-->
+<!--	<beans:bean id="executionCheckPointService" class="com.macrosoft.service.impl.ExecutionCheckPointServiceImpl">-->
+<!--		<beans:property name="executionCheckPointDao" ref="executionCheckPointDao"></beans:property>-->
+<!--	</beans:bean>-->
+<!--	<beans:bean id="executionCheckPointDao" class="com.macrosoft.dao.impl.ExecutionCheckPointDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+	<!--  ************* *************SubscriptReference Beans  ************* ************* *************-->
+<!--	<beans:bean id="subscriptReferenceDAO" class="com.macrosoft.dao.impl.SubscriptReferenceDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+<!--	<beans:bean id="subscriptReferenceService" class="com.macrosoft.service.impl.SubscriptReferenceServiceImpl">-->
+<!--		<beans:property name="subscriptReferenceDAO" ref="subscriptReferenceDAO"></beans:property>-->
+<!--	</beans:bean>-->
+	
+	
+	<!--  ************* *************Execution Status Beans  ************* ************* *************-->
+<!--	<beans:bean id="executionStatusDAO" class="com.macrosoft.dao.impl.ExecutionStatusDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+	
+<!--	<beans:bean id="executionStatusService" class="com.macrosoft.service.impl.ExecutionStatusServiceImpl">-->
+<!--		<beans:property name="executionStatusDAO" ref="executionStatusDAO"></beans:property>-->
+<!--	</beans:bean>-->
+
+<!--	<beans:bean id="exportToWordService" class="com.macrosoft.service.impl.ExportToWordServiceImpl">-->
+
+
+<!--	</beans:bean>-->
+	<!--  ************* *************Execution Result Beans  ************* ************* *************-->
+<!--	<beans:bean id="executionResultDAO" class="com.macrosoft.dao.impl.ExecutionResultDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+	
+	
+<!--	<beans:bean id="executionResultService" class="com.macrosoft.service.impl.ExecutionResultServiceImpl">-->
+<!--		<beans:property name="executionResultDAO" ref="executionResultDAO"></beans:property>-->
+<!--		<beans:property name="executionStatusDAO" ref="executionStatusDAO"></beans:property>-->
+<!--	</beans:bean>-->
+	
+	
+	<!--  ************* *************Monitor data Beans  ************* ************* *************-->
+<!--	<beans:bean id="monitorDataDAO" class="com.macrosoft.dao.impl.MonitorDataDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+	
+<!--	<beans:bean id="monitorDataService" class="com.macrosoft.service.impl.MonitorDataServiceImpl">-->
+<!--		<beans:property name="monitorDataDAO" ref="monitorDataDAO"></beans:property>-->
+<!--	</beans:bean>-->
+	
+	<!--  ************* *************TestsetExecutionTrigger Beans  ************* *************-->
+<!--	<beans:bean id="testsetExecutionTriggerDAO" class="com.macrosoft.dao.impl.TestsetExecutionTriggerDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+	
+<!--	<beans:bean id="testsetExecutionTriggerService" class="com.macrosoft.service.impl.TestsetExecutionTriggerServiceImpl">-->
+<!--		<beans:property name="testsetExecutionTriggerDAO" ref="testsetExecutionTriggerDAO"></beans:property>-->
+<!--	</beans:bean>-->
+	
+	<!--  ************* *************Execution Test Case Result Beans  ************* ************* *************-->
+<!--	<beans:bean id="executionTestCaseResultDao" class="com.macrosoft.dao.impl.ExecutionTestCaseResultDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+	
+<!--	<beans:bean id="executionTestCaseResultService" class="com.macrosoft.service.impl.ExecutionTestCaseResultServiceImpl">-->
+<!--		<beans:property name="executionTestCaseResultDAO" ref="executionTestCaseResultDao"></beans:property>-->
+<!--	</beans:bean>-->
+	
+<!--	<beans:bean name="testsetExecutionTriggerMonitor" class="com.macrosoft.job.TestsetExecutionTriggerMonitor" scope="singleton" >-->
+<!--		<beans:property name="testsetExecutionTriggerService" ref="testsetExecutionTriggerService"></beans:property>-->
+<!--		<beans:property name="ursConfig" ref="ursConfig"></beans:property>-->
+<!--		<beans:property name="projectService" ref="projectService"></beans:property>-->
+<!--		<beans:property name="testSetService" ref="testSetService"></beans:property>-->
+<!--		<beans:property name="scriptLinkService" ref="scriptLinkService"></beans:property>-->
+<!--		<beans:property name="executionResultService" ref="executionResultService"></beans:property>-->
+<!--		<beans:property name="executionTestCaseResultService" ref="executionTestCaseResultService"></beans:property>-->
+<!--		<beans:property name="executionService" ref="executionService"></beans:property>-->
+<!--	</beans:bean>-->
+
+	
+	<!--  ************* *************RecoverSubscriptReference Beans  ************* ************* *************-->
+<!--	<beans:bean id="recoverSubscriptReferenceDAO" class="com.macrosoft.dao.impl.RecoverSubscriptReferenceDAOImpl">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--	</beans:bean>-->
+<!--	<beans:bean id="recoverSubscriptReferenceService" class="com.macrosoft.service.impl.RecoverSubscriptReferenceServiceImpl">-->
+<!--		<beans:property name="recoverSubscriptReferenceDAO" ref="recoverSubscriptReferenceDAO"></beans:property>-->
+<!--		<beans:property name="projectDAO" ref="projectDAO"></beans:property>-->
+<!--	</beans:bean>-->
+	
+<!--	<interceptors>-->
+<!--      <beans:bean class="com.macrosoft.intercepter.ValidateTenantInterceptor" />-->
+<!--	</interceptors>-->
+	
+<!--	<beans:bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">-->
+<!--		<beans:property name="sessionFactory" ref="sessionFactory" />-->
+<!--		<beans:property name="autodetectDataSource" value="false"/>-->
+<!--	</beans:bean>-->
+
+<!--	<tx:annotation-driven transaction-manager="transactionManager"/>-->
+
+</beans:beans>

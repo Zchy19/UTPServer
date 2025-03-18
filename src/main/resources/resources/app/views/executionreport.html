@@ -1,0 +1,1014 @@
+<div class="box box-primary">
+	<div class="box-header with-border">
+		<small>测试报告</small>
+		<div class="box-tools pull-right">
+			<button type="button" class="btn btn-box-tool dropdown-toggle"
+				data-placement="bottom" data-toggle="tooltip" title="测试结果筛选"
+				data-bind="click: filterReportConditionSetting">
+				<i class="fa fa-filter"></i>
+			</button>
+			<button type="button" class="btn btn-box-tool dropdown-toggle"
+				data-placement="bottom" data-toggle="modal" data-toggle="tooltip"
+				title="删除测试结果" data-bind="click: removeReportSetting">
+				<i class="fa fa-trash"></i>
+			</button>
+			<!--
+			<button type="button" class="btn btn-box-tool"
+				data-placement="bottom" data-toggle="tooltip" title="刷新"
+				data-bind="click: getReports">
+				<i class="fa fa-refresh"></i>
+			</button>
+			-->
+		</div>
+	</div>
+	<!--  -->
+	<div class="box-body" style="height: 450px; overflow-y: auto;">
+		<div data-bind="attr: {id: 'executionReportTab' + pageId()}">
+			<table
+				class="table table-condensed table-bordered table-striped table-hover"
+				data-bind="visible: observableData().length > 0">
+				<thead>
+					<tr>
+						<th><small>名称</small></th>
+						<th><small>被测对象</small></th>
+						<th><small>时间</small></th>
+						<th><small>结果</small></th>
+						<th style="width: 111.6px;"><small></small></th>
+					</tr>
+				</thead>
+				<tbody data-bind='foreach: observableData'>
+					<tr>
+						<td><small><label
+								data-bind='text:executionName, attr:{title:executedByUserId}'
+								data-toggle="tooltip" data-placement="bottom"></label></small></td>
+						<td><small><label data-bind='text:testObject'></label></small></td>
+						<td><small><label data-bind='text:startTime'></label>
+								- <label data-bind='text:endTime'></label></small></td>
+						<td><small>
+								<div data-bind="visible: result() == 'Success'"
+									style='background-color: green'>
+									<span>成功</span>
+								</div>
+								<div data-bind="visible: result() == 'Fail'"
+									style='background-color: red'>
+									<span data-bind='attr:{title:status}' data-toggle="tooltip"
+										data-placement="bottom">失败</span>
+								</div>
+						</small></td>
+						<td><small>
+								<button class="btn btn-primary btn-sm" data-toggle="tooltip"
+									title="查看"
+									data-bind="click: $parent.fetchOnlineSummaryReportData">
+									<i class="glyphicon glyphicon-zoom-in"></i>
+								</button>
+								<button class="btn btn-danger btn-sm" data-toggle="tooltip"
+									title="删除报表" data-original-title="Delete"
+									data-bind="click: $parent.removeReport">
+									<i class="glyphicon glyphicon-trash"></i>
+								</button>
+								<div class="btn-group">
+									<button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">
+										<i class="glyphicon glyphicon-list"></i>
+									</button>
+									<ul class="dropdown-menu" role="menu">
+										<!--关闭指标数据和概要报表功能,需要时,将注释打开即可使用-->
+										<!--<li><a href="#" data-bind="click: $parent.fetchOfflineSummaryReportData">概要报表</a></li>-->
+										<!--<li><a href="#" data-bind="click: $parent.fetchMonitorData">指标数据</a></li>-->
+										<li><a href="#" data-bind="click: $parent.fetchReportData, visible: $parent.systemConfig.getConfig('utpclient.testset_exec.export_report')">详细报表</a>
+										</li>
+										<li><a href="#" data-bind="click: $parent.fetchTraceReportData, visible: $parent.systemConfig.getConfig('utpclient.requirement_mgr')">追溯报表</a></li>
+									</ul>
+								</div>
+								<button class="btn btn-info btn-sm" data-toggle="tooltip"
+								title="详情数据"
+								data-bind="click: $parent.viewExecutionResultDetail">
+								<i class="glyphicon glyphicon-zoom-in"></i>
+							</button>
+						</small></td>
+					</tr>
+				</tbody>
+			</table>
+			<h5 class="text-center" style="color: grey; font-style: italic;"
+				data-bind="visible: observableData().length == 0">
+				<small>暂无数据！</small>
+			</h5>
+		</div>
+	</div>
+</div>
+<div class="modal fade" data-bind="attr: {id: 'reportFilterConditionSettingModal' + pageId()}" tabindex="-1" role="dialog"
+	aria-labelledby="reportFilterConditionSettingModalLabel"  data-backdrop="static">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">报告过滤设置</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label><span lang="en">测试集</span></label>
+					<select class="form-control"
+						data-bind="options: testsets,
+						optionsText: 'name',
+						value: selectedTestset, 
+						optionsCaption: '选择....',
+						event: { change: testsetChanged }">
+					</select>
+				</div>
+				<div class="form-group">
+					<label><span lang="en">测试人</span></label>
+					<input type="text" class="form-control" data-bind="value:selectedUser">
+				</div>
+				
+				<div>
+					<div class="form-group">
+						<label><span lang="en">开始时间</span></label>
+						<div class="input-group date" data-bind="attr: {id: 'filterBeginDate' + pageId()}">
+							<div class="input-group-addon">
+								<i class="fa fa-calendar"></i>
+							</div>
+							<input type="text" class="form-control" data-bind="value:reportFilterCondition.begin" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label><span lang="en">结束时间</span></label>
+						<div class="input-group date" data-bind="attr: {id: 'filterEndDate' + pageId()}">
+							<div class="input-group-addon">
+								<i class="fa fa-calendar"></i>
+							</div>
+							<input type="text" class="form-control" data-bind="value:reportFilterCondition.end">
+						</div>
+					</div>
+				</div>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left"
+					data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary"
+					data-bind="click: filterReport">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" data-bind="attr: {id: 'reportRemoveConditionSettingModal' + pageId()}"
+	tabindex="-1" role="dialog"
+	aria-labelledby="reportRemoveConditionSettingModalLabel"  data-backdrop="static">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">报告删除时间段设置</h4>
+			</div>
+			<div class="modal-body">
+				<div>
+					<div class="form-group">
+						<label><span lang="en">开始时间</span></label>
+						<div class="input-group date" data-bind="attr: {id: 'removeBeginDate' + pageId()}">
+							<div class="input-group-addon">
+								<i class="fa fa-calendar"></i>
+							</div>
+							<input type="text" class="form-control" data-bind="value:reportRemoveCondition.begin" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label><span lang="en">结束时间</span></label>
+						<div class="input-group date" data-bind="attr: {id: 'removeEndDate' + pageId()}">
+							<div class="input-group-addon">
+								<i class="fa fa-calendar"></i>
+							</div>
+							<input type="text" class="form-control" data-bind="value:reportRemoveCondition.end">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left"
+					data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary"
+					data-bind="click: removePeriodReport">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" data-bind="attr: {id: 'staticModal' + pageId()}" tabindex="-1" role="dialog"
+	align="center"  data-backdrop="static">
+	<div class="modal-dialog" role="document"
+		style="display: inline-block; width: 80%;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span >X</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div align="center">
+					<div data-bind="attr: {id: 'referrals' + pageId()}" style="height: 200px"></div>
+				</div>
+				<div class="box box-info">
+					<div class="box-header with-border">
+						<small></small>
+						<!-- <div class="box-tools pull-right">
+							<button type="button" class="btn btn-box-tool"
+								data-widget="collapse">
+								<i class="fa fa-minus"></i>
+							</button>
+						</div> -->
+					</div>
+					<div class="box-body">
+						<div class="webix-sample-box" data-bind="attr: {id: 'reportDetailInfo' + pageId()}"
+							style="width: 100%; height: 450px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right"
+					data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal modal-warning fade in" data-bind="attr: {id: 'deleteReportModal' + pageId()}"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">提醒</h4>
+			</div>
+			<div class="modal-body">
+				<div>删除报告，会导致与此相关联的质量报告统计变化，确认删除该测试报告？</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline" data-dismiss="modal">否</button>
+				<button type="button" class="btn btn-outline" data-dismiss="modal"
+					data-bind="click:deleteReport">是</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" data-bind="attr: {id: 'pressureTestDetailReportModal' + pageId()}"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">压力测试详细信息</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+		            <div class="col-md-6">
+		              <div class="form-group">
+		                <label>ID：</label>
+		                <span data-bind="text:pressureTestDetail.runId"></span>
+		              </div>
+		              <div class="form-group">
+		                <label>开始时间：</label>
+		                <span data-bind="text:pressureTestDetail.startTime"></span>
+		              </div>
+		            </div>
+		            <div class="col-md-6">
+		              <div class="form-group">
+		                <label>结果：</label>
+		                <span data-bind="visible: pressureTestDetail.result() == 'SUCCESS'" style='background-color: green'>成功</span>
+		                <span data-bind="visible: pressureTestDetail.result() == 'FAIL'" style='background-color: red'>失败</span>
+		              </div>
+		              <div class="form-group">
+		                <label>jieshushijian</label>
+		                <span data-bind="text:pressureTestDetail.endTime"></span>
+		              </div>
+		            </div>
+		        </div>
+		        <div class="row" style="max-height: 400px; overflow-y: auto;">
+					<table
+						class="table table-condensed table-bordered table-striped table-hover"
+						data-bind="visible: pressureTestDetailData().length > 0">
+						<thead>
+							<tr>
+								<th><small>测试机器人</small></th>
+								<th><small>命令</small></th>
+								<th><small>参数</small></th>
+								<th><small>结果</small></th>
+								<th><small>时间（ms）</small></th>
+							</tr>
+						</thead>
+						<tbody data-bind='foreach: pressureTestDetailData'>
+							<tr>
+								<td><small><label data-bind='text:antbot'></label></small></td>
+								<td><small><label data-bind='text:command'></label></small></td>
+								<td><small><label data-bind='text:parameter'></label></small></td>
+								<td><small>
+										<div data-bind="visible: result() == 'SUCCESS'" style='background-color: green'>
+											<span>成功</span>
+										</div>
+										<div data-bind="visible: result() == 'FAIL'" style='background-color: red'>
+											<span data-bind='attr:{title:failReason}' data-toggle="tooltip"
+												data-placement="bottom">失败</span>
+										</div>
+								</small></td>
+								<td><small><label data-bind='text:runTimeMs'></label></small></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" data-bind="attr: {id: 'pressureTestFailDetailReportModal' + pageId()}"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">失败压力测试信息</h4>
+			</div>
+			<div class="modal-body">
+				<div data-bind="visible: failDetailEnabled() == true">
+					<div class="row">
+			            <div class="col-md-6">
+			              <div class="form-group">
+			                <label>ID：</label>
+			                <span data-bind="text:pressureTestDetail.runId"></span>
+			              </div>
+			              <div class="form-group">
+			                <label>开始时间：</label>
+			                <span data-bind="text:pressureTestDetail.startTime"></span>
+			              </div>
+			            </div>
+			            <div class="col-md-6">
+			              <div class="form-group">
+			                <label>结果：</label>
+			                <span data-bind="visible: pressureTestDetail.result() == 'SUCCESS'" style='background-color: green'>成功</span>
+			                <span data-bind="visible: pressureTestDetail.result() == 'FAIL'" style='background-color: red'>失败</span>
+			              </div>
+			              <div class="form-group">
+			                <label>结束时间：</label>
+			                <span data-bind="text:pressureTestDetail.endTime"></span>
+			              </div>
+			            </div>
+			        </div>
+			        <div class="row" style="max-height: 400px; overflow-y: auto;">
+						<table
+							class="table table-condensed table-bordered table-striped table-hover"
+							data-bind="visible: pressureTestDetailData().length > 0">
+							<thead>
+								<tr>
+									<th><small>测试机器人</small></th>
+									<th><small>命令</small></th>
+									<th><small>参数</small></th>
+									<th><small>结果</small></th>
+									<th><small>时间（ms）</small></th>
+								</tr>
+							</thead>
+							<tbody data-bind='foreach: pressureTestDetailData'>
+								<tr>
+									<td><small><label data-bind='text:antbot'></label></small></td>
+									<td><small><label data-bind='text:command'></label></small></td>
+									<td><small><label data-bind='text:parameter'></label></small></td>
+									<td><small>
+											<div data-bind="visible: result() == 'SUCCESS'" style='background-color: green'>
+												<span>成功</span>
+											</div>
+											<div data-bind="visible: result() == 'FAIL'" style='background-color: red'>
+												<span data-bind='attr:{title:failReason}' data-toggle="tooltip"
+													data-placement="bottom">失败</span>
+											</div>
+									</small></td>
+									<td><small><label data-bind='text:runTimeMs'></label></small></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div data-bind="visible: failDetailEnabled() == false">
+					<div class="row" style="max-height: 400px; overflow-y: auto;" data-bind="visible: pressureTestFailDetailData().length > 0">
+						<table class="table table-condensed table-bordered table-striped table-hover">
+							<thead>
+								<tr>
+									<th><small>ID</small></th>
+									<th><small>开始时间</small></th>
+									<th><small>结束时间</small></th>
+									<th><small></small></th>
+								</tr>
+							</thead>
+							<tbody data-bind='foreach: pressureTestFailDetailData'>
+								<tr>
+									<td><small><label data-bind='text:runID'></label></small></td>
+									<td><small><label data-bind='text:startTime'></label></small></td>
+									<td><small><label data-bind='text:endTime'></label></small></td>
+									<td><small>
+										<a href="" data-bind="click: $parent.enalbeFailDetailInfo">详细</a>
+									</small></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div>
+						暂无信息
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-bind="visible: failDetailEnabled() == true, click: disableFailDetailInfo">
+					<span lang="en">返回</span>
+				</button>
+				<button type="button" data-bind="visible: failDetailEnabled() == false" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="pressureTestBigDataVideoModal"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">数据视频</h4>
+			</div>
+			<div class="modal-body">
+				<div>
+					<video style="max-width: 100%; max-height: 100%;"/>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="pressureTestBigDataImgModal"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">数据图片</h4>
+			</div>
+			<div class="modal-body">
+				<div>
+					<img style="max-width: 100%; max-height: 100%;"/>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="pressureTestBigDataAudioModal"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">音频数据</h4>
+			</div>
+			<div class="modal-body">
+				<div>
+					<audio controls="controls" style="width: 100%; height: 50px;">
+						<source type="audio/wav"">
+					</audio>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<div class="modal fade" data-bind="attr: {id: 'pressureTestSummaryReportModal' + pageId()}"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">压力测试概况</h4>
+				<div class="pull-right">
+					<input type="checkbox" data-bind="attr: {id: 'pressureTestViewState' + pageId()}" data-on-text="图表" data-off-text="表格">
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+		            <div class="col-md-6">
+		              <div class="form-group">
+		                <label>成功：</label>
+		                <label data-bind='text:pressureTestSummary.succCount'></label>
+		              </div>
+		              <div class="form-group">
+		                <label>开始时间：</label>
+		                <label data-bind='text:pressureTestSummary.startTime'></label>
+		              </div>
+		            </div>
+		            <div class="col-md-6">
+		              <div class="form-group">
+		                <label>失败：</label>
+		                <label data-bind='text:pressureTestSummary.failCount'></label>
+		              </div>
+		              <div class="form-group">
+		                <label>结束时间：</label>
+		                <label data-bind='text:pressureTestSummary.endTime'></label>
+		              </div>
+		            </div>
+		        </div>
+		        <div class="row" style="max-height: 400px; overflow-y: auto;" data-bind="visible: pressureTestGraphViewState() == true">
+		        	<div data-bind="attr: {id: 'pressureTestSummaryChart' + pageId()}" style="height: 250px"></div>
+		        </div>
+		        <div class="row" style="max-height: 400px; overflow-y: auto;" data-bind="visible: pressureTestGraphViewState() == false">
+					<table class="table table-condensed table-bordered table-striped table-hover"
+						data-bind="visible: pressureTestSummaryData().length > 0">
+						<thead>
+							<tr>
+								<th><small>ID</small></th>
+								<th><small>时间</small></th>
+							</tr>
+						</thead>
+						<tbody data-bind='foreach: pressureTestSummaryData'>
+							<tr>
+								<td><small><label data-bind='text:runID'></label></small></td>
+								<td><small><label data-bind='text:millionSeconds'></label></small></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" data-bind="attr: {id: 'pressureTestCmdRunTimesReportModal' + pageId()}"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">压力测试概况</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row" style="max-height: 400px; overflow-y: auto;">
+					<table class="table table-condensed table-bordered table-striped table-hover"
+						data-bind="visible: pressureTestCmdsStatisRunTimes().length > 0">
+						<thead>
+							<tr>
+								<th><small>测试机器人</small></th>
+								<th><small>命令</small></th>
+								<th><small>参数</small></th>
+								<th><small>最大用时（ms）</small></th>
+								<th><small>最小用时（ms）</small></th>
+								<th><small>平均用时（ms）</small></th>
+							</tr>
+						</thead>
+						<tbody data-bind='foreach: pressureTestCmdsStatisRunTimes'>
+							<tr>
+								<td><small><label data-bind='text:antbot'></label></small></td>
+								<td><small><label data-bind='text:command'></label></small></td>
+								<td><small><label data-bind='text:parameter'></label></small></td>
+								<td><small><label data-bind='text:maxTimeMs'></label></small></td>
+								<td><small><label data-bind='text:minTimeMs'></label></small></td>
+								<td><small>
+									<label data-bind='text:avgTimeMs'></label>
+								</small></td>
+							</tr>
+						</tbody>
+					</table>
+		        </div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" data-bind="attr: {id: 'frameDataModal' + pageId()}"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">J1939协议帧收发信息</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row" style="max-height: 400px; overflow-y: auto;">
+					<table class="table table-condensed table-bordered table-striped table-hover"
+						data-bind="visible: frameDataList().length > 0">
+						<thead>
+							<tr>
+								<th><small>方向</small></th>
+								<th><small>时间</small></th>
+								<th><small>帧数据信息</small></th>
+								<th><small>帧原始数据</small></th>
+							</tr>
+						</thead>
+						<tbody data-bind='foreach: frameDataList'>
+							<tr>
+								<td><small>
+									<span data-bind="if:receiveFrame">接收</span>
+									<span data-bind="ifnot:receiveFrame">发送</span>
+								</small></td>
+								<td><small><label data-bind='text:timestamp'></label></small></td>
+								<td><small>
+									<label data-bind='text:frameData.message'></label>
+									<div data-bind='foreach: frameData.signals'>
+										<span data-bind='text:name'></span>:<span data-bind='text:value'></span><br/>
+									</div>
+								</small></td>
+								<td><small><label data-bind='text:rawFrame'></label></small></td>
+							</tr>
+						</tbody>
+					</table>
+		        </div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" data-bind="attr: {id: 'frameARINC429DataModal' + pageId()}"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">ARINC429协议帧收发信息</h4>
+			</div>
+			<div class="modal-body">
+				<div data-bind="visible: arincDetailEnabled() == true">
+					<div data-bind='visible: currentARINC429Record.labelIndex() != ""'>
+						<div class="attachment">
+							<p>
+								<span> Time :</span><span data-bind='text:currentARINC429Record.timestamp'></span>
+								<span> Label </span><span
+									data-bind='text:currentARINC429Record.labelIndex'></span> <span>
+									: </span> <span data-bind='text:currentARINC429Record.encodedString'></span>
+							</p>
+							<p>
+								<span data-bind='text:currentARINC429Record.labelName'></span> <br /> <span>P
+									SSM DDD DDDD DDDD DDDD DDDD SDI LLL LLL LL</span> <br /> <span
+									data-bind='text:currentARINC429Record.decodedBits'></span>
+							</p>
+							<p data-bind='foreach: currentARINC429Record.fields'>
+								<span data-bind='text:currentARINC429Record.labelName'></span> <span>
+									= </span><span data-bind='text:bcdValue'></span> <span
+									data-bind='text:units'></span>
+							</p>
+							<p>
+								<span>SSM = </span><span data-bind='text:currentARINC429Record.ssmValue'></span>
+							</p>
+						</div>
+					</div>
+				</div>
+				<div data-bind="visible: arincDetailEnabled() == false">
+					<div class="row" style="max-height: 400px; overflow-y: auto;" data-bind="visible: arinc429FrameDataList().length > 0">
+						<table class="table table-bordered"
+							style="word-break: break-all; word-wrap: break-all;">
+							<thead>
+								<tr>
+									<th width="10%"><small>序号</small></th>
+									<th width="25%"><small>标签</small></th>
+									<th width="20%"><small>十六进制</small></th>
+									<th width="15%"><small>Bcd码</small></th>
+									<th width="10%"><small>方向</small></th>
+									<th width="20%"><small>时间</small></th>
+								</tr>
+							</thead>
+							<tbody data-bind='foreach: arinc429FrameDataList'>
+								<tr data-bind="click:$root.showARINC429Detail">
+									<td width="10"><small><span
+											data-bind='text:$index() + 1'></span></small></td>
+									<td width="25%"><small><span
+											data-bind='text:labelIndex'></span>(<span
+											data-bind='text:labelName'></span>)</small></td>
+									<td width="20%"><small><span
+											data-bind='text:encodedString'></span></small></td>
+									<td width="15%"><small>
+										<div data-bind='foreach: fields'>
+											<span
+												data-bind='text:bcdValue'></span>(<span
+												data-bind='text:units'></span>)
+										</div>
+										</small>
+									</td>
+									<td width="10%">
+										<small>
+											<span data-bind="if:receiveFrame">接收</span>
+											<span data-bind="ifnot:receiveFrame">发送</span>
+										</small>
+									</td>
+									<td width="20%"><small><span data-bind='text:timestamp'></span></small></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div data-bind="visible: arinc429FrameDataList().length == 0">
+						暂无信息
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-bind="visible: arincDetailEnabled() == true, click: disableARINC429DetailInfo">
+					<span lang="en">返回</span>
+				</button>
+				<button type="button" data-bind="visible: arincDetailEnabled() == false" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" data-bind="attr: {id: 'frameMIL1553BDataModal' + pageId()}"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">MIL1553B协议帧收发信息</h4>
+			</div>
+			<div class="modal-body">
+				<div data-bind="visible: mil1553BDetailEnabled() == true">
+					<div class="attachment">
+							<p>
+								<span> Path :</span><span data-bind='text:currentMIL1553BRecord.path'></span>
+								<span> comWord </span><span
+									data-bind='text:currentMIL1553BRecord.comWord'></span> <span>
+									: </span> 
+							</p>
+							<p>
+								<span data-bind='text:currentMIL1553BRecord.datas'></span>
+							</p>
+							<p>
+								<span data-bind='text:currentMIL1553BRecord.status'></span>
+							</p>
+							<p>
+								<span data-bind='text:currentMIL1553BRecord.rawFrame'></span>
+							</p>
+					</div>
+				</div>
+				<div data-bind="visible: mil1553BDetailEnabled() == false">
+					<div class="row" style="max-height: 400px; overflow-y: auto;" data-bind="visible: mil1553BFrameDataList().length > 0">
+						<table class="table table-bordered"
+							style="word-break: break-all; word-wrap: break-all;">
+							<thead>
+								<tr>
+									<th width="5%"><small></small></th>
+									<th width="20%"><small>路径</small></th>
+									<th width="10%"><small>命令字</small></th>
+									<th width="10%"><small>状态</small></th>
+									<th width="25%"><small>数据</small></th>
+									<th width="30%"><small>原始帧</small></th>
+								</tr>
+							</thead>
+							<tbody data-bind='foreach: mil1553BFrameDataList'>
+								<tr>
+									<td width="5%"><small><span data-bind='text:$index() + 1'></span></small></td>
+									<td width="20%"><small><span data-bind='text:path'></span></small></td>
+									<td width="10%"><small><span data-bind='text:comWord'></span></small></td>
+									<td width="10%"><small><span data-bind='text:status'></span></small></td>
+									<td width="25%"><small><span data-bind='text:datas'></span></small></td>
+									<td width="30%"><small><span data-bind='text:rawFrame'></span></small></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div data-bind="visible: mil1553BFrameDataList().length == 0">
+						暂无信息
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-bind="visible: mil1553BDetailEnabled() == true, click: disableMIL1553BDetailInfo">
+					<span lang="en">返回</span>
+				</button>
+				<button type="button" data-bind="visible: mil1553BDetailEnabled() == false" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" data-bind="attr: {id: 'frameMIL1553BCustomDataModal' + pageId()}"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">MIL1553B协议帧收发信息</h4>
+			</div>
+			<div class="modal-body">
+				<div data-bind="visible: mil1553BCustomDetailEnabled() == true">
+					<div class="row" style="max-height: 400px; overflow-y: auto;">
+						<table class="table table-bordered"
+							style="word-break: break-all; word-wrap: break-all;">
+							<thead>
+								<tr>
+									<th width="10%"><small>序号</small></th>
+									<th width="25%"><small>标签</small></th>
+									<th width="20%"><small>十六进制</small></th>
+									<th width="45%"><small>Bcd码</small></th>
+								</tr>
+							</thead>
+							<tbody data-bind='foreach: currentMIL1553BCustomRecord.frameDatas'>
+								<tr>
+									<td width="10"><small><span
+											data-bind='text:$index() + 1'></span></small></td>
+									<td width="25%"><small><span
+											data-bind='text:labelIndex'></span>(<span
+											data-bind='text:labelName'></span>)</small></td>
+									<td width="20"><small><span
+											data-bind='text:encodedString'></span></small></td>
+									<td width="45%">
+										<div data-bind='foreach: fields'>
+											<small><span data-bind='text:fieldName'></span>: <span data-bind='text:bcdValue'></span>(<span data-bind='text:units'></span>)</small><br/>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div data-bind="visible: mil1553BCustomDetailEnabled() == false">
+					<div class="row" style="max-height: 400px; overflow-y: auto;" data-bind="visible: mil1553BCustomFrameDataList().length > 0">
+						<table class="table table-bordered"
+							style="word-break: break-all; word-wrap: break-all;">
+							<thead>
+								<tr>
+									<th width="5%"><small></small></th>
+									<th width="15%"><small>路径</small></th>
+									<th width="15%"><small>命令字</small></th>
+									<th width="10%"><small>状态</small></th>
+									<th width="25%"><small>原始帧</small></th>
+									<th width="10%"><small>方向</small></th>
+									<th width="20%"><small>时间</small></th>
+								</tr>
+							</thead>
+							<tbody data-bind='foreach: mil1553BCustomFrameDataList'>
+								<tr data-bind="click:$root.showMIL1553BCustomDetail">
+									<td width="5%"><small><span data-bind='text:$index() + 1'></span></small></td>
+									<td width="15%"><small><span data-bind='text:path'></span></small></td>
+									<td width="15%"><small><span data-bind='text:comWord'></span></small></td>
+									<td width="10%"><small><span data-bind='text:status'></span></small></td>
+									<td width="25%"><small><span data-bind='text:rawFrame'></span></small></td>
+									<td width="10%">
+										<small>
+											<span data-bind="if:receiveFrame">接收</span>
+											<span data-bind="ifnot:receiveFrame">发送</span>
+										</small>
+									</td>
+									<td width="20%"><small><span data-bind='text:timestamp'></span></small></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div data-bind="visible: mil1553BCustomFrameDataList().length == 0">
+						暂无信息
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-bind="visible: mil1553BCustomDetailEnabled() == true, click: disableMIL1553BCustomDetailInfo">
+					<span lang="en">返回</span>
+				</button>
+				<button type="button" data-bind="visible: mil1553BCustomDetailEnabled() == false" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" data-bind="attr: {id: 'frameGenericDataModal' + pageId()}"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">消息收发列表</h4>
+			</div>
+			<div class="modal-body">
+				<div>
+					<div class="row" style="max-height: 380px; overflow-y: auto;" data-bind="visible: genericFrameDataList().length > 0">
+						<table class="table table-bordered"
+							style="word-break: break-all; word-wrap: break-all;">
+							<thead style="position: sticky;top: -0.8;background: white;z-index: 1;">
+								<tr>
+									<th width="5%"><small>序号</small></th>
+									<th width="25%"><small>消息名称</small></th>
+									<th width="10%"><small>方向</small></th>
+									<th width="20%"><small>时间（毫秒）</small></th>
+									<th width="30%"><small>消息帧</small></th>
+									<th width="10%"><small>字段信息</small></th>
+								</tr>
+							</thead>
+							<tbody data-bind='foreach: genericFrameDataList'>
+								<tr>
+									<td width="5%"><small><span data-bind='text:$parent.genericFrameDataList().length - $index() - 1'></span></small></td>									
+									<td width="25%"><small><span data-bind='text:frameData.message'></span></small></td>
+									<td width="10%">
+										<small>
+											<span data-bind="if:receiveFrame">接收</span>
+											<span data-bind="ifnot:receiveFrame">发送</span>
+										</small>
+									</td>
+									<td width="20%"><small><span data-bind='text:timestamp'></span></small></td>
+									<td width="30%"><small><span data-bind='text:rawFrame'></span></small></td>
+									<td width="10%"><button class="btn btn-primary btn-sm" data-bind="click: $root.showGenericDetail">
+											<i class="glyphicon glyphicon-zoom-in"></i>
+										</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div data-bind="visible: genericFrameDataList().length == 0">
+						暂无信息
+					</div>
+				</div>
+				<div data-bind="visible: genericDetailEnabled() == true">
+					<div class="row">
+						<div class="col-md-8">
+							<div class="form-group">
+								<label class="control-label">消息内容</label>
+								<div data-bind="visible:genericErrorFrameData() == false, attr: {id: 'reportConfigView' + pageId()}" style="width: 95%; height: 450px;"></div>
+								<div data-bind="visible:genericErrorFrameData() == true">
+									<span data-bind='html:genericRecordContent()'></span>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label class="control-label">原始帧</label>
+								<br/>
+								<small><div data-bind='html:genericRawFrame()' style="background-color: #ffffff; max-height: 450px; overflow-y: auto;word-break: break-all; word-wrap: break-all;"></div> </small>						
+							</div>
+						</div>
+					</div>
+					<div class="row" data-bind="visible:genericErrorFrameData() == false">
+						<div class="col-md-8">
+							<div class="form-group">
+								<input type="text" class="form-control" placeholder="模板名称" data-bind="value:messageTemplateName">
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<button type="button" style="margin: 5px" class="btn btn-primary pull-left" data-bind="click:createMessageType">设为模板</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" data-bind="attr: {id: 'protocolCompareModal' + pageId()}" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">协议对比</h4>
+			</div>
+			<div class="modal-body">
+				<div data-bind="compose: {model: viewManager.protocolCompareActivePage, activationData : viewManager.protocolCompareActiveData}"></div>
+			</div>
+			<div class="modal-footer">
+				<div class="form-group">					
+					<button type="button" class="btn btn-default pull-right" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" data-bind="attr: {id: 'reportGeneralRawDataModal' + pageId()}"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">数据</h4>
+			</div>
+			<div class="modal-body">
+				<small><span data-bind='text:generalRawData()' style="background-color: #ffffff; max-height: 400px; overflow-y: auto;word-break: break-all; word-wrap: break-all;"></span> </small>				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/html" data-bind="attr: {id: 'bitTablePopoverTemplate' + pageId()}">
+	<div class="row" style="max-height: 200px; overflow-y: auto;" data-bind="visible: bitTable.length > 0">
+		<table class="table table-bordered" style="word-break: break-all; word-wrap: break-all;">
+							<thead>
+								<tr>
+									<th width="40%"><small>名称</small></th>
+									<th width="20%"><small>数值</small></th>
+									<th width="20%"><small>起始位</small></th>
+									<th width="20%"><small>长度</small></th>
+								</tr>
+							</thead>
+							<tbody data-bind='foreach: bitTable'>
+								<tr>
+									<td width="40"><small><span data-bind='text:name'></span></small></td>
+									<td width="20%"><small><span data-bind='text:value'></span></small></td>
+									<td width="20"><small><span data-bind='text:startBit'></span></small></td>
+									<td width="20"><small><span data-bind='text:bitLength'></span></small></td>
+								</tr>
+							</tbody>
+		 </table>
+	</div>
+</script>
+<style type="text/css">
+    code {
+      background-color: #f5f5f5;
+    }
+</style>

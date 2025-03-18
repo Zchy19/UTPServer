@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Blockly Playground</title>
+<script src="../blockly_uncompressed.js"></script>
+<script src="../generators/javascript.js"></script>
+<script src="../generators/javascript/logic.js"></script>
+<script src="../generators/javascript/loops.js"></script>
+<script src="../generators/javascript/math.js"></script>
+<script src="../generators/javascript/text.js"></script>
+<script src="../generators/javascript/lists.js"></script>
+<script src="../generators/javascript/colour.js"></script>
+<script src="../generators/javascript/variables.js"></script>
+<script src="../generators/javascript/variables_dynamic.js"></script>
+<script src="../generators/javascript/procedures.js"></script>
+<script src="../generators/python.js"></script>
+<script src="../generators/python/logic.js"></script>
+<script src="../generators/python/loops.js"></script>
+<script src="../generators/python/math.js"></script>
+<script src="../generators/python/text.js"></script>
+<script src="../generators/python/lists.js"></script>
+<script src="../generators/python/colour.js"></script>
+<script src="../generators/python/variables.js"></script>
+<script src="../generators/python/variables_dynamic.js"></script>
+<script src="../generators/python/procedures.js"></script>
+<script src="../generators/php.js"></script>
+<script src="../generators/php/logic.js"></script>
+<script src="../generators/php/loops.js"></script>
+<script src="../generators/php/math.js"></script>
+<script src="../generators/php/text.js"></script>
+<script src="../generators/php/lists.js"></script>
+<script src="../generators/php/colour.js"></script>
+<script src="../generators/php/variables.js"></script>
+<script src="../generators/php/variables_dynamic.js"></script>
+<script src="../generators/php/procedures.js"></script>
+<script src="../generators/lua.js"></script>
+<script src="../generators/lua/logic.js"></script>
+<script src="../generators/lua/loops.js"></script>
+<script src="../generators/lua/math.js"></script>
+<script src="../generators/lua/text.js"></script>
+<script src="../generators/lua/lists.js"></script>
+<script src="../generators/lua/colour.js"></script>
+<script src="../generators/lua/variables.js"></script>
+<script src="../generators/lua/variables_dynamic.js"></script>
+<script src="../generators/lua/procedures.js"></script>
+<script src="../generators/dart.js"></script>
+<script src="../generators/dart/logic.js"></script>
+<script src="../generators/dart/loops.js"></script>
+<script src="../generators/dart/math.js"></script>
+<script src="../generators/dart/text.js"></script>
+<script src="../generators/dart/lists.js"></script>
+<script src="../generators/dart/colour.js"></script>
+<script src="../generators/dart/variables.js"></script>
+<script src="../generators/dart/variables_dynamic.js"></script>
+<script src="../generators/dart/procedures.js"></script>
+<script src="../generators/antscript.js"></script>
+<script src="../generators/antscript/logic.js"></script>
+<script src="../generators/antscript/loops.js"></script>
+<script src="../generators/antscript/math.js"></script>
+<script src="../generators/antscript/text.js"></script>
+<script src="../generators/antscript/lists.js"></script>
+<script src="../generators/antscript/colour.js"></script>
+<script src="../generators/antscript/variables.js"></script>
+<script src="../generators/antscript/procedures.js"></script>
+<script src="../msg/messages.js"></script>
+<script src="../blocks/logic.js"></script>
+<script src="../blocks/loops.js"></script>
+<script src="../blocks/math.js"></script>
+<script src="../blocks/text.js"></script>
+<script src="../blocks/lists.js"></script>
+<script src="../blocks/colour.js"></script>
+<script src="../blocks/variables.js"></script>
+<script src="../blocks/procedures.js"></script>
+<script src="../blocks/variables_dynamic.js"></script>
+<script src="../blocks/ant_loops.js"></script>
+<script src="../blocks/ant_logic.js"></script>
+<script src="../blocks/ant_text.js"></script>
+<script src="../blocks/ant_variables.js"></script>
+<script src="../blocks/ant_procedures.js"></script>
+<script src="../blocks/ant_math.js"></script>
+<script src="../blocks/ant_list.js"></script>
+<script src="../generators/antscript/acorn.js"></script>
+<script src="../generators/antscript/expressionToBlock.js"></script>
+<script src="../generators/antscript/antscriptToBlock.js"></script>
+
+<script>
+'use strict';
+var workspace = null;
+var fakeDragStack = [];
+
+function start() {
+  setBackgroundColor();
+
+  // Parse the URL arguments.
+  var match = location.search.match(/dir=([^&]+)/);
+  var rtl = match && match[1] == 'rtl';
+  document.forms.options.elements.dir.selectedIndex = Number(rtl);
+  var toolbox = getToolboxElement();
+  document.forms.options.elements.toolbox.selectedIndex =
+      Number(toolbox.getElementsByTagName('category').length == 0);
+  match = location.search.match(/side=([^&]+)/);
+  var side = match ? match[1] : 'start';
+  document.forms.options.elements.side.value = side;
+  var result = [{"name":"AntBot_GUI","commands":[{"CmdName": "RelocateElem","Params": [{"name": "elem_name","editable": false}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "relocate element","cmdDescFormatter": "relocate element %s1"},{"lang": "zh_CN","nameDesc": "重定位元素","cmdDescFormatter": "重定位元素%s1"}]},{"CmdName": "GetProperty","Params": [{"name": "elem_name","editable": false},{"name": "property_name","editable": false},"^value"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "get element property value","cmdDescFormatter": "get element %s1 property %s2 to variable %s3"},{"lang": "zh_CN","nameDesc": "获取元素属性值","cmdDescFormatter": "获取元素%s1的属性%s2的值到变量%s3中"}]},{"CmdName": "SetIdentiPropVal","Params": [{"name": "elem_name","editable": false},{"name": "prop_name","editable": false},"prop_value"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "change element identity property value dynamically","cmdDescFormatter": "change element %s1 identity property %s2 value to be %s3 dynamically"},{"lang": "zh_CN","nameDesc": "动态修改元素特征属性值","cmdDescFormatter": "动态修改元素%s1的特征属性%s2的值为%s3"}]},{"CmdName": "CheckElemExist","Params": [{"name": "elem_name","editable": false},"max_wait_time"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check element exist on GUI","cmdDescFormatter": "check element %s1 exist on GUI, maximum wait time is %s2 seconds"},{"lang": "zh_CN","nameDesc": "检查元素在界面上存在","cmdDescFormatter": "检查元素%s1在界面上存在, 最大等待时间为%s2秒"}]},{"CmdName": "FindElement","Params": [{"name": "elem_name","editable": false},"max_wait_time","^result"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "find element on GUI","cmdDescFormatter": "find element %s1 exist on GUI, maximum find time is %s2 seconds, return found result in variable %s3"},{"lang": "zh_CN","nameDesc": "在界面上查找元素","cmdDescFormatter": "在界面上查找元素%s1, 最大查找时间为%s2秒，查找结果放在变量%s3中"}]},{"CmdName": "CheckElemDisappear","Params": [{"name": "elem_name","editable": false},"max_wait_time"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check element disapear from GUI","cmdDescFormatter": "check element %s1 dispear from GUI, maximum wait time is %s2 seconds"},{"lang": "zh_CN","nameDesc": "检查元素从界面上消失","cmdDescFormatter": "检查元素%s1从界面上消失, 最大等待时间为%s2秒"}]},{"CmdName": "CheckProperty","Params": [{"name": "elem_name","editable": false},{"name": "property_name","editable": false},"expected_value"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check element property value","cmdDescFormatter": "check the value of %s2 property of element %s1 is %s3"},{"lang": "zh_CN","nameDesc": "检查元素属性值","cmdDescFormatter": "检查元素%s1属性%s2的值为%s3"}]},{"CmdName": "CompareProperty","Params": [{"name": "elem_name","editable": false},{"name": "property_name","editable": false},"property_value","^result"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "compare element property value and return compare result","cmdDescFormatter": "compare element %s1 property %s2 value with value %s3 and return compare result in variable %s4"},{"lang": "zh_CN","nameDesc": "比较元素属性值并输出比较结果","cmdDescFormatter": "比较元素%s1属性%s2的值和%s3，并输出比较脚本到变量%s4中"}]},{"CmdName": "CheckFixedAreaImage","Params": [{"name": "elem_name","editable": false},{"name": "area_name","editable": false}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check area image","cmdDescFormatter": "check element %s1 area image as expected %s2"},{"lang": "zh_CN","nameDesc": "检查区域图片","cmdDescFormatter": "比较元素%s1对应的区域图片同期望区域图片%s2一致"}]},{"CmdName": "FindFixedAreaImage","Params": [{"name": "elem_name","editable": false},{"name": "area_name","editable": false},"^result"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "find area image and return find result","cmdDescFormatter": "find element %s1 area image %s2 and return find result"},{"lang": "zh_CN","nameDesc": "查找区域图片并输出查找结果","cmdDescFormatter": "查找元素%s1的区域图片%s2并输出查找结果"}]},{"CmdName": "CheckDynamicAreaImage","Params": [{"name": "elem_name","editable": false},{"name": "area_name","editable": false},"start_posx","start_posy","step_space","end_posx","end_posy"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check area image by search step by step","cmdDescFormatter": "check element %s1 area image as expected %s2 by search step by step"},{"lang": "zh_CN","nameDesc": "检查区域图片(通过步进搜索)","cmdDescFormatter": "比较元素%s1对应的区域图片同期望区域图片%s2一致(通过步进搜索)"}]},{"CmdName": "FindDynamicAreaImage","Params": [{"name": "elem_name","editable": false},{"name": "area_name","editable": false},"start_posx","start_posy","step_space","end_posx","end_posy","^result"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "find area image by search step by step and return find result","cmdDescFormatter": "find element %s1 area image %s2 by search step by step and return find result to variable %s8"},{"lang": "zh_CN","nameDesc": "查找区域图片(通过步进搜索)并输出查找结果","cmdDescFormatter": "查找元素%s1的区域图片%s2(通过步进搜索)并输出查找结果到变量%s8中"}]},{"CmdName": "GetAreaDimension","Params": [{"name": "elem_name","editable": false},{"name": "area_name","editable": false},"field_name","^filed_value"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "get area dimension","cmdDescFormatter": "get element %s1 area image %s2 dimension %s3, return in variable %s4"},{"lang": "zh_CN","nameDesc": "获取区域图片尺寸","cmdDescFormatter": "获取元素%s1的区域图片%s2的尺寸%s3,通过变量%s4返回"}]},{"CmdName": "SetAreaDimension","Params": [{"name": "elem_name","editable": false},{"name": "area_name","editable": false},"field_name","filed_value"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "set area dimension","cmdDescFormatter": "set element %s1 area image %s2 dimension %s3 to value %s4"},{"lang": "zh_CN","nameDesc": "设置区域图片尺寸","cmdDescFormatter": "设置元素%s1的区域图片%s2的尺寸%s3为%s4"}]},{"CmdName": "LoadProject","Params": ["recordset"],"DefTime": "20","UserLanguage": [{"lang": "en","nameDesc": "load record set","cmdDescFormatter": "load record set %s1"},{"lang": "zh_CN","nameDesc": "加载录制集","cmdDescFormatter": "加载录制集%s1"}]},{"CmdName": "WaitElemAppear","Params": [{"name": "elem_name","editable": false},"max_wait_time"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "wait element appear on GUI","cmdDescFormatter": "wait element %s1 appear on GUI, maximum wait time is %s2 seconds"},{"lang": "zh_CN","nameDesc": "等待元素在界面上出现","cmdDescFormatter": "等待元素%s1在界面上出现, 最大等待时间为%s2秒"}]},{"CmdName": "WaitElemDisappear","Params": [{"name": "elem_name","editable": false},"max_wait_time"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "wait element disappear from GUI","cmdDescFormatter": "wait element %s1 disappear from GUI, maximum wait time is %s2 seconds"},{"lang": "zh_CN","nameDesc": "等待元素从界面上消失","cmdDescFormatter": "等待元素%s1从界面上消失, 最大等待时间为%s2秒"}]},{"CmdName": "WaitProcessExit","Params": ["process_full_path","max_wait_time"],"DefTime": "20","UserLanguage": [{"lang": "en","nameDesc": "wait process exit","cmdDescFormatter": "wait process %s1 exit, maximum wait time is %s2 seconds"},{"lang": "zh_CN","nameDesc": "等待进程结束","cmdDescFormatter": "等待进程%s1结束, 最大等待时间为%s2秒"}]},{"CmdName": "InputString","Params": [{"name": "elem_name","editable": false},"string"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "input string","cmdDescFormatter": "input string %s2 to element %s1"},{"lang": "zh_CN","nameDesc": "输入字符串","cmdDescFormatter": "向元素%s1中输入字符串%s2"}]},{"CmdName": "InputText","Params": [{"name": "elem_name","editable": false},"string"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "input string","cmdDescFormatter": "input string %s2 to element %s1"},{"lang": "zh_CN","nameDesc": "输入字符串","cmdDescFormatter": "向元素%s1中输入字符串%s2"}]},{"CmdName": "Click","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "click","cmdDescFormatter": "click element %s1 at relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "点击","cmdDescFormatter": "在相对坐标（%s2,%s3）处点击元素%s1"}]},{"CmdName": "RightClick","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "right click","cmdDescFormatter": "right click element %s1 at relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "右键点击","cmdDescFormatter": "在相对坐标（%s2,%s3）处右键点击元素%s1"}]},{"CmdName": "KeyClick","Params": [{"name": "elem_name","editable": false},"keycode"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "input key","cmdDescFormatter": "input key %s2 in element %s1"},{"lang": "zh_CN","nameDesc": "输入按键","cmdDescFormatter": "在元素%s1中输入按键%s2"}]},{"CmdName": "LeftPress","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "press left button","cmdDescFormatter": "press left button in element %s1 on relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "按住鼠标左键","cmdDescFormatter": "在元素%s1相对位置（%s2,%s3）处按住鼠标左键"}]},{"CmdName": "LeftRelease","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "release left button","cmdDescFormatter": "release left button in element %s1 on relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "释放鼠标左键","cmdDescFormatter": "在元素%s1相对位置（%s2,%s3）处释放鼠标左键"}]},{"CmdName": "DragTo","Params": [{"name": "elem_name","editable": false},"xPos1","yPos1","xPos2","yPos2"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "drag","cmdDescFormatter": "in element %s1,drag mouse from relative position(%s2,%s3) to position(%s4,%s5)"},{"lang": "zh_CN","nameDesc": "拖拽","cmdDescFormatter": "在元素%s1中从相对位置（%s2,%s3）拖拽鼠标到位置(%s4,%s5)"}]},{"CmdName": "LeftDoubleClick","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "double click","cmdDescFormatter": "double click element %s1 in relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "双击","cmdDescFormatter": "在元素%s1中从相对位置（%s2,%s3）拖拽鼠标到位置(%s4,%s5)"}]},{"CmdName": "RightPress","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "press right button","cmdDescFormatter": "press right button in element %s1 on relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "按住鼠标右键","cmdDescFormatter": "在元素%s1相对位置（%s2,%s3）处按住鼠标右键"}]},{"CmdName": "RightRelease","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "release right button","cmdDescFormatter": "release right button in element %s1 on relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "释放鼠标右键","cmdDescFormatter": "在元素%s1相对位置（%s2,%s3）处释放鼠标右键"}]},{"CmdName": "MiddlePress","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "press middle button","cmdDescFormatter": "press middle button in element %s1 on relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "按住鼠标中间键","cmdDescFormatter": "在元素%s1相对位置（%s2,%s3）处按住鼠标中间键"}]},{"CmdName": "MiddleRelease","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "release middle button","cmdDescFormatter": "release middle button in element %s1 on relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "释放鼠标中间键","cmdDescFormatter": "在元素%s1相对位置（%s2,%s3）处释放鼠标中间键"}]},{"CmdName": "MiddleClick","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "click middle button","cmdDescFormatter": "click middle button in element %s1 on relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "点击鼠标中间键","cmdDescFormatter": "在元素%s1相对位置（%s2,%s3）处点击鼠标中间键"}]},{"CmdName": "KeyPress","Params": [{"name": "elem_name","editable": false},"keycode"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "press key","cmdDescFormatter": "press key %s2 in element %s1"},{"lang": "zh_CN","nameDesc": "按下按键","cmdDescFormatter": "在元素%s1中按下按键%s2"}]},{"CmdName": "KeyRelease","Params": [{"name": "elem_name","editable": false},"keycode"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "release key","cmdDescFormatter": "release key %s2 in element %s1"},{"lang": "zh_CN","nameDesc": "释放按键","cmdDescFormatter": "在元素%s1中释放按键%s2"}]},{"CmdName": "ToggleCheckBox","Params": ["checkbox_name","xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "toggle checkbox","cmdDescFormatter": "toggle checkbox %s1"},{"lang": "zh_CN","nameDesc": "选中复选框","cmdDescFormatter": "选中复选框%s1"}]},{"CmdName": "Expand","Params": [{"name": "combobox_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "expand combobox","cmdDescFormatter": "expand combobox %s1"},{"lang": "zh_CN","nameDesc": "展开下拉框","cmdDescFormatter": "展开下拉框%s1"}]},{"CmdName": "ClickLink","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "click link","cmdDescFormatter": "click link %s1"},{"lang": "zh_CN","nameDesc": "点击链接","cmdDescFormatter": "点击链接%s1"}]},{"CmdName": "ClickListItem","Params": [{"name": "list_item_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "click list item","cmdDescFormatter": "click list item %s1"},{"lang": "zh_CN","nameDesc": "点击列表项","cmdDescFormatter": "点击列表项%s1"}]},{"CmdName": "RightClickListItem","Params": [{"name": "list_item_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "right click list item","cmdDescFormatter": "right click list item %s1"},{"lang": "zh_CN","nameDesc": "右击列表项","cmdDescFormatter": "右击列表项%s1"}]},{"CmdName": "DoubleClickListItem","Params": [{"name": "list_item_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "double click list item","cmdDescFormatter": "double click list item %s1"},{"lang": "zh_CN","nameDesc": "双击列表项","cmdDescFormatter": "双击列表项%s1"}]},{"CmdName": "ClickTreeItem","Params": [{"name": "tree_item_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "click tree item","cmdDescFormatter": "click tree item %s1"},{"lang": "zh_CN","nameDesc": "点击树节点","cmdDescFormatter": "点击树节点%s1"}]},{"CmdName": "RightClickTreeItem","Params": [{"name": "tree_item_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "right click tree item","cmdDescFormatter": "right click tree item %s1"},{"lang": "zh_CN","nameDesc": "右击树节点","cmdDescFormatter": "右击树节点%s1"}]},{"CmdName": "DoubleClickTreeItem","Params": [{"name": "tree_item_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "double click tree item","cmdDescFormatter": "double click tree item %s1"},{"lang": "zh_CN","nameDesc": "双击树节点","cmdDescFormatter": "双击树节点%s1"}]},{"CmdName": "SelectMenu","Params": [{"name": "menu_item_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "select menu item","cmdDescFormatter": "select menu item %s1"},{"lang": "zh_CN","nameDesc": "选择菜单项","cmdDescFormatter": "选择菜单项%s1"}]},{"CmdName": "ClickButton","Params": [{"name": "elem_name","editable": false},"xPos","yPos", {"name":"enum", "type":"enum", "enumVals":['111', '222', '333']}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "click button","cmdDescFormatter": "click button %s1"},{"lang": "zh_CN","nameDesc": "点击按钮","cmdDescFormatter": "点击按钮%s1"}]},{"CmdName": "SelectRadio","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "select radiobox","cmdDescFormatter": "select radiobox %s1"},{"lang": "zh_CN","nameDesc": "选择单选框","cmdDescFormatter": "选择单选框%s1"}]},{"CmdName": "SelectTab","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "select tab page","cmdDescFormatter": "select tab page %s1"},{"lang": "zh_CN","nameDesc": "选择标签页","cmdDescFormatter": "选择标签页%s1"}]},{"CmdName": "ClickSpin","Params": [{"name": "spin_button","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "click spin button","cmdDescFormatter": "click spin button %s1"},{"lang": "zh_CN","nameDesc": "点击微调按钮","cmdDescFormatter": "点击微调按钮%s1"}]},{"CmdName": "DoubleClick","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "double click","cmdDescFormatter": "double click %s1 in relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "双击","cmdDescFormatter": "在相对位置（%s2,%s3）处双击元素%s1"}]},{"CmdName": "SwitchTab","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "switch tab page","cmdDescFormatter": "switch tab page %s1"},{"lang": "zh_CN","nameDesc": "切换标签页","cmdDescFormatter": "切换标签页%s1"}]}],"notifications":["Notification_ID_1","Notification_ID_2","Notification_ID_3"]}]
+ // var result = [{"CmdName":"RelocateElem","Params":["elem_name"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"relocate element","cmdDescFormatter":"relocate element %s1"},{"lang":"zh_CN","nameDesc":"重定位元素","cmdDescFormatter":"重定位元素%s1"}]},{"CmdName":"GetProperty","Params":["elem_name","property_name","^value"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"get element property value","cmdDescFormatter":"get element %s1 property %s2 to variable %s3"},{"lang":"zh_CN","nameDesc":"获取元素属性值","cmdDescFormatter":"获取元素%s1的属性%s2的值到变量%s3中"}]},{"CmdName":"SetIdentiPropVal","Params":["elem_name","prop_name","prop_value"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"change element identity property value dynamically","cmdDescFormatter":"change element %s1 identity property %s2 value to be %s3 dynamically"},{"lang":"zh_CN","nameDesc":"动态修改元素特征属性值","cmdDescFormatter":"动态修改元素%s1的特征属性%s2的值为%s3"}]},{"CmdName":"CheckElemExist","Params":["elem_name","max_wait_time"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"check element exist on GUI","cmdDescFormatter":"check element %s1 exist on GUI, maximum wait time is %s2 seconds"},{"lang":"zh_CN","nameDesc":"检查元素在界面上存在","cmdDescFormatter":"检查元素%s1在界面上存在, 最大等待时间为%s2秒"}]},{"CmdName":"FindElement","Params":["elem_name","max_wait_time","^result"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"find element on GUI","cmdDescFormatter":"find element %s1 exist on GUI, maximum find time is %s2 seconds, return found result in variable %s3"},{"lang":"zh_CN","nameDesc":"在界面上查找元素","cmdDescFormatter":"在界面上查找元素%s1, 最大查找时间为%s2秒，查找结果放在变量%s3中"}]},{"CmdName":"CheckElemDisappear","Params":["elem_name","max_wait_time"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"check element disapear from GUI","cmdDescFormatter":"check element %s1 dispear from GUI, maximum wait time is %s2 seconds"},{"lang":"zh_CN","nameDesc":"检查元素从界面上消失","cmdDescFormatter":"检查元素%s1从界面上消失, 最大等待时间为%s2秒"}]},{"CmdName":"CheckProperty","Params":["elem_name","property_name","expected_value"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"check element property value","cmdDescFormatter":"check the value of %s2 property of element %s1 is %s3"},{"lang":"zh_CN","nameDesc":"检查元素属性值","cmdDescFormatter":"检查元素%s1属性%s2的值为%s3"}]},{"CmdName":"CompareProperty","Params":["elem_name","property_name","property_value","^result"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"compare element property value and return compare result","cmdDescFormatter":"compare element %s1 property %s2 value with value %s3 and return compare result in variable %s4"},{"lang":"zh_CN","nameDesc":"比较元素属性值并输出比较结果","cmdDescFormatter":"比较元素%s1属性%s2的值和%s3，并输出比较脚本到变量%s4中"}]},{"CmdName":"CheckFixedAreaImage","Params":["elem_name","area_name"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"check area image","cmdDescFormatter":"check element %s1 area image as expected %s2"},{"lang":"zh_CN","nameDesc":"检查区域图片","cmdDescFormatter":"比较元素%s1对应的区域图片同期望区域图片%s2一致"}]},{"CmdName":"FindFixedAreaImage","Params":["elem_name","area_name","^result"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"find area image and return find result","cmdDescFormatter":"find element %s1 area image %s2 and return find result"},{"lang":"zh_CN","nameDesc":"查找区域图片并输出查找结果","cmdDescFormatter":"查找元素%s1的区域图片%s2并输出查找结果"}]},{"CmdName":"CheckDynamicAreaImage","Params":["elem_name","area_name","start_posx","start_posy","step_space","end_posx","end_posy"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"check area image by search step by step","cmdDescFormatter":"check element %s1 area image as expected %s2 by search step by step"},{"lang":"zh_CN","nameDesc":"检查区域图片(通过步进搜索)","cmdDescFormatter":"比较元素%s1对应的区域图片同期望区域图片%s2一致(通过步进搜索)"}]},{"CmdName":"FindDynamicAreaImage","Params":["elem_name","area_name","start_posx","start_posy","step_space","end_posx","end_posy","^result"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"find area image by search step by step and return find result","cmdDescFormatter":"find element %s1 area image %s2 by search step by step and return find result to variable %s8"},{"lang":"zh_CN","nameDesc":"查找区域图片(通过步进搜索)并输出查找结果","cmdDescFormatter":"查找元素%s1的区域图片%s2(通过步进搜索)并输出查找结果到变量%s8中"}]},{"CmdName":"GetAreaDimension","Params":["elem_name","area_name","field_name","^filed_value"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"get area dimension","cmdDescFormatter":"get element %s1 area image %s2 dimension %s3, return in variable %s4"},{"lang":"zh_CN","nameDesc":"获取区域图片尺寸","cmdDescFormatter":"获取元素%s1的区域图片%s2的尺寸%s3,通过变量%s4返回"}]},{"CmdName":"SetAreaDimension","Params":["elem_name","area_name","field_name","filed_value"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"set area dimension","cmdDescFormatter":"set element %s1 area image %s2 dimension %s3 to value %s4"},{"lang":"zh_CN","nameDesc":"设置区域图片尺寸","cmdDescFormatter":"设置元素%s1的区域图片%s2的尺寸%s3为%s4"}]},{"CmdName":"LoadProject","Params":["recordset"],"DefTime":"20","UserLanguage":[{"lang":"en","nameDesc":"load record set","cmdDescFormatter":"load record set %s1"},{"lang":"zh_CN","nameDesc":"加载录制集","cmdDescFormatter":"加载录制集%s1"}]},{"CmdName":"WaitElemAppear","Params":["elem_name","max_wait_time"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"wait element appear on GUI","cmdDescFormatter":"wait element %s1 appear on GUI, maximum wait time is %s2 seconds"},{"lang":"zh_CN","nameDesc":"等待元素在界面上出现","cmdDescFormatter":"等待元素%s1在界面上出现, 最大等待时间为%s2秒"}]},{"CmdName":"WaitElemDisappear","Params":["elem_name","max_wait_time"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"wait element disappear from GUI","cmdDescFormatter":"wait element %s1 disappear from GUI, maximum wait time is %s2 seconds"},{"lang":"zh_CN","nameDesc":"等待元素从界面上消失","cmdDescFormatter":"等待元素%s1从界面上消失, 最大等待时间为%s2秒"}]},{"CmdName":"WaitProcessExit","Params":["process_full_path","max_wait_time"],"DefTime":"20","UserLanguage":[{"lang":"en","nameDesc":"wait process exit","cmdDescFormatter":"wait process %s1 exit, maximum wait time is %s2 seconds"},{"lang":"zh_CN","nameDesc":"等待进程结束","cmdDescFormatter":"等待进程%s1结束, 最大等待时间为%s2秒"}]},{"CmdName":"InputString","Params":["elem_name","string"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"input string","cmdDescFormatter":"input string %s2 to element %s1"},{"lang":"zh_CN","nameDesc":"输入字符串","cmdDescFormatter":"向元素%s1中输入字符串%s2"}]},{"CmdName":"InputText","Params":["elem_name","string"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"input string","cmdDescFormatter":"input string %s2 to element %s1"},{"lang":"zh_CN","nameDesc":"输入字符串","cmdDescFormatter":"向元素%s1中输入字符串%s2"}]},{"CmdName":"Click","Params":["elem_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"click","cmdDescFormatter":"click element %s1 at relative position(%s2,%s3)"},{"lang":"zh_CN","nameDesc":"点击","cmdDescFormatter":"在相对坐标（%s2,%s3）处点击元素%s1"}]},{"CmdName":"RightClick","Params":["elem_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"right click","cmdDescFormatter":"right click element %s1 at relative position(%s2,%s3)"},{"lang":"zh_CN","nameDesc":"右键点击","cmdDescFormatter":"在相对坐标（%s2,%s3）处右键点击元素%s1"}]},{"CmdName":"KeyClick","Params":["elem_name","keycode"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"input key","cmdDescFormatter":"input key %s2 in element %s1"},{"lang":"zh_CN","nameDesc":"输入按键","cmdDescFormatter":"在元素%s1中输入按键%s2"}]},{"CmdName":"LeftPress","Params":["elem_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"press left button","cmdDescFormatter":"press left button in element %s1 on relative position(%s2,%s3)"},{"lang":"zh_CN","nameDesc":"按住鼠标左键","cmdDescFormatter":"在元素%s1相对位置（%s2,%s3）处按住鼠标左键"}]},{"CmdName":"LeftRelease","Params":["elem_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"release left button","cmdDescFormatter":"release left button in element %s1 on relative position(%s2,%s3)"},{"lang":"zh_CN","nameDesc":"释放鼠标左键","cmdDescFormatter":"在元素%s1相对位置（%s2,%s3）处释放鼠标左键"}]},{"CmdName":"DragTo","Params":["elem_name","xPos1","yPos1","xPos2","yPos2"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"drag","cmdDescFormatter":"in element %s1,drag mouse from relative position(%s2,%s3) to position(%s4,%s5)"},{"lang":"zh_CN","nameDesc":"拖拽","cmdDescFormatter":"在元素%s1中从相对位置（%s2,%s3）拖拽鼠标到位置(%s4,%s5)"}]},{"CmdName":"LeftDoubleClick","Params":["elem_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"double click","cmdDescFormatter":"double click element %s1 in relative position(%s2,%s3)"},{"lang":"zh_CN","nameDesc":"双击","cmdDescFormatter":"在元素%s1中从相对位置（%s2,%s3）拖拽鼠标到位置(%s4,%s5)"}]},{"CmdName":"RightPress","Params":["elem_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"press right button","cmdDescFormatter":"press right button in element %s1 on relative position(%s2,%s3)"},{"lang":"zh_CN","nameDesc":"按住鼠标右键","cmdDescFormatter":"在元素%s1相对位置（%s2,%s3）处按住鼠标右键"}]},{"CmdName":"RightRelease","Params":["elem_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"release right button","cmdDescFormatter":"release right button in element %s1 on relative position(%s2,%s3)"},{"lang":"zh_CN","nameDesc":"释放鼠标右键","cmdDescFormatter":"在元素%s1相对位置（%s2,%s3）处释放鼠标右键"}]},{"CmdName":"MiddlePress","Params":["elem_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"press middle button","cmdDescFormatter":"press middle button in element %s1 on relative position(%s2,%s3)"},{"lang":"zh_CN","nameDesc":"按住鼠标中间键","cmdDescFormatter":"在元素%s1相对位置（%s2,%s3）处按住鼠标中间键"}]},{"CmdName":"MiddleRelease","Params":["elem_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"release middle button","cmdDescFormatter":"release middle button in element %s1 on relative position(%s2,%s3)"},{"lang":"zh_CN","nameDesc":"释放鼠标中间键","cmdDescFormatter":"在元素%s1相对位置（%s2,%s3）处释放鼠标中间键"}]},{"CmdName":"MiddleClick","Params":["elem_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"click middle button","cmdDescFormatter":"click middle button in element %s1 on relative position(%s2,%s3)"},{"lang":"zh_CN","nameDesc":"点击鼠标中间键","cmdDescFormatter":"在元素%s1相对位置（%s2,%s3）处点击鼠标中间键"}]},{"CmdName":"KeyPress","Params":["elem_name","keycode"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"press key","cmdDescFormatter":"press key %s2 in element %s1"},{"lang":"zh_CN","nameDesc":"按下按键","cmdDescFormatter":"在元素%s1中按下按键%s2"}]},{"CmdName":"KeyRelease","Params":["elem_name","keycode"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"release key","cmdDescFormatter":"release key %s2 in element %s1"},{"lang":"zh_CN","nameDesc":"释放按键","cmdDescFormatter":"在元素%s1中释放按键%s2"}]},{"CmdName":"ToggleCheckBox","Params":["checkbox_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"toggle checkbox","cmdDescFormatter":"toggle checkbox %s1"},{"lang":"zh_CN","nameDesc":"选中复选框","cmdDescFormatter":"选中复选框%s1"}]},{"CmdName":"Expand","Params":["combobox_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"expand combobox","cmdDescFormatter":"expand combobox %s1"},{"lang":"zh_CN","nameDesc":"展开下拉框","cmdDescFormatter":"展开下拉框%s1"}]},{"CmdName":"ClickLink","Params":["elem_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"click link","cmdDescFormatter":"click link %s1"},{"lang":"zh_CN","nameDesc":"点击链接","cmdDescFormatter":"点击链接%s1"}]},{"CmdName":"ClickListItem","Params":["list_item_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"click list item","cmdDescFormatter":"click list item %s1"},{"lang":"zh_CN","nameDesc":"点击列表项","cmdDescFormatter":"点击列表项%s1"}]},{"CmdName":"RightClickListItem","Params":["list_item_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"right click list item","cmdDescFormatter":"right click list item %s1"},{"lang":"zh_CN","nameDesc":"右击列表项","cmdDescFormatter":"右击列表项%s1"}]},{"CmdName":"DoubleClickListItem","Params":["list_item_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"double click list item","cmdDescFormatter":"double click list item %s1"},{"lang":"zh_CN","nameDesc":"双击列表项","cmdDescFormatter":"双击列表项%s1"}]},{"CmdName":"ClickTreeItem","Params":["tree_item_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"click tree item","cmdDescFormatter":"click tree item %s1"},{"lang":"zh_CN","nameDesc":"点击树节点","cmdDescFormatter":"点击树节点%s1"}]},{"CmdName":"RightClickTreeItem","Params":["list_item_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"right click tree item","cmdDescFormatter":"right click tree item %s1"},{"lang":"zh_CN","nameDesc":"右击树节点","cmdDescFormatter":"右击树节点%s1"}]},{"CmdName":"DoubleClickTreeItem","Params":["tree_item_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"double click tree item","cmdDescFormatter":"double click tree item %s1"},{"lang":"zh_CN","nameDesc":"双击树节点","cmdDescFormatter":"双击树节点%s1"}]},{"CmdName":"SelectMenu","Params":["menu_item_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"select menu item","cmdDescFormatter":"select menu item %s1"},{"lang":"zh_CN","nameDesc":"选择菜单项","cmdDescFormatter":"选择菜单项%s1"}]},{"CmdName":"ClickButton","Params":["elem_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"click button","cmdDescFormatter":"click button %s1"},{"lang":"zh_CN","nameDesc":"点击按钮","cmdDescFormatter":"点击按钮%s1"}]},{"CmdName":"SelectRadio","Params":["elem_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"select radiobox","cmdDescFormatter":"select radiobox %s1"},{"lang":"zh_CN","nameDesc":"选择单选框","cmdDescFormatter":"选择单选框%s1"}]},{"CmdName":"SelectTab","Params":["elem_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"select tab page","cmdDescFormatter":"select tab page %s1"},{"lang":"zh_CN","nameDesc":"选择标签页","cmdDescFormatter":"选择标签页%s1"}]},{"CmdName":"ClickSpin","Params":["spin_button","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"click spin button","cmdDescFormatter":"click spin button %s1"},{"lang":"zh_CN","nameDesc":"点击微调按钮","cmdDescFormatter":"点击微调按钮%s1"}]},{"CmdName":"DoubleClick","Params":["elem_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"double click","cmdDescFormatter":"double click %s1 in relative position(%s2,%s3)"},{"lang":"zh_CN","nameDesc":"双击","cmdDescFormatter":"在相对位置（%s2,%s3）处双击元素%s1"}]},{"CmdName":"SwitchTab","Params":["elem_name","xPos","yPos"],"DefTime":"10","UserLanguage":[{"lang":"en","nameDesc":"switch tab page","cmdDescFormatter":"switch tab page %s1"},{"lang":"zh_CN","nameDesc":"切换标签页","cmdDescFormatter":"切换标签页%s1"}]}];
+  // Create main workspace.
+ // var command = [{"CmdName": "StartServer","Params": [{"name": "port","type": "integer"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "start HTTP server","cmdDescFormatter": "start HTTP server with port %s1"},{"lang": "zh","nameDesc": "启动HTTP服务","cmdDescFormatter": "使用端口%s1启动HTTP服务"}]},{"CmdName": "StopServer","Params": [],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "stop HTTP server","cmdDescFormatter": "stop HTTP server with port %s1"},{"lang": "zh","nameDesc": "启动HTTP服务","cmdDescFormatter": "使用端口%s1启动HTTP服务"}]},{"CmdName": "ConfigAPIResp","Params": [{"name": "apiName","type": "string"},{"name": "delaySeconds","type": "integer"},{"name": "responseString","type": "string"}	],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "configure API response","cmdDescFormatter": "configure response of API(%s1), delay %s2 seconds to send response when receive API request"},{"lang": "zh","nameDesc": "配置API返回消息","cmdDescFormatter": "配置API(%s1)的返回消息,收到API请求后延迟%s2秒回复"}]},{"CmdName": "SetCurMsgByIndex","Params": [{"name": "requestIndex","type": "integer"},{"name": "maxWaitSec","type": "integer"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "set current message by index","cmdDescFormatter": "wait and set  current message as the message which index is %s1"},{"lang": "zh","nameDesc": "通过Index设定当前消息","cmdDescFormatter": "等待并设定第%s1个消息作为当前消息"}]},{"CmdName": "SetCurMsgByAPI","Params": [{"name": "apiName","type": "string"},{"name": "requestIndexOfSameAPI","type": "integer"},{"name": "maxWaitSec","type": "integer"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "set current message by API","cmdDescFormatter": "wait and set current message as the message which name is %s1"},{"lang": "zh","nameDesc": "通过API名称设定当前消息","cmdDescFormatter": "等待并设定API名称为%s1的所有消息中的第%s2个作为当前消息"}]},{"CmdName": "SetCurMsgByIndexAfterTime","Params": [{"name": "index","type": "integer"},{"name": "timeStamp","type": "integer"},{"name": "maxWaitSec","type": "integer"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "set current message by Index (after given time)","cmdDescFormatter": "wait and set current message as the message which index is %s1 after time %2"},{"lang": "zh","nameDesc": "通过Index设定当前消息（在指定时间后）","cmdDescFormatter": "等待并设定指定时间%s2之后第%s1个消息作为当前消息"}]},{"CmdName": "SetCurMsgByUrlAfterTime","Params": [{"name": "apiName","type": "string"},{"name": "timeStamp","type": "integer"},{"name": "urlIndex","type": "integer"},{"name": "maxWaitSec","type": "integer"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "set current message by API (after given time)","cmdDescFormatter": "wait and set current message as the message which name is %s1 after time %2"},{"lang": "zh","nameDesc": "通过API设定当前消息（在指定时间后）","cmdDescFormatter": "等待并设定指定时间%s3之后API名称为%s1的所有消息中的第%s2个作为当前消息"}]},{"CmdName": "GetCurMsgTime","Params": ["^msgTime"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "get time stamp of current message","cmdDescFormatter": "get time stamp of current message,return time in variable %s1"},{"lang": "zh","nameDesc": "获取当前消息的时间戳","cmdDescFormatter": "获取当前消息的时间戳并输出在变量%s1中"}]},{"CmdName": "CheckCurMsgUrl","Params": [{"name": "apiName","type": "string"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check current message API　name","cmdDescFormatter": "check current message API　name with expected value %s1"},{"lang": "zh","nameDesc": "检查当前消息的API名称","cmdDescFormatter": "检查当前消息的API名称，期望值是%s1"}]},{"CmdName": "CheckCurMsgMethod","Params": [{"name": "method","type": "string"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check current message API　name","cmdDescFormatter": "check current message API　name with expected value %s1"},{"lang": "zh","nameDesc": "检查当前消息的Method","cmdDescFormatter": "检查当前消息的Method，期望值是%s1"}]},{"CmdName": "CheckCurMsgParam","Params": [{"name": "paramName","type": "string"},{"name": "paramName","type": "string"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check current message parameter","cmdDescFormatter": "check current message parameter %s1 with expected value %s2"},{"lang": "zh","nameDesc": "检查当前消息的参数","cmdDescFormatter": "检查当前消息的参数%s1的值，期望值为%s2"}]},{"CmdName": "CheckCurMsgPostData","Params": [{"name": "postdata","type": "text"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check current message post data","cmdDescFormatter": "check current message post data with expected value %s1"},{"lang": "zh","nameDesc": "检查当前消息的POST数据","cmdDescFormatter": "检查当前消息的POST数据, 期望值为%s1"}]},{"CmdName": "GetCurMsgPostData","Params": ["^postdata"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "get current message post data","cmdDescFormatter": "get current message post data, return in variable %s1"},{"lang": "zh","nameDesc": "获取当前消息的POST数据","cmdDescFormatter": "获取当前消息的POST数据, 输出到变量%s1中"}]}];
+  var command = [];
+  command["SerialPortAntBot"] = [{"CmdName":"SendString","Params":[{"name":"stringToSend","type":"string"}],"DefTime":"60","UserLanguage":[{"lang":"en","nameDesc":"send string","cmdDescFormatter":"send string:%s1"},{"lang":"zh","nameDesc":"发送字符串","cmdDescFormatter":"发送字符串:%s1"}]},{"CmdName":"GetReceivedString","Params":[{"name":"maximum lenth to get","type":"int"},"^receivedString"],"DefTime":"60","UserLanguage":[{"lang":"en","nameDesc":"get received string","cmdDescFormatter":"get received string (max length is %s1) and save to variable %s2"},{"lang":"zh","nameDesc":"获取接收到的字符串","cmdDescFormatter":"获取接收到的字符串（最大长度为%s1)并保存在变量%s2中"}]},{"CmdName":"GetAllReceivedString","Params":[{"name":"^receivedString","type":"string"}],"DefTime":"60","UserLanguage":[{"lang":"en","nameDesc":"get all received all ","cmdDescFormatter":"get all received string and save in variable %s1"},{"lang":"zh","nameDesc":"获取所有接收到的字符串","cmdDescFormatter":"获取所有接收到的字符串并保存在变量%s1中"}]},{"CmdName":"StartReceive","Params":[],"DefTime":"20","UserLanguage":[{"lang":"en","nameDesc":"start receive","cmdDescFormatter":"start receive and save in internal buffer"},{"lang":"zh","nameDesc":"开始接收","cmdDescFormatter":"开始接收并放在内部缓冲区中"}]},{"CmdName":"StopReceive","Params":[],"DefTime":"20","UserLanguage":[{"lang":"en","nameDesc":"stop receive","cmdDescFormatter":"stop receive to internal buffer"},{"lang":"zh","nameDesc":"停止接收","cmdDescFormatter":"停止接收到内部缓冲区"}]},{"CmdName":"CheckStringExist","Params":[{"name":"stringToFound","type":"string"},{"name":"maxWaitSeconds","type":"integer"}],"DefTime":"20","UserLanguage":[{"lang":"en","nameDesc":"check string exist","cmdDescFormatter":"check string exist in internal buffer"},{"lang":"zh","nameDesc":"检查字符串存在","cmdDescFormatter":"检查字符串(%s1)在内部缓冲区中存在"}]},{"CmdName":"OpenPort","Params":[{"name":"port","type":"string"},{"name":"baud_rate","type":"integer"}],"DefTime":"60","UserLanguage":[{"lang":"en","nameDesc":"open port","cmdDescFormatter":"connect with prot(%s1) using baud rate(%s2)"},{"lang":"zh","nameDesc":"连接串口","cmdDescFormatter":"使用波特率(%s2)和同端口(%s1)建立串口"}]},{"CmdName":"ClosePort","Params":[],"DefTime":"50","UserLanguage":[{"lang":"en","nameDesc":"close port","cmdDescFormatter":"close port"},{"lang":"zh","nameDesc":"关闭连接","cmdDescFormatter":"关闭同串口的连接"}]},{"CmdName":"ClearRecvBuffer","Params":[],"DefTime":"60","UserLanguage":[{"lang":"en","nameDesc":"clear receive(RX) buffer","cmdDescFormatter":"clear receive(RX) buffer"},{"lang":"zh","nameDesc":"清空接收(RX)缓冲区","cmdDescFormatter":"清空接收(RX)缓冲区"}]},{"CmdName":"ClearSendBuffer","Params":[],"DefTime":"60","UserLanguage":[{"lang":"en","nameDesc":"clear send(TX) buffer","cmdDescFormatter":"clear send(TX) buffer"},{"lang":"zh","nameDesc":"清空发送(TX)缓冲区","cmdDescFormatter":"清空发送(TX)缓冲区"}]}];
+  command["HttpServerAntBot"] = [{"CmdName": "StartServer","Params": [{"name": "port","type": "integer"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "start HTTP server","cmdDescFormatter": "start HTTP server with port %s1"},{"lang": "zh","nameDesc": "启动HTTP服务","cmdDescFormatter": "使用端口%s1启动HTTP服务"}]},{"CmdName": "StopServer","Params": [],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "stop HTTP server","cmdDescFormatter": "stop HTTP server with port %s1"},{"lang": "zh","nameDesc": "启动HTTP服务","cmdDescFormatter": "使用端口%s1启动HTTP服务"}]},{"CmdName": "ConfigAPIResp","Params": [{"name": "apiName","type": "string"},{"name": "delaySeconds","type": "integer"},{"name": "responseString","type": "string"}	],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "configure API response","cmdDescFormatter": "configure response of API(%s1), delay %s2 seconds to send response when receive API request"},{"lang": "zh","nameDesc": "配置API返回消息","cmdDescFormatter": "配置API(%s1)的返回消息,收到API请求后延迟%s2秒回复"}]},{"CmdName": "SetCurMsgByIndex","Params": [{"name": "requestIndex","type": "integer"},{"name": "maxWaitSec","type": "integer"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "set current message by index","cmdDescFormatter": "wait and set  current message as the message which index is %s1"},{"lang": "zh","nameDesc": "通过Index设定当前消息","cmdDescFormatter": "等待并设定第%s1个消息作为当前消息"}]},{"CmdName": "SetCurMsgByAPI","Params": [{"name": "apiName","type": "string"},{"name": "requestIndexOfSameAPI","type": "integer"},{"name": "maxWaitSec","type": "integer"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "set current message by API","cmdDescFormatter": "wait and set current message as the message which name is %s1"},{"lang": "zh","nameDesc": "通过API名称设定当前消息","cmdDescFormatter": "等待并设定API名称为%s1的所有消息中的第%s2个作为当前消息"}]},{"CmdName": "SetCurMsgByIndexAfterTime","Params": [{"name": "index","type": "integer"},{"name": "timeStamp","type": "integer"},{"name": "maxWaitSec","type": "integer"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "set current message by Index (after given time)","cmdDescFormatter": "wait and set current message as the message which index is %s1 after time %2"},{"lang": "zh","nameDesc": "通过Index设定当前消息（在指定时间后）","cmdDescFormatter": "等待并设定指定时间%s2之后第%s1个消息作为当前消息"}]},{"CmdName": "SetCurMsgByUrlAfterTime","Params": [{"name": "apiName","type": "string"},{"name": "timeStamp","type": "integer"},{"name": "urlIndex","type": "integer"},{"name": "maxWaitSec","type": "integer"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "set current message by API (after given time)","cmdDescFormatter": "wait and set current message as the message which name is %s1 after time %2"},{"lang": "zh","nameDesc": "通过API设定当前消息（在指定时间后）","cmdDescFormatter": "等待并设定指定时间%s3之后API名称为%s1的所有消息中的第%s2个作为当前消息"}]},{"CmdName": "GetCurMsgTime","Params": ["^msgTime"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "get time stamp of current message","cmdDescFormatter": "get time stamp of current message,return time in variable %s1"},{"lang": "zh","nameDesc": "获取当前消息的时间戳","cmdDescFormatter": "获取当前消息的时间戳并输出在变量%s1中"}]},{"CmdName": "CheckCurMsgUrl","Params": [{"name": "apiName","type": "string"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check current message API　name","cmdDescFormatter": "check current message API　name with expected value %s1"},{"lang": "zh","nameDesc": "检查当前消息的API名称","cmdDescFormatter": "检查当前消息的API名称，期望值是%s1"}]},{"CmdName": "CheckCurMsgMethod","Params": [{"name": "method","type": "string"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check current message API　name","cmdDescFormatter": "check current message API　name with expected value %s1"},{"lang": "zh","nameDesc": "检查当前消息的Method","cmdDescFormatter": "检查当前消息的Method，期望值是%s1"}]},{"CmdName": "CheckCurMsgParam","Params": [{"name": "paramName","type": "string"},{"name": "paramName","type": "string"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check current message parameter","cmdDescFormatter": "check current message parameter %s1 with expected value %s2"},{"lang": "zh","nameDesc": "检查当前消息的参数","cmdDescFormatter": "检查当前消息的参数%s1的值，期望值为%s2"}]},{"CmdName": "CheckCurMsgPostData","Params": [{"name": "postdata","type": "text"}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check current message post data","cmdDescFormatter": "check current message post data with expected value %s1"},{"lang": "zh","nameDesc": "检查当前消息的POST数据","cmdDescFormatter": "检查当前消息的POST数据, 期望值为%s1"}]},{"CmdName": "GetCurMsgPostData","Params": ["^postdata"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "get current message post data","cmdDescFormatter": "get current message post data, return in variable %s1"},{"lang": "zh","nameDesc": "获取当前消息的POST数据","cmdDescFormatter": "获取当前消息的POST数据, 输出到变量%s1中"}]}];
+   command["AntBot_GUI"] = [{"CmdName": "RelocateElem","Params": [{"name": "elem_name","editable": false}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "relocate element","cmdDescFormatter": "relocate element %s1"},{"lang": "zh_CN","nameDesc": "重定位元素","cmdDescFormatter": "重定位元素%s1"}]},{"CmdName": "GetProperty","Params": [{"name": "elem_name","editable": false},{"name": "property_name","editable": false},"^value"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "get element property value","cmdDescFormatter": "get element %s1 property %s2 to variable %s3"},{"lang": "zh_CN","nameDesc": "获取元素属性值","cmdDescFormatter": "获取元素%s1的属性%s2的值到变量%s3中"}]},{"CmdName": "SetIdentiPropVal","Params": [{"name": "elem_name","editable": false},{"name": "prop_name","editable": false},"prop_value"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "change element identity property value dynamically","cmdDescFormatter": "change element %s1 identity property %s2 value to be %s3 dynamically"},{"lang": "zh_CN","nameDesc": "动态修改元素特征属性值","cmdDescFormatter": "动态修改元素%s1的特征属性%s2的值为%s3"}]},{"CmdName": "CheckElemExist","Params": [{"name": "elem_name","editable": false},"max_wait_time"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check element exist on GUI","cmdDescFormatter": "check element %s1 exist on GUI, maximum wait time is %s2 seconds"},{"lang": "zh_CN","nameDesc": "检查元素在界面上存在","cmdDescFormatter": "检查元素%s1在界面上存在, 最大等待时间为%s2秒"}]},{"CmdName": "FindElement","Params": [{"name": "elem_name","editable": false},"max_wait_time","^result"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "find element on GUI","cmdDescFormatter": "find element %s1 exist on GUI, maximum find time is %s2 seconds, return found result in variable %s3"},{"lang": "zh_CN","nameDesc": "在界面上查找元素","cmdDescFormatter": "在界面上查找元素%s1, 最大查找时间为%s2秒，查找结果放在变量%s3中"}]},{"CmdName": "CheckElemDisappear","Params": [{"name": "elem_name","editable": false},"max_wait_time"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check element disapear from GUI","cmdDescFormatter": "check element %s1 dispear from GUI, maximum wait time is %s2 seconds"},{"lang": "zh_CN","nameDesc": "检查元素从界面上消失","cmdDescFormatter": "检查元素%s1从界面上消失, 最大等待时间为%s2秒"}]},{"CmdName": "CheckProperty","Params": [{"name": "elem_name","editable": false},{"name": "property_name","editable": false},"expected_value"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check element property value","cmdDescFormatter": "check the value of %s2 property of element %s1 is %s3"},{"lang": "zh_CN","nameDesc": "检查元素属性值","cmdDescFormatter": "检查元素%s1属性%s2的值为%s3"}]},{"CmdName": "CompareProperty","Params": [{"name": "elem_name","editable": false},{"name": "property_name","editable": false},"property_value","^result"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "compare element property value and return compare result","cmdDescFormatter": "compare element %s1 property %s2 value with value %s3 and return compare result in variable %s4"},{"lang": "zh_CN","nameDesc": "比较元素属性值并输出比较结果","cmdDescFormatter": "比较元素%s1属性%s2的值和%s3，并输出比较脚本到变量%s4中"}]},{"CmdName": "CheckFixedAreaImage","Params": [{"name": "elem_name","editable": false},{"name": "area_name","editable": false}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check area image","cmdDescFormatter": "check element %s1 area image as expected %s2"},{"lang": "zh_CN","nameDesc": "检查区域图片","cmdDescFormatter": "比较元素%s1对应的区域图片同期望区域图片%s2一致"}]},{"CmdName": "FindFixedAreaImage","Params": [{"name": "elem_name","editable": false},{"name": "area_name","editable": false},"^result"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "find area image and return find result","cmdDescFormatter": "find element %s1 area image %s2 and return find result"},{"lang": "zh_CN","nameDesc": "查找区域图片并输出查找结果","cmdDescFormatter": "查找元素%s1的区域图片%s2并输出查找结果"}]},{"CmdName": "CheckDynamicAreaImage","Params": [{"name": "elem_name","editable": false},{"name": "area_name","editable": false},"start_posx","start_posy","step_space","end_posx","end_posy"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "check area image by search step by step","cmdDescFormatter": "check element %s1 area image as expected %s2 by search step by step"},{"lang": "zh_CN","nameDesc": "检查区域图片(通过步进搜索)","cmdDescFormatter": "比较元素%s1对应的区域图片同期望区域图片%s2一致(通过步进搜索)"}]},{"CmdName": "FindDynamicAreaImage","Params": [{"name": "elem_name","editable": false},{"name": "area_name","editable": false},"start_posx","start_posy","step_space","end_posx","end_posy","^result"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "find area image by search step by step and return find result","cmdDescFormatter": "find element %s1 area image %s2 by search step by step and return find result to variable %s8"},{"lang": "zh_CN","nameDesc": "查找区域图片(通过步进搜索)并输出查找结果","cmdDescFormatter": "查找元素%s1的区域图片%s2(通过步进搜索)并输出查找结果到变量%s8中"}]},{"CmdName": "GetAreaDimension","Params": [{"name": "elem_name","editable": false},{"name": "area_name","editable": false},"field_name","^filed_value"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "get area dimension","cmdDescFormatter": "get element %s1 area image %s2 dimension %s3, return in variable %s4"},{"lang": "zh_CN","nameDesc": "获取区域图片尺寸","cmdDescFormatter": "获取元素%s1的区域图片%s2的尺寸%s3,通过变量%s4返回"}]},{"CmdName": "SetAreaDimension","Params": [{"name": "elem_name","editable": false},{"name": "area_name","editable": false},"field_name","filed_value"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "set area dimension","cmdDescFormatter": "set element %s1 area image %s2 dimension %s3 to value %s4"},{"lang": "zh_CN","nameDesc": "设置区域图片尺寸","cmdDescFormatter": "设置元素%s1的区域图片%s2的尺寸%s3为%s4"}]},{"CmdName": "LoadProject","Params": ["recordset"],"DefTime": "20","UserLanguage": [{"lang": "en","nameDesc": "load record set","cmdDescFormatter": "load record set %s1"},{"lang": "zh_CN","nameDesc": "加载录制集","cmdDescFormatter": "加载录制集%s1"}]},{"CmdName": "WaitElemAppear","Params": [{"name": "elem_name","editable": false},"max_wait_time"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "wait element appear on GUI","cmdDescFormatter": "wait element %s1 appear on GUI, maximum wait time is %s2 seconds"},{"lang": "zh_CN","nameDesc": "等待元素在界面上出现","cmdDescFormatter": "等待元素%s1在界面上出现, 最大等待时间为%s2秒"}]},{"CmdName": "WaitElemDisappear","Params": [{"name": "elem_name","editable": false},"max_wait_time"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "wait element disappear from GUI","cmdDescFormatter": "wait element %s1 disappear from GUI, maximum wait time is %s2 seconds"},{"lang": "zh_CN","nameDesc": "等待元素从界面上消失","cmdDescFormatter": "等待元素%s1从界面上消失, 最大等待时间为%s2秒"}]},{"CmdName": "WaitProcessExit","Params": ["process_full_path","max_wait_time"],"DefTime": "20","UserLanguage": [{"lang": "en","nameDesc": "wait process exit","cmdDescFormatter": "wait process %s1 exit, maximum wait time is %s2 seconds"},{"lang": "zh_CN","nameDesc": "等待进程结束","cmdDescFormatter": "等待进程%s1结束, 最大等待时间为%s2秒"}]},{"CmdName": "InputString","Params": [{"name": "elem_name","editable": false},"string"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "input string","cmdDescFormatter": "input string %s2 to element %s1"},{"lang": "zh_CN","nameDesc": "输入字符串","cmdDescFormatter": "向元素%s1中输入字符串%s2"}]},{"CmdName": "InputText","Params": [{"name": "elem_name","editable": false},"string"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "input string","cmdDescFormatter": "input string %s2 to element %s1"},{"lang": "zh_CN","nameDesc": "输入字符串","cmdDescFormatter": "向元素%s1中输入字符串%s2"}]},{"CmdName": "Click","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "click","cmdDescFormatter": "click element %s1 at relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "点击","cmdDescFormatter": "在相对坐标（%s2,%s3）处点击元素%s1"}]},{"CmdName": "RightClick","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "right click","cmdDescFormatter": "right click element %s1 at relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "右键点击","cmdDescFormatter": "在相对坐标（%s2,%s3）处右键点击元素%s1"}]},{"CmdName": "KeyClick","Params": [{"name": "elem_name","editable": false},"keycode"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "input key","cmdDescFormatter": "input key %s2 in element %s1"},{"lang": "zh_CN","nameDesc": "输入按键","cmdDescFormatter": "在元素%s1中输入按键%s2"}]},{"CmdName": "LeftPress","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "press left button","cmdDescFormatter": "press left button in element %s1 on relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "按住鼠标左键","cmdDescFormatter": "在元素%s1相对位置（%s2,%s3）处按住鼠标左键"}]},{"CmdName": "LeftRelease","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "release left button","cmdDescFormatter": "release left button in element %s1 on relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "释放鼠标左键","cmdDescFormatter": "在元素%s1相对位置（%s2,%s3）处释放鼠标左键"}]},{"CmdName": "DragTo","Params": [{"name": "elem_name","editable": false},"xPos1","yPos1","xPos2","yPos2"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "drag","cmdDescFormatter": "in element %s1,drag mouse from relative position(%s2,%s3) to position(%s4,%s5)"},{"lang": "zh_CN","nameDesc": "拖拽","cmdDescFormatter": "在元素%s1中从相对位置（%s2,%s3）拖拽鼠标到位置(%s4,%s5)"}]},{"CmdName": "LeftDoubleClick","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "double click","cmdDescFormatter": "double click element %s1 in relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "双击","cmdDescFormatter": "在元素%s1中从相对位置（%s2,%s3）拖拽鼠标到位置(%s4,%s5)"}]},{"CmdName": "RightPress","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "press right button","cmdDescFormatter": "press right button in element %s1 on relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "按住鼠标右键","cmdDescFormatter": "在元素%s1相对位置（%s2,%s3）处按住鼠标右键"}]},{"CmdName": "RightRelease","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "release right button","cmdDescFormatter": "release right button in element %s1 on relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "释放鼠标右键","cmdDescFormatter": "在元素%s1相对位置（%s2,%s3）处释放鼠标右键"}]},{"CmdName": "MiddlePress","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "press middle button","cmdDescFormatter": "press middle button in element %s1 on relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "按住鼠标中间键","cmdDescFormatter": "在元素%s1相对位置（%s2,%s3）处按住鼠标中间键"}]},{"CmdName": "MiddleRelease","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "release middle button","cmdDescFormatter": "release middle button in element %s1 on relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "释放鼠标中间键","cmdDescFormatter": "在元素%s1相对位置（%s2,%s3）处释放鼠标中间键"}]},{"CmdName": "MiddleClick","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "click middle button","cmdDescFormatter": "click middle button in element %s1 on relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "点击鼠标中间键","cmdDescFormatter": "在元素%s1相对位置（%s2,%s3）处点击鼠标中间键"}]},{"CmdName": "KeyPress","Params": [{"name": "elem_name","editable": false},"keycode"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "press key","cmdDescFormatter": "press key %s2 in element %s1"},{"lang": "zh_CN","nameDesc": "按下按键","cmdDescFormatter": "在元素%s1中按下按键%s2"}]},{"CmdName": "KeyRelease","Params": [{"name": "elem_name","editable": false},"keycode"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "release key","cmdDescFormatter": "release key %s2 in element %s1"},{"lang": "zh_CN","nameDesc": "释放按键","cmdDescFormatter": "在元素%s1中释放按键%s2"}]},{"CmdName": "ToggleCheckBox","Params": ["checkbox_name","xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "toggle checkbox","cmdDescFormatter": "toggle checkbox %s1"},{"lang": "zh_CN","nameDesc": "选中复选框","cmdDescFormatter": "选中复选框%s1"}]},{"CmdName": "Expand","Params": [{"name": "combobox_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "expand combobox","cmdDescFormatter": "expand combobox %s1"},{"lang": "zh_CN","nameDesc": "展开下拉框","cmdDescFormatter": "展开下拉框%s1"}]},{"CmdName": "ClickLink","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "click link","cmdDescFormatter": "click link %s1"},{"lang": "zh_CN","nameDesc": "点击链接","cmdDescFormatter": "点击链接%s1"}]},{"CmdName": "ClickListItem","Params": [{"name": "list_item_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "click list item","cmdDescFormatter": "click list item %s1"},{"lang": "zh_CN","nameDesc": "点击列表项","cmdDescFormatter": "点击列表项%s1"}]},{"CmdName": "RightClickListItem","Params": [{"name": "list_item_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "right click list item","cmdDescFormatter": "right click list item %s1"},{"lang": "zh_CN","nameDesc": "右击列表项","cmdDescFormatter": "右击列表项%s1"}]},{"CmdName": "DoubleClickListItem","Params": [{"name": "list_item_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "double click list item","cmdDescFormatter": "double click list item %s1"},{"lang": "zh_CN","nameDesc": "双击列表项","cmdDescFormatter": "双击列表项%s1"}]},{"CmdName": "ClickTreeItem","Params": [{"name": "tree_item_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "click tree item","cmdDescFormatter": "click tree item %s1"},{"lang": "zh_CN","nameDesc": "点击树节点","cmdDescFormatter": "点击树节点%s1"}]},{"CmdName": "RightClickTreeItem","Params": [{"name": "tree_item_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "right click tree item","cmdDescFormatter": "right click tree item %s1"},{"lang": "zh_CN","nameDesc": "右击树节点","cmdDescFormatter": "右击树节点%s1"}]},{"CmdName": "DoubleClickTreeItem","Params": [{"name": "tree_item_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "double click tree item","cmdDescFormatter": "double click tree item %s1"},{"lang": "zh_CN","nameDesc": "双击树节点","cmdDescFormatter": "双击树节点%s1"}]},{"CmdName": "SelectMenu","Params": [{"name": "menu_item_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "select menu item","cmdDescFormatter": "select menu item %s1"},{"lang": "zh_CN","nameDesc": "选择菜单项","cmdDescFormatter": "选择菜单项%s1"}]},{"CmdName": "ClickButton","Params": [{"name": "elem_name","editable": false},"xPos","yPos", {"name":"enum", "type":"enum", "enumVals":['111', '222', '333']}],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "click button","cmdDescFormatter": "click button %s1"},{"lang": "zh_CN","nameDesc": "点击按钮","cmdDescFormatter": "点击按钮%s1"}]},{"CmdName": "SelectRadio","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "select radiobox","cmdDescFormatter": "select radiobox %s1"},{"lang": "zh_CN","nameDesc": "选择单选框","cmdDescFormatter": "选择单选框%s1"}]},{"CmdName": "SelectTab","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "select tab page","cmdDescFormatter": "select tab page %s1"},{"lang": "zh_CN","nameDesc": "选择标签页","cmdDescFormatter": "选择标签页%s1"}]},{"CmdName": "ClickSpin","Params": [{"name": "spin_button","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "click spin button","cmdDescFormatter": "click spin button %s1"},{"lang": "zh_CN","nameDesc": "点击微调按钮","cmdDescFormatter": "点击微调按钮%s1"}]},{"CmdName": "DoubleClick","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "double click","cmdDescFormatter": "double click %s1 in relative position(%s2,%s3)"},{"lang": "zh_CN","nameDesc": "双击","cmdDescFormatter": "在相对位置（%s2,%s3）处双击元素%s1"}]},{"CmdName": "SwitchTab","Params": [{"name": "elem_name","editable": false},"xPos","yPos"],"DefTime": "10","UserLanguage": [{"lang": "en","nameDesc": "switch tab page","cmdDescFormatter": "switch tab page %s1"},{"lang": "zh_CN","nameDesc": "切换标签页","cmdDescFormatter": "切换标签页%s1"}]}];
+  workspace = Blockly.inject('blocklyDiv',
+          {comments: true,
+           collapse: true,
+           disable: true,
+           grid:
+             {spacing: 25,
+              length: 3,
+              colour: '#ccc',
+              snap: true},
+           horizontalLayout: side == 'top' || side == 'bottom',
+           maxBlocks: Infinity,
+		  // maxBlocks: 3,
+           media: '../media/',
+           oneBasedIndex: true,
+           readOnly: false,
+           rtl: rtl,
+           scrollbars: true,
+           toolbox: toolbox,
+           toolboxPosition: side == 'top' || side == 'start' ? 'start' : 'end',
+           zoom:
+             {controls: true,
+              wheel: true,
+              startScale: 1.0,
+              maxScale: 4,
+              minScale: .25,
+              scaleSpeed: 1.1},
+			  agentOptions : 	command,
+							
+			// When no globalVariables defined or its length equals to zero, the block of global EVN will not displayed within view
+			//globalVariables : [{"VarName": "Env", "VarValue":"test"}], 
+			//Script or TestCase or ChekcPoint or All
+			editType : 'All',
+			// now only support 'zh_CN' and 'en'
+			locale : 'zh_CN'
+          });
+
+    workspace.options.getCheckpoint = function(id){
+      return {
+        id, value: 'testCheckpoint'
+      }
+    };
+		workspace.options.getScript = function(id){
+      return {
+        id, value: 'testScript'
+      }
+    };
+    workspace.options.getSubScript = function(id){
+      return {
+        id, value: 'testScript'
+      }
+    };
+		workspace.options.getAgentType = function(antbotName){
+      return 'HttpServerAntBot';
+    };
+  // Restore previously displayed text.
+  if (sessionStorage) {
+    var text = sessionStorage.getItem('textarea');
+    if (text) {
+      document.getElementById('importExport').value = text;
+    }
+    // Restore event logging state.
+    var state = sessionStorage.getItem('logEvents');
+    logEvents(Boolean(Number(state)));
+  } else {
+    // MSIE 11 does not support sessionStorage on file:// URLs.
+    logEvents(false);
+  }
+  taChange();
+
+  function onFirstComment(event) {
+    console.log(event)
+    if (event.type == Blockly.Events.SELECTED) {
+      
+      
+    }
+  }
+  workspace.addChangeListener(onFirstComment);
+
+
+}
+
+function setBackgroundColor() {
+  var lilac = '#d6d6ff';
+
+  var currentPage = window.location.href;
+  var regexFile = /^file[\S]*$/;
+
+  if (regexFile.test(currentPage)) {
+    document.getElementsByTagName('body')[0].style.backgroundColor = lilac;
+  }
+}
+
+function getToolboxElement() {
+  var match = location.search.match(/toolbox=([^&]+)/);
+  return document.getElementById('toolbox-' + (match ? match[1] : 'categories'));
+}
+
+function toXml() {
+  var output = document.getElementById('importExport');
+  var xml = Blockly.Xml.workspaceToDom(workspace);
+  output.value = Blockly.Xml.domToPrettyText(xml);
+  output.focus();
+  output.select();
+  taChange();
+}
+
+function fromXml() {
+  var input = document.getElementById('importExport');
+  var xml = Blockly.Xml.textToDom(input.value);
+  Blockly.Xml.domToWorkspace(xml, workspace);
+  taChange();
+}
+
+function agentCMDtoXml() {
+  var input = document.getElementById('importExport');  
+  var xml = Blockly.Xml.agentCMDToDom('AntBot_GUI', input.value, workspace);
+  var output = document.getElementById('importExport');
+  output.value = Blockly.Xml.domToPrettyText(xml);
+  output.focus();
+  output.select();
+  taChange();
+}
+function scripttoXml(){
+    var xml = Blockly.utils.xml.createElement('xml');
+	var input = document.getElementById('importExport');
+	input = JSON.parse(input.value);
+	var block = Blockly.utils.xml.createElement('block');
+    block.setAttribute('type', 'procedures_callscript');
+    block.setAttribute('gap', 16);
+    var mutation = Blockly.utils.xml.createElement('mutation');
+    mutation.setAttribute('name', input.name);
+    block.appendChild(mutation);
+    for (var j = 0; j < input.args.length; j++) {
+      var arg = Blockly.utils.xml.createElement('arg');
+      arg.setAttribute('name', input.args[j]);			
+      mutation.appendChild(arg);
+    }
+	var nameField = Blockly.utils.xml.createElement('field');
+    nameField.setAttribute('name', 'SCRIPTNAME');
+	nameField.appendChild(input.name);
+    block.appendChild(nameField);
+	
+	nameField = Blockly.utils.xml.createElement('field');
+    nameField.setAttribute('name', 'WITH');
+    nameField.appendChild('with:');
+    block.appendChild(nameField);
+	
+	for (var j = 0; j < input.args.length; j++) {
+      var nameField = Blockly.utils.xml.createElement('field');	  
+      nameField.setAttribute('name', 'ARGNAME'+j);
+      nameField.appendChild(input.args[j]);  
+      block.appendChild(nameField);
+    }
+	
+	nameField = Blockly.utils.xml.createElement('field');
+    nameField.setAttribute('name', 'SCRIPTID');
+    nameField.appendChild(input.id);
+    block.appendChild(nameField);
+	
+	xml.appendChild(block);
+  Blockly.Xml.domToWorkspace(xml, workspace); 
+}
+function fromScript() {
+  /*
+  var input = document.getElementById('importExport');  
+  var xml = Blockly.Xml.scriptToDom(input.value, workspace);
+  Blockly.Xml.domToWorkspace(xml, workspace);
+  taChange();
+  */
+  var input = document.getElementById('importExport');  
+  var xml = Blockly.Xml.scriptToDom(input.value, workspace);
+  var text = Blockly.Xml.domToPrettyText(xml);
+  Blockly.Xml.domToWorkspace(xml, workspace);
+  taChange();
+}
+
+function collapse() {
+	var blocks = workspace.getAllBlocks();
+	for(var i=0;i<blocks.length;i++){
+		blocks[i].setCollapsed(true);
+	}	
+}
+
+function expand(){
+	var blocks = workspace.getAllBlocks();
+	for(var i=0;i<blocks.length;i++){
+		blocks[i].setCollapsed(false);
+	}	
+}
+
+function setColor(){
+	var blocks = workspace.getAllBlocks();
+	for(var i=0;i<blocks.length;i++){
+		blocks[i].setColour("#FF0000");
+	}	
+}
+
+function getColor(type){
+	var logicType = ["logic_logic", "controls_wait", "controls_singleIf", "logic_compare","logic_operation","logic_negate","logic_boolean"];
+	var loopType = ["controls_while", "controls_async", "controls_for", "controls_forEachInListVariable", "logic_rexcompare", "logic_rexcomparereturn"];
+	var textType = ["text"];
+	var mathType = ["math_number"];
+	var listType = ["lists_create_with"];	
+	var variableType = ["variables_get", "variables_set", "global_variables_get", "math_change"];
+	var functionType = ["procedures_defagent", "procedures_defscript", "procedures_callchangableagent", "procedures_callagent", "procedures_callscript", "procedures_testcase", "procedures_checkpoint"];
+	if(logicType.toString().indexOf(type) > -1) {
+		return 210;
+	}
+	if(loopType.toString().indexOf(type) > -1) {
+		return 120;
+	}
+	if(textType.toString().indexOf(type) > -1) {
+		return 160;
+	}
+	if(mathType.toString().indexOf(type) > -1) {
+		return 230;
+	}
+	if(listType.toString().indexOf(type) > -1) {
+		return 260;
+	}	
+	if(variableType.toString().indexOf(type) > -1) {
+		return 330;
+	}
+	if(functionType.toString().indexOf(type) > -1) {
+		return 290;
+	}
+}
+
+function restoreColor(){
+	var blocks = workspace.getAllBlocks();
+	for(var i=0;i<blocks.length;i++){
+		blocks[i].setColour(getColor(blocks[i].type));
+	}	
+}
+
+function toCode(lang) {
+  var output = document.getElementById('importExport');
+  output.value = Blockly[lang].workspaceToCode(workspace);
+  taChange();
+}
+
+// Disable the "Import from XML" button if the XML is invalid.
+// Preserve text between page reloads.
+function taChange() {
+  var textarea = document.getElementById('importExport');
+  if (sessionStorage) {
+    sessionStorage.setItem('textarea', textarea.value);
+  }
+  var valid = true;
+  try {
+    Blockly.Xml.textToDom(textarea.value);
+  } catch (e) {
+    valid = false;
+  }
+  document.getElementById('import').disabled = !valid;
+//  document.getElementById('importAgentCMD').disabled = !valid;
+//  document.getElementById('importScript').disabled = !valid;
+}
+
+function logEvents(state) {
+  var checkbox = document.getElementById('logCheck');
+  checkbox.checked = state;
+  if (sessionStorage) {
+    sessionStorage.setItem('logEvents', Number(state));
+  }
+  if (state) {
+    workspace.addChangeListener(logger);
+  } else {
+    workspace.removeChangeListener(logger);
+  }
+}
+
+function logger(e) {
+  console.log(e);
+}
+
+function airstrike(n) {
+  var prototypes = [];
+  var toolbox = getToolboxElement();
+  var blocks = toolbox.getElementsByTagName('block');
+  for (var i = 0, block; block = blocks[i]; i++) {
+    prototypes.push(block.getAttribute('type'));
+  }
+  for (var i = 0; i < n; i++) {
+    var prototype = prototypes[Math.floor(Math.random() * prototypes.length)];
+    var block = workspace.newBlock(prototype);
+    block.initSvg();
+    block.getSvgRoot().setAttribute('transform', 'translate(' +
+        Math.round(Math.random() * 450 + 40) + ', ' +
+        Math.round(Math.random() * 600 + 40) + ')');
+    block.render();
+  }
+}
+
+function testCmdToBlock(){
+  var input = document.getElementById('importExport');  
+  var xml = Blockly.Xml.agentCMDToDom('AntBot_GUI', input.value, workspace);
+  var output = document.getElementById('importExport');
+  output.value = Blockly.Xml.domToPrettyText(xml);
+  output.focus();
+  output.select();
+  taChange();
+}
+
+function fakeDrag(id, dx, dy, opt_workspace) {
+  var ws = opt_workspace || Blockly.getMainWorkspace();
+  var blockToDrag = ws.getBlockById(id);
+
+  if (!blockToDrag) {
+    fakeDragWrapper();
+    return;
+  }
+  var blockTop = blockToDrag.svgGroup_.getBoundingClientRect().top;
+  var blockLeft = blockToDrag.svgGroup_.getBoundingClientRect().left;
+
+  // Click somewhere on the block.
+  var mouseDownEvent = new MouseEvent('mousedown',
+      {clientX: blockLeft + 5, clientY: blockTop + 5});
+  blockToDrag.onMouseDown_(mouseDownEvent);
+
+  // Throw in a move for good measure.
+  setTimeout(
+    function() {
+      var mouseMoveEvent = new MouseEvent('mousemove',
+          {clientX: blockLeft + dx,
+          clientY: blockTop + dy});
+      blockToDrag.onMouseMove_(mouseMoveEvent);
+
+      // Drop at dx, dy.
+      setTimeout(
+        function() {
+          var mouseUpEvent = new MouseEvent('mouseup',
+              {clientX: blockLeft + dx,
+              clientY: blockTop + dy});
+          blockToDrag.onMouseUp_(mouseUpEvent);
+
+          setTimeout(fakeDragWrapper(), 100);
+        }, 30);
+    }, 30);
+};
+
+function fakeDragWrapper() {
+  var dragInfo = fakeDragStack.pop();
+  if (dragInfo) {
+    fakeDrag(dragInfo.id, dragInfo.dx, dragInfo.dy, dragInfo.workspace);
+  }
+}
+
+function fakeManyDrags() {
+  var blockList = workspace.getAllBlocks();
+  for (var i = 0; i < 2 * blockList.length; i++) {
+    fakeDragStack.push(
+      {
+        id: blockList[Math.round(Math.random() * (blockList.length - 1))].id,
+        // Move some blocks up and to the left, but mostly down and to the right.
+        dx: Math.round((Math.random() - 0.25) * 200),
+        dy: Math.round((Math.random() - 0.25) * 200),
+        workspace: workspace
+      });
+  }
+  fakeDragWrapper();
+}
+
+function spaghetti(n) {
+  var xml = spaghettiXml;
+  for(var i = 0; i < n; i++) {
+    xml = xml.replace(/(<(statement|next)( name="DO0")?>)<\//g,
+        '$1' + spaghettiXml + '</');
+  }
+  xml = '<xml xmlns="http://www.w3.org/1999/xhtml">' + xml + '</xml>';
+  var dom = Blockly.Xml.textToDom(xml);
+  console.time('Spaghetti domToWorkspace');
+  Blockly.Xml.domToWorkspace(dom, workspace);
+  console.timeEnd('Spaghetti domToWorkspace');
+}
+var spaghettiXml = [
+  '  <block type="controls_if">',
+  '    <value name="IF0">',
+  '      <block type="logic_compare">',
+  '        <field name="OP">EQ</field>',
+  '        <value name="A">',
+  '          <block type="math_arithmetic">',
+  '            <field name="OP">MULTIPLY</field>',
+  '            <value name="A">',
+  '              <block type="math_number">',
+  '                <field name="NUM">6</field>',
+  '              </block>',
+  '            </value>',
+  '            <value name="B">',
+  '              <block type="math_number">',
+  '                <field name="NUM">7</field>',
+  '              </block>',
+  '            </value>',
+  '          </block>',
+  '        </value>',
+  '        <value name="B">',
+  '          <block type="math_number">',
+  '            <field name="NUM">42</field>',
+  '          </block>',
+  '        </value>',
+  '      </block>',
+  '    </value>',
+  '    <statement name="DO0"></statement>',
+  '    <next></next>',
+  '  </block>'].join('\n');
+
+</script>
+
+<style>
+html, body {
+  height: 100%;
+}
+body {
+  background-color: #fff;
+  font-family: sans-serif;
+  overflow: hidden;
+}
+h1 {
+  font-weight: normal;
+  font-size: 140%;
+}
+#blocklyDiv {
+  float: right;
+  height: 95%;
+  width: 70%;
+}
+#importExport {
+  font-family: monospace;
+}
+
+.ioLabel>.blocklyFlyoutLabelText {
+  font-style: italic;
+}
+
+</style>
+</head>
+<body onload="start()">
+
+  <div id="blocklyDiv"></div>
+
+  <h1>Blockly Playground</h1>
+
+  <p><a href="javascript:void(workspace.setVisible(true))">Show</a>
+   - <a href="javascript:void(workspace.setVisible(false))">Hide</a></p>
+
+  <form id="options">
+    <select name="dir" onchange="document.forms.options.submit()">
+      <option value="ltr">LTR</option>
+      <option value="rtl">RTL</option>
+    </select>
+    <select name="toolbox" onchange="document.forms.options.submit()">
+      <option value="categories">Categories</option>
+      <option value="simple">Simple</option>
+    </select>
+    <select name="side" onchange="document.forms.options.submit()">
+      <option value="start">Start</option>
+      <option value="end">End</option>
+      <option value="top">Top</option>
+      <option value="bottom">Bottom</option>
+    </select>
+  </form>
+
+  <p>
+    <input type="button" value="Export to XML" onclick="toXml()">
+    &nbsp;
+    <input type="button" value="Import from XML" onclick="fromXml()" id="import">
+    <br>
+    <input type="button" value="To JavaScript" onclick="toCode('JavaScript')">
+    &nbsp;        
+    <input type="button" value="To Ant" onclick="toCode('AntScript')">
+	&nbsp;
+    <input type="button" value="Agent CMD to XML" onclick="agentCMDtoXml()" id="importAgentCMD">	
+	&nbsp;
+	<input type="button" value="SubScript to XML" onclick="scripttoXml()" id="importsubScript">
+	&nbsp;
+    <input type="button" value="Script to Block" onclick="fromScript()" id="importScript">
+	&nbsp;
+    <input type="button" value="Expand" onclick="expand()">
+	&nbsp;
+    <input type="button" value="Collapse" onclick="collapse()">
+	&nbsp;
+    <input type="button" value="SetColor" onclick="setColor()">
+	&nbsp;
+    <input type="button" value="RestoreColor" onclick="restoreColor()">	
+    <br>
+    <textarea id="importExport" style="width: 26%; height: 12em"
+      onchange="taChange();" onkeyup="taChange()"></textarea>
+  </p>
+
+  <p>
+    Stress test: &nbsp;
+    <input type="button" value="Airstrike!" onclick="airstrike(100)">
+    <input type="button" value="Spaghetti!" onclick="spaghetti(8)">
+    <input type="button" value="Fake some drags!" onclick="fakeManyDrags()">
+	<input type="button" value="Test cmd to block/xml!" onclick="testCmdToBlock()">
+  </p>
+  <p>
+    Log events: &nbsp;
+    <input type="checkbox" onclick="logEvents(this.checked)" id="logCheck">
+  </p>  
+	<xml id="toolbox-categories" style="display: none">
+    <category name="Logic" colour="210">	   
+	  <block type="logic_logic"></block>
+	  <block type="logic_breakpoint"></block>
+    <block type="logic_exittestcase"></block>
+    <block type="logic_exittest"></block>
+	  <block type="logic_time"></block>
+	  <block type="logic_monitor"></block>
+	  <block type="controls_wait"></block>
+      <block type="controls_singleIf"></block>	  
+      <block type="logic_compare"></block>
+      <block type="logic_operation"></block>
+      <block type="logic_negate"></block>
+      <block type="logic_boolean"></block>      
+	  <block type="logic_report_level"></block>
+      <!--
+	  <block type="logic_null"></block>	  
+      <block type="logic_ternary"></block>
+	  -->
+    </category>
+    <category name="Loops" colour="120">
+	  <!--	
+      <block type="controls_repeat_ext">
+        <value name="TIMES">
+          <shadow type="math_number">
+            <field name="NUM">10</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="controls_repeat" disabled="true"></block>
+	  <block type="controls_flow_statements"></block>
+	  -->
+	  <block type="controls_while"></block>
+    <block type="controls_async"></block>
+    <block type="controls_simplefor">
+        <value name="FROM">
+          <shadow type="math_number">
+            <field name="NUM">0</field>
+          </shadow>
+        </value>
+        <value name="TO">
+          <shadow type="math_number">
+            <field name="NUM">10</field>
+          </shadow>
+        </value>
+        <value name="BY">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+    </block>
+    <block type="controls_forEachInListVariable"></block>      
+    </category>
+	<category name="Math" colour="230">
+	  <block type="math_number" gap="32"></block>
+	  <block type="math_complex_number"></block>
+      <block type="math_arithmetic">
+        <value name="A">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="B">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_single">
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_trig">
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+      <!--
+	  <block type="math_constant"></block>
+      <block type="math_number_property">
+        <value name="NUMBER_TO_CHECK">
+          <shadow type="math_number">
+            <field name="NUM">0</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_round">
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">3.1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_on_list"></block>
+      <block type="math_modulo">
+        <value name="DIVIDEND">
+          <shadow type="math_number">
+            <field name="NUM">64</field>
+          </shadow>
+        </value>
+        <value name="DIVISOR">
+          <shadow type="math_number">
+            <field name="NUM">10</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_constrain">
+        <value name="VALUE">
+          <shadow type="math_number">
+            <field name="NUM">50</field>
+          </shadow>
+        </value>
+        <value name="LOW">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="HIGH">
+          <shadow type="math_number">
+            <field name="NUM">100</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_random_int">
+        <value name="FROM">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="TO">
+          <shadow type="math_number">
+            <field name="NUM">100</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_random_float"></block>
+	  -->
+    </category>
+	<category name="Text" colour="160">
+    <block type="text_getlength"></block>
+    <block type="text_timetostring"></block>
+    <block type="text_stringtotime"></block>
+	  <block type="text"></block>
+	  <block type="text_area"></block>
+	  <block type="text_stringmerge">
+		  <value name="STRINGARRAY">
+          <block type="lists_create_with">
+            <mutation items="1"></mutation>
+          </block>
+        </value>
+	  </block>
+	  <block type="text_stringsplit">
+		<value name="STRINGVAL">
+          <shadow type="text">
+            <field name="TEXT"></field>
+          </shadow>
+        </value>
+		<value name="SEPARATOR">
+          <shadow type="text">
+            <field name="TEXT"></field>
+          </shadow>
+        </value>
+	  </block>
+	  <block type="logic_stringcompare">
+		<value name="CANDIDATE">
+          <shadow type="text">
+            <field name="TEXT"></field>
+          </shadow>
+        </value>
+		<value name="TARGET">
+          <shadow type="text">
+            <field name="TEXT"></field>
+          </shadow>
+        </value>
+	  </block>
+    <block type="logic_stringcomparereturn">
+      <value name="CANDIDATE">
+            <shadow type="text">
+              <field name="TEXT"></field>
+            </shadow>
+          </value>
+      <value name="TARGET">
+            <shadow type="text">
+              <field name="TEXT"></field>
+            </shadow>
+          </value>
+      </block>    
+      <block type="logic_rexcompare">
+		<value name="VAR">
+          <shadow type="text">
+            <field name="TEXT"></field>
+          </shadow>
+        </value>
+		<value name="REGEX">
+          <shadow type="text">
+            <field name="TEXT"></field>
+          </shadow>
+        </value>
+	  </block>
+	  <block type="logic_rexcomparereturn">
+		<value name="VAR">
+          <shadow type="text">
+            <field name="TEXT"></field>
+          </shadow>
+        </value>
+		<value name="REGEX">
+          <shadow type="text">
+            <field name="TEXT"></field>
+          </shadow>
+        </value>
+	  </block>	
+	  <!--
+      <block type="text_join"></block>
+      <block type="text_append">
+        <value name="TEXT">
+          <shadow type="text"></shadow>
+        </value>
+      </block>
+      <block type="text_length">
+        <value name="VALUE">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_isEmpty">
+        <value name="VALUE">
+          <shadow type="text">
+            <field name="TEXT"></field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_indexOf">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR">text</field>
+          </block>
+        </value>
+        <value name="FIND">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_charAt">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR">text</field>
+          </block>
+        </value>
+      </block>
+      <block type="text_getSubstring">
+        <value name="STRING">
+          <block type="variables_get">
+            <field name="VAR">text</field>
+          </block>
+        </value>
+      </block>
+      <block type="text_changeCase">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_trim">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_count">
+        <value name="SUB">
+          <shadow type="text"></shadow>
+        </value>
+        <value name="TEXT">
+          <shadow type="text"></shadow>
+        </value>
+      </block>
+      <block type="text_replace">
+        <value name="FROM">
+          <shadow type="text"></shadow>
+        </value>
+        <value name="TO">
+          <shadow type="text"></shadow>
+        </value>
+        <value name="TEXT">
+          <shadow type="text"></shadow>
+        </value>
+      </block>
+      <block type="text_reverse">
+        <value name="TEXT">
+          <shadow type="text"></shadow>
+        </value>
+      </block>
+      <label text="Input/Output:" web-class="ioLabel"></label>
+      <block type="text_print">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_prompt_ext">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+	  -->
+    </category>	
+    <category name="Lists" colour="260">
+      <block type="lists_create_with">
+        <mutation items="0"></mutation>
+    </block>
+    <block type="list_get_length">
+    </block>
+    <block type="list_get_index_val">	
+      <value name="INDEX">
+        <shadow type="math_number">
+          <field name="INDEX">1</field>
+        </shadow>
+      </value>
+    </block>
+	  <block type="lists_set_array_from_json">
+		  <value name="SOURCE">
+          <shadow type="text">
+            <field name="TEXT">{}</field>
+          </shadow>
+        </value>
+    </block>
+    <block type="lists_set_array_from_csv">
+		  <value name="SOURCE">
+          <shadow type="text">
+            <field name="TEXT">csv_name</field>
+          </shadow>
+        </value>
+    </block>
+    <block type="lists_save_array_to_csv">
+		  <value name="SOURCE">
+          <shadow type="text">
+            <field name="TEXT">csv_name</field>
+          </shadow>
+        </value>
+    </block>
+    <block type="get_mcdc_values">
+      <value name="EXPRESSION">
+        <shadow type="text">
+          <field name="TEXT">expression</field>
+        </shadow>
+      </value>
+      <value name="CONDITION">
+        <shadow type="text">
+          <field name="TEXT">condition</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="get_json_from_array">
+    </block>
+	  <block type="lists_generate_fix_len_str_data">
+    </block>
+    <block type="lists_generate_fix_len_hex_data">
+    </block>
+    <block type="lists_generate_range_data">
+      <value name="RANGE">
+        <shadow type="text">
+          <field name="TEXT">(0,1)</field>
+        </shadow>
+      </value>
+      <value name="COUNT">
+        <shadow type="math_number">
+          <field name="COUNT">1</field>
+        </shadow>
+      </value>
+    </block>
+	  <block type="lists_create_orthogonal_array">
+		 <value name="ARRAYTARGET">
+          <block type="lists_create_with">
+            <mutation items="1"></mutation>
+          </block>
+        </value>
+      </block>
+	  <block type="lists_append_to_array">
+		<value name="ARRAYTARGET">
+          <block type="lists_create_with">
+            <mutation items="1"></mutation>
+          </block>
+        </value>
+      </block>
+	  <block type="lists_merge_array">
+		<value name="ARRAYTARGET">
+          <block type="lists_create_with">
+            <mutation items="1"></mutation>
+          </block>
+        </value>
+      </block>
+	  <block type="lists_generate_test_data">
+		  <value name="CONDITION">
+          <block type="lists_create_with">
+            <mutation items="1"></mutation>
+          </block>
+        </value>
+    </block>
+    <block type="lists_generate_bits_test_data">
+		  <value name="CONDITION">
+          <block type="lists_create_with">
+            <mutation items="1"></mutation>
+          </block>
+        </value>
+    </block>
+	  <block type="lists_generate_float_test_data">
+		<value name="CONDITION">
+          <block type="lists_create_with">
+            <mutation items="1"></mutation>
+          </block>
+        </value>
+      </block>
+	  <!--
+      <block type="lists_create_with"></block>
+      <block type="lists_repeat">
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">5</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="lists_length"></block>
+      <block type="lists_isEmpty"></block>
+      <block type="lists_indexOf">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR">list</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_getIndex">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR">list</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_setIndex">
+        <value name="LIST">
+          <block type="variables_get">
+            <field name="VAR">list</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_getSublist">
+        <value name="LIST">
+          <block type="variables_get">
+            <field name="VAR">list</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_split">
+        <value name="DELIM">
+          <shadow type="text">
+            <field name="TEXT">,</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="lists_sort"></block>
+      <block type="lists_reverse"></block>
+	  -->
+    </category>
+    <!--
+	<category name="Colour" colour="20">
+      <block type="colour_picker"></block>
+      <block type="colour_random"></block>
+      <block type="colour_rgb">
+        <value name="RED">
+          <shadow type="math_number">
+            <field name="NUM">100</field>
+          </shadow>
+        </value>
+        <value name="GREEN">
+          <shadow type="math_number">
+            <field name="NUM">50</field>
+          </shadow>
+        </value>
+        <value name="BLUE">
+          <shadow type="math_number">
+            <field name="NUM">0</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="colour_blend">
+        <value name="COLOUR1">
+          <shadow type="colour_picker">
+            <field name="COLOUR">#ff0000</field>
+          </shadow>
+        </value>
+        <value name="COLOUR2">
+          <shadow type="colour_picker">
+            <field name="COLOUR">#3333ff</field>
+          </shadow>
+        </value>
+        <value name="RATIO">
+          <shadow type="math_number">
+            <field name="NUM">0.5</field>
+          </shadow>
+        </value>
+      </block>
+    </category>
+	-->
+    <sep></sep>
+    <category name="Variables" colour="330" custom="VARIABLE"></category>
+    <category name="Functions" colour="290" custom="PROCEDURE">
+		<block type="global_variables_get"></block>
+		<block type="procedures_defscript"></block>
+		<block type="procedures_defagent"></block>
+		<block type="procedures_callscript"></block>
+		<block type="procedures_checkpoint"></block>
+		<block type="procedures_getscript"></block>
+	</category>
+	<!--
+	<category name="Globals" colour="100">
+		<block type="global_variables_get"></block>			
+	</category>
+	-->
+  </xml>
+</body>
+</html>

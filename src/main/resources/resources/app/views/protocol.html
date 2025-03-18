@@ -1,0 +1,481 @@
+<div class="box box-primary">
+	<div class="box-header with-border">
+		<small data-bind="visible:selectionManager.selectedProject()==null">
+			<select style="color: black" data-bind="
+				options: projectManager.projects(), 
+				value: selectedTargetProject,
+				optionsText: 'name',
+				optionsCaption: '全部协议',
+				event: { change: onProjectSelected }">
+			</select>
+		</small>
+		<div class="box-tools pull-right">
+			<button type="button" class="btn btn-box-tool" data-bind="click: enterAddItemMode" data-toggle="tooltip"
+				title="新建协议"><i class="fa fa-plus"></i></button>
+			<button type="button" class="btn btn-box-tool" data-bind="click: enterImportProtocolMode"
+				data-toggle="tooltip" title="导入协议"><i class="fa fa-upload"></i></button>
+			<button type="button" class="btn btn-box-tool" data-bind="click: refreshProtocols" data-toggle="tooltip"
+				title="刷新"><i class="fa fa-refresh"></i></button>
+		</div>
+	</div>
+
+	<div class="box-body" style="min-height: 450px; max-height: 550px; overflow-y: auto;">
+		<table class="table table-bordered table-striped table-hover">
+			<thead>
+				<tr>
+					<th class="col-md-4"> <small>名称 </small></th>
+					<!-- <th class="col-md-3">
+						<small>
+							<select class="form-control" data-bind="options: haveProtocolTypes,
+								value: protocolType,
+								optionsCaption: '全部类型',
+								event: { change: protocolTypeChanged }">
+							</select>
+						</small>
+					</th> -->
+					<th class="col-md-4"><small>时间</small></th>
+					<th class="col-md-4"></th>
+				</tr>
+			</thead>
+			<tbody data-bind='foreach: protocols' data-bind="visible: protocols().length > 0">
+				<tr>
+					<td><small><label data-bind='text:fileName'></label></small></td>
+					<!-- <td><small><label data-bind='text:protocolType'></label></small></td> -->
+					<td><small><label data-bind='text:createdAt'></label></small></td>
+					<td>
+						<small>
+							<button class="btn btn-primary btn-sm" data-toggle="tooltip" title="编辑"
+								data-bind="click: $parent.editProtocol">
+								<i class="glyphicon glyphicon-edit"></i>
+							</button>
+							<button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="导出"
+								data-bind="click: $parent.exportProtocol">
+								<i class="glyphicon glyphicon-download-alt"></i>
+							</button>
+							<button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="消息模板"
+								data-bind="click: $parent.viewMessageTemplate">
+								<i class="glyphicon glyphicon-list-alt"></i>
+							</button>
+							<button class="btn btn-danger btn-sm" data-toggle="tooltip" title="删除协议"
+								data-original-title="Delete" data-bind="click: $parent.remove">
+								<i class="glyphicon glyphicon-trash"></i>
+							</button>
+						</small>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<h5 class="text-center" style="color: grey; font-style: italic;" data-bind="visible: protocols().length == 0">
+			<small>暂无数据！</small>
+		</h5>
+	</div>
+</div>
+
+
+
+
+
+<div class="modal fade" id="protocolImportModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog" role="document">
+		<form id="protocolImportForm" data-toggle="validator" enctype="multipart/form-data">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="myModalLabel">协议配置信息</h4>
+				</div>
+				<div class="modal-body" style="height: auto;">
+
+					<!-- <div class="form-group">
+						<label for="protocolTypeName" class="control-label">类型<font color="red">*</font></label> -->
+					<!-- <input type="text" class="form-control" id="protocolTypeName"
+							data-bind="enable: isEditMode() == false, value:protocolTypeName" required> -->
+					<!-- <select class="form-control" id="protocolType" data-bind="options: protocolTypes,
+									   value: protocolTypeName,optionsCaption: '请选择类型'">
+						</select>
+					</div> -->
+
+					<div class="form-group">
+						<label for="exampleInputFile">选择文件</label> <input id="icdInputFile" type="file"
+							data-bind="event: { change: function() { loadFromFile($element.files[0]) } }" />
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary">
+							<span lang="en">确定</span>
+						</button>
+						<button type="button" class="btn btn-default pull-left"
+							data-bind="click: cancelImportProtocol">取消</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="modal fade" id="protocolEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	data-backdrop="static">
+	<div class="modal-dialog modal-fullscreen" role="document">
+		<form id="protocolForm" data-toggle="validator" enctype="multipart/form-data">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title pull-left" id="myModalLabel">协议配置信息</h4>
+					<div class="pull-right" data-bind="visible: !systemConfig.getConfig('utpclient.proto_mgr.disable_easy_edit') && !systemConfig.getConfig('utpclient.proto_mgr.pattern')">
+						<input type="checkbox" id="protocolPatternConfig" data-on-text="简易模式" data-off-text="高级模式"
+							data-bind="checked: protocolPattern">
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+
+						<div class="col-md-5" data-bind="visible: protocolPattern() == true">
+							<div class="form-group">
+								<label for="protocolName" class="control-label">协议名称<font color="red">*</font></label>
+								<input type="text" class="form-control" id="protocolName"
+									data-bind="value:selectedProtocolName" required>
+							</div>
+						</div>
+						<div class="col-md-5" data-bind="visible: protocolPattern() == true">
+							<div class="form-group">
+								<label for="protocolTypeName" class="control-label">协议类型<font color="red">*</font>
+								</label>
+								<!-- <input type="text" class="form-control" id="protocolTypeName"
+									data-bind="enable: isEditMode() == false, value:protocolTypeName" required> -->
+								<select class="form-control" data-bind="options: protocolTypes,
+									   value: protocolTypeName,optionsCaption: '请选择类型'">
+								</select>
+							</div>
+						</div>
+						<div class="col-md-2" data-bind="visible: protocolPattern() == true">
+							<div class="form-group">
+								<label for="protocolType" class="control-label">编码</label>
+								<select class="form-control" data-bind="options: protocolOptions,
+                       				optionsText: 'text',optionsValue: 'value',value: littleEndian">
+								</select>
+							</div>
+						</div>
+
+						<div class="col-md-6" data-bind="visible: protocolPattern() == false">
+							<div class="form-group">
+								<label for="protocolName" class="control-label">协议名称<font color="red">*</font></label>
+								<input type="text" class="form-control" id="protocolName"
+									data-bind="value:selectedProtocolName" required>
+							</div>
+						</div>
+						<div class="col-md-6" data-bind="visible: protocolPattern() == false">
+							<div class="form-group">
+								<label for="protocolTypeName" class="control-label">协议类型<font color="red">*</font>
+								</label>
+								<!-- <input type="text" class="form-control" id="protocolTypeName"
+									data-bind="enable: isEditMode() == false, value:protocolTypeName" required> -->
+								<select class="form-control" data-bind="options: protocolTypes,
+									   value: protocolTypeName,optionsCaption: '请选择类型'">
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="form-group" data-bind="visible: protocolPattern() == false">
+						<label>内容</label>
+						<div id="protocolEditor"></div>
+					</div>
+
+					<!-- 简易模式 -->
+					<div class="form-group" data-bind="visible: protocolPattern() == true"
+						style="border: 1px solid #000; padding: 20px;">
+						<!-- <div class="container" style="width: 100%;height: 100%; margin-left: 0px; padding-left: 0px; margin-right: 0px; padding-right: 30px;"> -->
+
+						<!-- 消息名称输入框 -->
+						<div class="form-group col-md-6">
+							<label for="simpleMessageName">消息名称:</label>
+							<input type="text" class="form-control" id="simpleMessageName" placeholder="输入消息名称">
+						</div>
+						<!-- 消息方向选择 -->
+						<div class="form-group col-md-6">
+							<label for="messageDirection" class="form-label">消息方向</label>
+							<select id="messageDirection" class="form-control" data-bind="value: selectedMessageDirection,optionsCaption: '请选择方向...'" required>
+								<option value="send">仅发送</option>
+								<option value="receive">仅接收</option>
+								<option value="sendAndReceive">发送和接收</option>
+							</select>
+						</div>
+
+						<!-- 表格容器 -->
+						<div class="table-container" id="tableContainer">
+							<!-- 表格将在这里动态生成 -->
+						</div>
+
+						<!-- 按钮容器 -->
+						<div class="btn-container"
+							style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+							<!-- 新增字段按钮 -->
+							<button class="btn btn-primary" data-bind="click:addField" id="addFieldBtn">增加字段</button>
+							<div>
+								<!-- 删除消息按钮 -->
+								<button class="btn btn-primary" data-bind="click:removeNewPage">删除消息</button>
+								<!-- 新增消息按钮 -->
+								<button class="btn btn-primary" data-bind="click:createNewPage">增加消息</button>
+							</div>
+						</div>
+
+						<!-- 分页控制 -->
+						<div class="page-control" id="pageControl" style="text-align: center;">
+							<div id="totalPagesContainer" data-bind="foreach: totalPages">
+								<button
+									data-bind="text: $data, click: $parent.printPageNumber.bind($data), css: { 'selected-page': $data === $parent.currentPage() }">
+								</button>
+							</div>
+						</div>
+						<!-- </div> -->
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="form-group">
+						<button type="button" class="btn btn-primary"
+							data-bind="visible:isEditMode() == false, click: submitProtocol">
+							<span lang="en">提交</span>
+						</button>
+						<button type="button" class="btn btn-primary"
+							data-bind="visible:isEditMode(), click: updateProtocol">
+							<span lang="en">提交</span>
+						</button>
+						<button type="button" class="btn btn-default pull-left"
+							data-bind="click: cancelProtocol">取消</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="modal fade" id="messageTemplateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="myModalLabel">消息模板</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row" data-bind="visible: messages().length == 0">
+					<span>该协议不存在任何消息定义！</span>
+				</div>
+				<div class="row" data-bind="visible: messages().length > 0">
+					<div class="col-md-5">
+						<div class="form-group">
+							<label class="control-label">消息名称</label>
+							<small>
+								<select class="form-control" data-bind="options: messages,
+									optionsText: 'messageName',
+									value: selectedMessage,
+									event: { change: messageChanged }">
+								</select>
+							</small>
+						</div>
+						<div class="form-group" data-bind="visible: messageTemplates().length == 0">
+							<span>该消息不存在任何模板定义！</span>
+						</div>
+						<div class="form-group" data-bind="visible: messageTemplates().length > 0">
+							<table class="table table-bordered" style="word-break: break-all; word-wrap: break-all;">
+								<thead>
+									<tr>
+										<th width="35%"><small>模板名称</small></th>
+										<th width="35%"><small>创建时间</small></th>
+										<th width="30%"><small></small></th>
+									</tr>
+								</thead>
+								<tbody data-bind='foreach: messageTemplates'>
+									<tr>
+										<td width="35%"><small><span data-bind='text:templateName'></span></small></td>
+										<td width="35%"><small><span data-bind='text:createdAt'></span></small></td>
+										<td width="30%">
+											<small>
+												<button type="button" class="btn btn-primary btn-sm"
+													data-toggle="tooltip" title="查看"
+													data-bind="click: $root.showMessageTemplateDetail">
+													<i class="glyphicon glyphicon-zoom-in"></i>
+												</button>
+												<button type="button" class="btn btn-danger btn-sm"
+													data-toggle="tooltip" title="删除"
+													data-bind="click: $parent.deleteMessageTemplate">
+													<i class="glyphicon glyphicon-trash"></i>
+												</button>
+											</small>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="col-md-7">
+						<div class="form-group">
+							<div id="messageTemplateDetailView"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left"
+					data-bind="click: cancelMessageTemplate">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal modal-warning fade in" id="deleteProtocolModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">提醒</h4>
+			</div>
+			<div class="modal-body" style="height: auto;">
+				<div>删除协议，有可能导致与此相关联的脚本及历史记录显示不准确，确认删除该协议？</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline" data-bind="click: clearRemoveNotification">否</button>
+				<button type="button" class="btn btn-outline" data-bind="click:deleteCurrentProtocol">是</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="proConfigModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">设置</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group" data-bind="visible: !isDataBlock()">
+					<div class="form-group">
+						<label for="fromField" class="control-label">起始(fromField)</label>
+						<select class="form-control" id="fromField" data-bind="options: fieldValues,
+																		 value: fromField,
+																		 optionsCaption: '请选择字段',
+																		 validationOptions: { required: true }">
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="toField" class="control-label">截止(toField)</label>
+						<select class="form-control" id="toField" data-bind="options: fieldValues,
+																	   value: toField,
+																	   optionsCaption: '请选择字段',
+																	   validationOptions: { required: true }">
+						</select>
+					</div>
+
+					<div class="form-group" data-bind="visible: algorithmChooose">
+						<label for="crcAlgorithm" class="control-label">CRC校验算法</label>
+						<select class="form-control" id="crcAlgorithm" data-bind="options: crcAlgorithm,value: selectedCrcAlgorithm">
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group" data-bind="visible: isDataBlock">
+					<h4 style="padding: 7px 0;">数据块长度设置</h4>
+					<div class="form-group col-md-5">
+						<label>名称</label>
+						<input type="text" class="form-control" data-bind="value: dataBlockLengthName">
+					</div>
+					<div class="form-group col-md-2">
+						<label>字节数</label>
+						<select class="form-control" data-bind="options: [1, 2, 4, 8],value: dataBlocklength">
+						</select>
+					</div>
+					<div class="form-group col-md-5">
+						<label>值</label>
+						<input type="text" class="form-control" data-bind="value: dataBlockLen">
+					</div>
+					<h4 style="padding: 7px 0;">数据块设置</h4>
+					<div class="form-group col-md-6">
+						<label>名称</label>
+						<input type="text" class="form-control" data-bind="value: dataName">
+					</div>
+					<div class="form-group col-md-6">
+						<label>值</label>
+						<input type="text" class="form-control" data-bind="value: dataBlockDefault">
+					</div>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-bind="click: saveConfig">
+					<span lang="en">保存</span>
+				</button>
+				<button type="button" class="btn btn-default pull-left" data-bind="click: closeModal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<style type="text/css">
+	#totalPagesContainer button {
+		background-color: transparent;
+		border: none;
+		color: blue;
+		text-decoration: underline;
+		cursor: pointer;
+	}
+
+	#totalPagesContainer button.selected-page {
+		color: red;
+	}
+
+	code {
+		background-color: #f5f5f5;
+	}
+
+	#protocolEditor {
+		width: 100%;
+		height: 400px;
+	}
+
+	#messageTemplateDetailView {
+		width: 100%;
+		height: 400px;
+	}
+
+	.modal-fullscreen {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		max-width: none;
+	}
+
+	.modal-fullscreen .modal-content {
+		height: 100%;
+		border: 0;
+		border-radius: 0;
+		overflow: hidden;
+		/* 隐藏溢出的内容 */
+	}
+
+	.modal-body {
+		overflow-y: auto;
+		/* 允许模态框内容区域垂直滚动 */
+		height: calc(100% - 120px);
+		/* 调整高度以适应头部和底部 */
+	}
+
+	.modal-header,
+	.modal-footer {
+		height: 60px;
+		/* 固定头部和底部的高度 */
+	}
+
+	#proConfigModal .modal-body {
+		display: flex;
+		flex-direction: column;
+		max-height: 80vh;
+		/* 最大高度为视口高度的 80% */
+		overflow-y: auto;
+		/* 内容超过最大高度时出现滚动条 */
+	}
+
+	#proConfigModal .modal-content {
+		height: 58%;
+	}
+</style>

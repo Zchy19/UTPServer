@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+	<title>Dynamic File Loading</title>
+	<meta  name = "viewport" content = "initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no">
+
+	<script src="../../codebase/webix/webix.js?v=7.0.4" type="text/javascript"></script>
+	<script src="../../codebase/filemanager.js?v=7.0.4" type="text/javascript"></script>
+
+	<link rel="stylesheet" type="text/css" href="../../codebase/webix/webix.css?v=7.0.4">
+	<link rel="stylesheet" type="text/css" href="../../codebase/filemanager.css?v=7.0.4">
+
+
+</head>
+<body>
+<script type="text/javascript">
+	webix.ready(function(){
+
+		webix.ui({
+			view:"filemanager",
+			id:"files",
+			handlers:{
+				"files"     : "/filemanager/samples/server/files",
+				"search" 	: "/filemanager/samples/server",
+				"upload" 	: "/filemanager/samples/server",
+				"download"	: "/filemanager/samples/server",
+				"copy"		: "/filemanager/samples/server",
+				"move"		: "/filemanager/samples/server",
+				"remove"	: "/filemanager/samples/server",
+				"rename"	: "/filemanager/samples/server",
+				"create"	: "/filemanager/samples/server"
+			}
+		});
+
+		$$("files").load("/filemanager/samples/server/files");
+	});
+</script>
+</body>
+</html>

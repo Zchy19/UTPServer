@@ -1,0 +1,128 @@
+<div>
+	<section class="content">
+		<div class="box box-info">
+			<div class="box-header with-border">
+				<small>监测数据运行</small>
+				<small data-bind="visible: monitorIsRunning()"><span class="dot-before">监控中...</span></small>
+				<small style="margin-left: 100px" data-bind="visible: frameListArr().length > 0">
+					<select class="btn btn-box-tool" style="color: black" data-bind="
+						options: frameListArr,
+						value: selectFrameList,
+						optionsText: 'monitorDataName',
+						optionsValue: 'monitorDataName',
+						event: { change: frameListChanged }">
+					</select>
+				</small>
+				
+				<div class="box-tools pull-right" style="margin-right: 48%;top: 2px; display: flex; align-items: center;" data-bind="visible: !projectManager.isMonitoringResult">
+					<button class="btn btn-primary" data-bind="click: prepareExecution, visible: !monitorIsRunning()">开始监测</button>
+					<button class="btn btn-primary" data-bind="click: stopExecution, visible: monitorIsRunning()">停止监测</button>
+					<div style="margin-left: 10px;" data-bind="visible: !monitorIsRunning()">
+						<input class="form-check-input" type="checkbox" data-bind="checked: saveData, checkedValue: 1, uncheckedValue: 0" id="defaultCheck1">
+						<label class="form-check-label" for="defaultCheck1">保存数据</label>
+					</div>
+				</div>
+				<div class="box-tools pull-right" style="margin-right: 50px; width: 200px;" data-bind="visible: !projectManager.isMonitoringResult">
+					<small style="font-size: 100%;">显示记录条数</small>
+					<input type="number" style="width: 100px;height: 20px;" placeholder="请输入数量" data-bind="value: customMaxResult" />
+				</div>
+			</div>
+			<div id="monitorTestSetRunStep">
+			</div>
+		</div>
+	</section>
+</div>
+
+<div class="modal fade" id="monitorTestSetRunFrameInfoModal"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">消息信息</h4>
+			</div>
+			<div class="modal-body">
+				<div>
+					<div class="row">
+						<div class="col-md-8">
+							<div class="form-group">
+								<label class="control-label">消息内容</label>
+								<div id = "monitorTestSetRunFrameInfoConfigView" data-bind="visible:genericErrorFrameData() == false" style="width: 95%; height: 450px;"></div>
+								<div data-bind="visible:genericErrorFrameData() == true">
+									<span data-bind='html:genericRecordContent()'></span>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="form-group">
+								<label class="control-label">原始帧</label>
+								<br/>
+								<small><div data-bind='html:genericRawFrame()' style="background-color: #ffffff; max-height: 450px; overflow-y: auto;word-break: break-all; word-wrap: break-all;"></div> </small>						
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="monitorTestRunDynamicTargetEngineModal" tabindex="-1"
+	 role="dialog" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">UTP执行器:</h4>
+			</div>
+			<div class="modal-body">
+				<table class="table table-condensed"
+					   data-bind='visible: targetEngineCandidates().length > 0'>
+					<thead>
+					<tr>
+						<th></th>
+						<th>节点标识</th>
+						<!-- <th>类型</th> -->
+						<th>描述</th>
+					</tr>
+					</thead>
+					<tbody data-bind='foreach: targetEngineCandidates'>
+					<tr>
+						<td><input type="radio" data-bind="value: id, checked: $parent.selectTargetEngineId" /></td>
+						<td><span data-bind="text: engineName"></span></td>
+						<!-- <td><span data-bind="text:property "></span></td> -->
+						<td><span data-bind="text: describe"></span></td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left"
+						data-bind="click: cancelTargetEngine">取消</button>
+				<button type="button" class="btn btn-primary"
+						data-bind="click:confirmTargetEngine">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style type="text/css">
+    code {
+      background-color: #f5f5f5;
+    }
+
+	.dot-before {
+		position: relative;
+		margin-left: 30px;
+	}
+	.dot-before::before {
+		position: absolute;
+		content: '•';
+		left: -16px;
+		top: 50%;
+		transform: translateY(-50%);
+		font-size: 48px;
+		color: greenyellow;
+	}
+</style>

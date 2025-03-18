@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+	<title>Custom menu buttons</title>
+	<meta  name = "viewport" content = "initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no">
+
+	<script src="../../codebase/webix/webix.js?v=7.0.4" type="text/javascript"></script>
+	<script src="../../codebase/filemanager.js?v=7.0.4" type="text/javascript"></script>
+
+	<link rel="stylesheet" type="text/css" href="../../codebase/webix/webix.css?v=7.0.4">
+	<link rel="stylesheet" type="text/css" href="../../codebase/filemanager.css?v=7.0.4">
+
+	<style>
+		.header{
+			background: #e5e5e5;
+		}
+		.header div{
+			padding: 0 10px;
+		}
+
+	</style>
+</head>
+<body>
+<script type="text/javascript">
+	webix.ready(function(){
+		webix.ui({
+			rows:[
+				{ view: "label", css: "header", label: "You can add or remove buttons in context menu. In this sample menu has an extra option - Download" },
+				{
+					view:"filemanager",
+					id:"files",
+					url:"/filemanager/samples/server",
+					handlers:{
+						"download"	: "/filemanager/samples/server"
+					},
+					ready:function(){
+						this.getMenu().add({
+							id: "download",
+							icon: "webix_icon wxi-download",
+							value: "Download",
+							batch: "file"
+						}, 0);
+
+						this.getMenu().add({
+							$template:"Separator",
+							batch:"file"
+						}, 1);
+					}
+				}
+			]
+
+		});
+	});
+</script>
+</body>
+</html>

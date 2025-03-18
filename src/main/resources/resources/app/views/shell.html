@@ -1,0 +1,741 @@
+<div class="wrapper">
+	<header class="main-header">		
+		<nav class="navbar navbar-static-top" role="navigation">
+			<div class="navbar-header" data-bind="visible:!systemConfig.getConfig('utpclient.auto_login')">
+				<a class="logo" href="#" data-bind="click: gotomain"><b>返回首页</b><i data-bind="visible: false"></i></a>
+			</div>			
+			<div class="navbar-custom-menu">
+				<ul class="nav navbar-nav">
+					<!--<li class="active"><a href="app/help_doc/help/try_guide.html" target="_Blank" data-bind="visible:loginManager.isCloud()" data-toggle="tooltip" title="体验步骤" data-placement="bottom">体验步骤</a></li>-->
+					<!--<li class="active"><a href="#" data-bind="visible:loginManager.isCloud(),click: showTestProtocol" data-toggle="tooltip" title="协议管理" data-placement="bottom"><i class="glyphicon glyphicon-file"></i>协议管理</a></li>-->
+					<!-- <li class="active"><a href="#" data-bind="visible:loginManager.isCloud(),click: showPurchasePage" data-toggle="tooltip" title="购买" data-placement="bottom"><i class="glyphicon glyphicon-shopping-cart">&ensp;<font size="3px">购买</font></i></a></li>	 -->
+					<li class="active"><a href="#" data-bind="click: userEdit" data-toggle="tooltip" title="账号信息" data-placement="bottom"><i class="glyphicon glyphicon-user"></i></a></li>
+					<li class="active"><a href="#" data-bind="click: logout" data-toggle="tooltip" title="登出 " data-placement="bottom"><i class="glyphicon glyphicon-log-out"></i></a></li>
+					<div class="btn-group menu">
+						<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<i class="glyphicon glyphicon-menu-hamburger"></i>更多<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" style="width: 120px; background-color: #3c8dbc">
+							<!--<li class="active" data-bind="visible:loginManager.isCloud()"><a onmouseover="this.style.backgroundColor = '#367fa9'" onmouseout="this.style.backgroundColor = '#3c8dbc'" style="padding: 10px 10px; background-color: #3c8dbc" href="app/help_doc/help/try_guide.html" target="_Blank" data-toggle="tooltip" title="试用步骤" data-placement="bottom"><i class="glyphicon glyphicon-book"></i>试用步骤</a></li>-->
+							<li class="active" data-bind="visible:loginManager.isCloud()"><a onmouseover="this.style.backgroundColor = '#367fa9'" onmouseout="this.style.backgroundColor = '#3c8dbc'" style="padding: 10px 10px; background-color: #3c8dbc" href="app/help_doc/help/index.html" target="_Blank" data-toggle="tooltip" title="帮助索引" data-placement="bottom"><i class="glyphicon glyphicon-book"></i>帮助索引</a></li>
+							<li class="active" data-bind="visible:loginManager.isCloud()"><a onmouseover="this.style.backgroundColor = '#367fa9'" onmouseout="this.style.backgroundColor = '#3c8dbc'" style="padding: 10px 10px; background-color: #3c8dbc" href="app/help_doc/help/download.html" target="_Blank" data-toggle="tooltip" title="软件下载 " data-placement="bottom"><i class="glyphicon glyphicon-briefcase"></i>软件下载</a></li>
+							<li class="active" data-bind="visible:loginManager.isCloud()"><a onmouseover="this.style.backgroundColor = '#367fa9'" onmouseout="this.style.backgroundColor = '#3c8dbc'" style="padding: 10px 10px; background-color: #3c8dbc" href="app/help_doc/help/embedded_test/online_hardware_selection.html" target="_Blank" data-toggle="tooltip" title="硬件选配 " data-placement="bottom"><i class="glyphicon glyphicon-briefcase"></i>硬件选配</a></li>
+							<!-- <li class="active" data-bind="visible:loginManager.isCloud()"><a onmouseover="this.style.backgroundColor = '#367fa9'" onmouseout="this.style.backgroundColor = '#3c8dbc'" style="padding: 10px 10px; background-color: #3c8dbc" href="#" data-bind="click: showPurchasePage" data-toggle="tooltip"><i class="glyphicon glyphicon-shopping-cart"></i>机器人选购</a></li> -->
+							<li class="active" data-bind="visible:loginManager.isCloud()"><a onmouseover="this.style.backgroundColor = '#367fa9'" onmouseout="this.style.backgroundColor = '#3c8dbc'" style="padding: 10px 10px; background-color: #3c8dbc" href="#" data-bind="click: showMembersInvitation, visible:loginManager.isCloud()" data-toggle="tooltip" title="成员邀请 " data-placement="bottom"><img
+									src="dist/img/icon-InviteMembers.png" alt="" style="width: 22px;height: 22px; margin-right: 5px">成员邀请</a></li>
+							<li class="active" data-bind="visible:systemConfig.getConfig('utpclient.proto_mgr')"><a onmouseover="this.style.backgroundColor = '#367fa9'" onmouseout="this.style.backgroundColor = '#3c8dbc'" style="padding: 10px 10px; background-color: #3c8dbc" href="#" data-bind="click: showTestProtocol" data-toggle="tooltip" title="协议管理" data-placement="bottom"><i class="glyphicon glyphicon-file"></i>协议管理</a></li>
+							<li class="active" data-bind="visible:systemConfig.getConfig('utpclient.signal_mgr')"><a onmouseover="this.style.backgroundColor = '#367fa9'" onmouseout="this.style.backgroundColor = '#3c8dbc'" style="padding: 10px 10px; background-color: #3c8dbc" href="#" data-bind="click: showTestSignalProtocol" data-toggle="tooltip" title="信号管理" data-placement="bottom"><i class="glyphicon glyphicon-file"></i>信号管理</a></li>
+							<li class="active" data-bind="visible:!loginManager.isCloud()"><a onmouseover="this.style.backgroundColor = '#367fa9'" onmouseout="this.style.backgroundColor = '#3c8dbc'" style="padding: 10px 10px; background-color: #3c8dbc" href="#" data-bind="click: showLicense" data-toggle="tooltip" title="关于" data-placement="bottom"><i class="glyphicon glyphicon-file"></i>关于</a></li>
+												
+						</ul>
+					</div>
+				</ul>
+			</div>
+		</nav>
+	</header>	
+	<div class="content-wrapper" data-bind="compose: viewManager.activePage"></div>	
+</div>
+
+<div class="modal fade" id="MembersInvitation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">成员邀请</h4>
+				<button type="button" class="close" data-bind="click: enterpriseInfoCopy" title="复制" data-placement="bottom"><i class="glyphicon glyphicon-duplicate"></i></button>
+			</div>
+			<div class="modal-body" id="enterpriseInfo">
+				<p>企业注册代码：&nbsp;&nbsp;<span data-bind="text:invitationOrgId"></span></p>
+				<p>企业全称：&nbsp;&nbsp;<span data-bind="text:invitationOrgName"></span></p>
+				<p>注册链接：https://utpcloud.macrosoftsys.com</p>
+				<p style="text-align:right;">苏州宏控软件系统有限公司</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="protocolConfigModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel"  data-backdrop="static" style="overflow: scroll;" >
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="myModalLabel">协议管理</h4>
+			</div>
+			<div class="modal-body" style="height: auto;">
+				<div id="protocolConfigUi" data-bind="compose: {model: viewManager.protocolActivePage}"></div>
+			</div>
+			<div class="modal-footer">
+				<div class="form-group">					
+					<button type="button" class="btn btn-default pull-right" data-bind="click:closeProtocolConfigModal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--信号管理-->
+<div class="modal fade" id="signalProtocolConfigModal" tabindex="-1" role="dialog"
+	 aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">信号管理</h4>
+			</div>
+			<div class="modal-body">
+				<div  data-bind="compose: {model: viewManager.signalProtocolActivePage}"></div>
+			</div>
+			<div class="modal-footer">
+				<div class="form-group">
+					<button type="button" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 许可信息 -->
+<div class="modal fade" id="licenseModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" 
+	data-backdrop="static" style="overflow: scroll;">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">关于</h4>
+			</div>
+			<div class="modal-body" style="height: 270px;">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">厂商名称</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">苏州宏控软件系统有限公司</p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">网站地址</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">https://www.macrosoftsys.com</p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">支持电话</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">400 880 6505</p>
+					</div>
+				</div>
+				<div style="height: 100px;"></div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">版本类型</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">嵌入式测试标准版</p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">版本号</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">4.5.0</p>
+					</div>
+				</div>
+				<div style="height: 80px;"></div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">许可ID</label>
+					<div class="col-sm-10">
+						<p class="form-control-static" data-bind="text:licenseId"></p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">许可期限</label>
+					<div class="col-sm-10">
+						<p class="form-control-static" data-bind="text:licenseTime"></p>
+					</div>
+				</div>
+				
+			</div>
+			<div class="modal-footer" style="border-top-width: 0px;">
+				<div class="form-group">
+					<button type="button" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="UserEditModal" tabindex="-1"
+	role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog">
+		<form id="userEditForm">
+			<div class="modal-content">				
+				<div class="modal-header">
+					<h4 class="modal-title pull-left">用户信息配置</h4>									
+				</div>
+				<div class="modal-body nav-tabs-custom" >
+					<ul class="nav nav-tabs nav-justified" data-bind="visible:loginManager.isCloud()">
+							<li class="userEditStyle active"><a href="#userPwdInfo" data-toggle="tab" data-bind="click: pwdInformationUpdate">密码更新</a></li>
+							<li class="userEditStyle "><a href="#userBasicInfo" data-toggle="tab" data-bind="click: basicInformationUpdate">基本信息更新</a></li>
+							<li class="userCompanyInfo"><a href="#companyInfo" data-toggle="tab" data-bind="click: basicInformationUpdate">企业信息</a></li>
+					</ul>
+					<ul class="nav nav-tabs nav-justified" data-bind="visible:!loginManager.isCloud()">
+						<li class="userEditStyle active"style="border-top-width: 0px;">密码更新</li>
+					</ul>
+						<div class="tab-content">
+							<div class="tab-pane " id="userBasicInfo"> 
+								<div class="form-group">
+									<label class="control-label"><span lang="en">名称</span></label>						
+									<input type="text" class="form-control" id="name" data-bind="value:editingUser.name">
+								</div>
+								<div class="form-group">
+									<label class="control-label">Email</label> 
+									<input type="text" class="form-control" id="email"
+										data-bind="value:editingUser.email,
+													disable: currrentAccountType() === 'Email'">
+								</div>						
+								<div class="form-group" data-bind="visible: loginManager.isCloud()">
+									<label class="control-label">手机号</label> 
+									<input type="text" class="form-control" id="phone" 
+										data-bind="value:editingUser.phoneNumber,
+													disable: currrentAccountType() === 'PhoneNumber'">
+								</div>								
+								<div class="form-group" data-bind="visible: false">
+									<label lang="en">QQ</label> <input type="text"
+										class="form-control" placeholder="" lang="en"
+												data-bind="value:editingUser.qqNumber,
+															disable: currrentAccountType() === 'QQ'">
+								</div>
+								<div class="form-group" data-bind="visible: false">
+									<label lang="en">微信号</label> <input type="text"
+										class="form-control" placeholder=""
+											data-bind="value:editingUser.wechatNumber,
+													disable: currrentAccountType() === 'WeiChat'">
+								</div>
+							</div>
+							<div class="tab-pane" id="companyInfo">
+								<div class="form-group">
+									<label class="control-label"><span lang="en">企业全称<font color="red">*</font></span></label>
+									<input type="text" class="form-control" data-bind="value:editingUser.weiBoNumber " placeholder="企业名称">
+								</div>
+								<div class="form-group">
+									<label class="control-label"><span lang="en">姓名<font color="red">*</font></span></label>
+									<input type="text" class="form-control" data-bind="value: editingUser.nameOrRespectfully" placeholder="填写您的姓名 或 姓氏+先生/女士">
+								</div>
+								<div class="form-group">
+									<label class="control-label"><span lang="en">部门</span></label>
+									<input type="text" class="form-control" data-bind="value: editingUser.department" placeholder="当前所在的部门">
+								</div>
+								<div class="form-group">
+									<label class="control-label"><span lang="en">职位</span></label>
+									<input type="text" class="form-control" data-bind="value: editingUser.position" placeholder="当所在前的职位">
+								</div>
+							</div>
+							<div class="tab-pane active" id="userPwdInfo">
+								<div class="form-group">
+									<label class="control-label">账号</label> 
+									<input type="text" class="form-control" id="email"
+										data-bind="value:editingUser.email,disable: true">
+								</div>	
+								<div class="form-group">
+									<label class="control-label">原始密码<font color="red">*</font></label> <input type="password"
+										class="form-control" id="originalPwd" data-bind="value:editingPwd.originalPwd">
+								</div>
+								<div class="form-group">
+									<label class="control-label"><span lang="en">新密码<font color="red">*</font></span></label>						
+									<input type="password" class="form-control" id="newPwd" data-bind="value:editingPwd.pwd">
+								</div>
+								<div class="form-group">
+									<label class="control-label"><span lang="en">确认密码<font color="red">*</font></span></label>						
+									<input type="password"	class="form-control" id="confirmPwd" data-bind="value:editingPwd.confirmedPwd">
+								</div>		
+							</div>							
+						</div>
+				</div>
+				<div class="modal-footer">					
+					<button type="button" class="btn btn-primary pull-right">
+						<span lang="en" data-bind="click: submitInformation">提交</span>
+					</button>		
+					<button type="button" class="btn btn-default pull-left" data-bind="click: cancelUserConfig">
+						<span lang="en">取消</span>
+					</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div id="tool-purchase" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+	<div class="modal-dialog" role="document" style="width : 75%; display: flex">
+
+
+		<div class="modal-content" style="flex: 1; margin-right: 5px">
+			<div class="modal-header">
+				<h4 class="modal-title">购买测试机器人/工具</h4>
+			</div>
+			<div class="modal-body">
+				<div class="from-group" style="margin-bottom: 15px">
+					<label for="antbotType" class="control-label">
+						<span lang="en">测试机器人/工具<font color="red">*</font></span>
+					</label>
+					<select class="form-control" 
+						data-bind=" options: antbotClassification, optionsText: 'type',
+						optionsValue: 'type',value: selectedAntbotTypeClassification, optionsCaption: '请选择分类', event: { change: selectedAntbotTypeClassificationChanged }">
+					</select>
+					<select class="form-control" id="antbotType"
+						data-bind="options:classificationAntbotTypes, optionsText: function(item){
+							if(item.description != null && item.description != '' && item.description.length != 0)
+								return item.alias + ' : ' + item.description
+							return item.alias
+							},
+									optionsValue: 'name',
+									value: selectedAntbotType,
+									optionsCaption: '请选择需要购买的测试机器人/工具',
+									event: {change: selectedAntbotTypeChanged}">
+
+					</select>
+				</div>
+				<div class="from-group" style="margin-bottom: 15px" data-bind="visible:isChooseType()">
+					<label class="control-label">价格参考：￥<span data-bind="text:selectedAntbotType?antbotPrice:'0'"></span>/月/个</label>
+					<br/>
+					<!--					<label class="control-label">状态：<span data-bind="text:isBuy()?antbotValidity:'未购买'"></span><span data-bind="visible:isBuy()">&nbsp;到期</span></label>-->
+				</div>
+				<div class="from-group" style="margin-bottom: 15px">
+					<label for="duration" class="control-label">
+						<span lang="en">购买时长<font color="red">*</font></span>
+					</label>
+					<select class="form-control" id="duration" data-bind="	options: duration,
+																		optionsText:'showDuration',
+																		optionsValue:'realDuration',
+																		value:selectedDurationVal,
+																		optionsCaption:'请选择需要购买的时长',
+																		event: {change: selectedDurationChanged}">
+					</select>
+				</div>
+
+				<div class="from-group" style="margin-bottom: 15px">
+					<label for="count" class="control-label">
+						<span lang="en">购买数量<font color="red">*</font></span>
+						<div class="input-group">
+							<div class="input-group-btn">
+								<button type="button" class="btn btn-default" data-bind="click:subtractOne">-1</button>
+							</div>
+							<input id="count" type="number" class="form-control" value="0" data-bind="textInput: antbotCount">
+							<div class="input-group-btn">
+								<button type="button" class="btn btn-default" data-bind="click:addOne">+1</button>
+							</div>
+						</div>
+					</label>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left" data-bind="click: cancelThePurchase('cancel')">取消</button>
+				<!--				<button type="button" class="btn btn-primary" data-bind="text:isBuy()?'续期':'购买',enable:isChooseType() && selectedDurationVal, click:showConfirmOrder"/>-->
+				<button type="button" class="btn btn-primary" data-bind="text:'加入购物车',enable:isChooseType() && selectedDurationVal, click:addCart"/>
+				<button type="button" class="btn btn-primary" data-bind="text:'购买',enable:isChooseType() && selectedDurationVal, click:showConfirmOrder"/>
+			</div>
+		</div>
+
+		<div class="modal-content" style="flex: 1">
+			<div class="modal-header">
+				<h4 class="modal-title">购物车</h4>
+			</div>
+			<div class="modal-body">
+				<div data-bind="visible: toolTypeInfoList().length > 0 ? false : true">您还未添加任何工具至购物车，请添加</div>
+				<table style="text-align:center;" class="table table-bordered table-striped table-hover" data-bind="visible: toolTypeInfoList().length > 0 ? true : false">
+					<thead>
+					<tr>
+						<th><small>工具名称</small></th>
+						<th><small>工具单价</small></th>
+						<th><small>购买时长</small></th>
+						<th><small>购买数量</small></th>
+						<th><small>到期时间</small></th>
+						<th><small>需付金额</small></th>
+						<th><small>操作</small></th>
+					</tr>
+					</thead>
+					<tbody data-bind="foreach: toolTypeInfoList">
+					<tr>
+						<td><small><label data-bind="text:description"></label></small></td>
+						<td><small><label data-bind="text:unitPrice"></label></small></td>
+						<td><small><label data-bind="text:showDuration"></label></small></td>
+						<td><small><label data-bind="text:count"></label></small></td>
+						<td><small><label data-bind="text:newValidity"></label></small></td>
+						<td><small><label data-bind="text:price"></label></small></td>
+						<td>
+							<small>
+								<button class="btn btn-danger btn-sm" data-toggle="tooltip"
+										title="删除" data-original-title="Delete"
+										data-bind="click: $parent.toolTypeListRemove">
+									<i class="glyphicon glyphicon-remove-circle"></i>
+								</button>
+							</small>
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-default pull-left" data-bind="enable: toolTypeInfoList().length > 0, click: toolTypeListRemoveAll" data-toggle="tooltip" title="清空" data-placement="bottom"><i class="glyphicon glyphicon-trash"></i></button>
+				<small style="margin-right: 20px">总计：<label data-bind="text: toolTypeInfoListTotalAmount"></label></small>
+				<button type="button" class="btn btn-primary" data-bind="enable: toolTypeInfoList().length > 0, click: showConfirmCartList">结算</button>
+			</div>
+		</div>
+
+
+
+
+	</div>
+</div>
+
+<div class="modal fade" id="confirmOrder" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">订单信息确认</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group"><label class="control-label">机器人类型：<span data-bind="text:toolTypeInfo.description"/></label></div>
+				<div class="form-group"><label class="control-label">价格参考：￥<span data-bind="text:toolTypeInfo.unitPrice"/>/月/个</label></div>
+				<div class="form-group"><label class="control-label">购买时长：<span data-bind="text:orderData.showDuration"/></label></div>
+				<div class="form-group"><label class="control-label">购买数量：<span data-bind="text:toolTypeInfo.count"/>个</label></div>
+				<div class="form-group"><label class="control-label">有效期至：<span data-bind="text:orderData.newValidity"/></label></div>
+				<div class="form-group"><label class="control-label">待付金额：<span data-bind="text:orderData.totalAmount"/>元&nbsp;<i class="fa fa-info-circle"  data-toggle="tooltip" data-placement="right" title="计价方式：标价*月数*个数"></i></label></div>
+				<div class="form-group" style="text-align: right;margin-right: 10px"><label class="control-label"><a href="#" data-bind="click: showPurchaseProtocol">《用户购买协议》</a><input style="cursor: pointer" type="checkbox" data-bind="checked:allowProtocol"></label></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-bind="click: cancelThePurchase('consider')">再考虑下</button>
+				<button type="button" class="btn btn-primary" data-bind="enable:allowProtocol, click: toPay">前往支付</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="confirmCartList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+	<div class="modal-dialog" role="document" style="width: 720px">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">订单确认</h4>
+			</div>
+			<div class="modal-body">
+				<table style="text-align:center;" class="table table-bordered table-striped table-hover">
+					<thead>
+					<tr>
+						<th><small>工具名称</small></th>
+						<th><small>工具单价</small></th>
+						<th><small>购买时长</small></th>
+						<th><small>购买数量</small></th>
+						<th><small>到期时间</small></th>
+						<th><small>需付金额</small></th>
+					</tr>
+					</thead>
+					<tbody data-bind="foreach: toolTypeInfoList">
+					<tr>
+						<td><small><label data-bind="text:description"></label></small></td>
+						<td><small><label data-bind="text:unitPrice"></label></small></td>
+						<td><small><label data-bind="text:showDuration"></label></small></td>
+						<td><small><label data-bind="text:count"></label></small></td>
+						<td><small><label data-bind="text:newValidity"></label></small></td>
+						<td><small><label data-bind="text:price"></label></small></td>
+					</tr>
+					</tbody>
+				</table>
+				<div class="form-group" style="text-align: right;margin-right: 10px"><label class="control-label"><a href="#" data-bind="click: showPurchaseProtocol">《用户购买协议》</a><input style="cursor: pointer" type="checkbox" data-bind="checked:allowProtocol"></label></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left" data-bind="click: cancelThePurchase('consider')">再考虑下</button>
+				<small style="margin-right: 20px">总计：<label data-bind="text: toolTypeInfoListTotalAmount"></label></small>
+				<button type="button" class="btn btn-primary" data-bind="enable:allowProtocol, click: toPay">前往支付</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="userPurchaseProtocol" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content" >
+			<div class="modal-header">
+				<h4 class="modal-title">购买协议</h4>
+			</div>
+			<div class="modal-body" style="overflow: auto;max-height: 720px">
+				<div class="form-group">
+					<h4 style="text-align: center"><b>宏控软件测试工具服务协议</b></h4>
+					<h6 style="text-align:right;"><b>版本生效日期：2022年10月31日</b></h6>
+					<h6 class="subtitle"><b>提示条款</b></h6>
+
+					<h6>欢迎您与苏州宏控软件系统有限公司（以下简称“宏控软件”）共同签署本《宏控软件测试工具服务协议》
+						（下称“本协议”或“本服务协议”）并使用宏控软件服务！ 协议中条款前所列索引关键词仅为帮助您理解该条款表达的主旨之用，不影响或限制本协议条款的含义或解释。
+						为维护您自身权益，建议您仔细阅读各条款具体表述。</h6>
+					<h6><b>【审慎阅读】您在同意本协议之前，应当认真阅读本协议。请您务必审慎阅读、充分理解各条款的内容，
+						特别是免除或者限制责任的条款、法律适用和争议解决条款，这些条款将以粗体下划线标识，您应重点阅读。
+						如您对协议有任何疑问，可以向客服和相关业务部门进行咨询。</b></h6>
+					<h6><b>【签约动作】当您阅读并点击同意本协议或以其他方式选择接受本协议后，即表示您已充分阅读、
+					理解并接受本协议的全部内容，并与宏控软件达成一致。本协议自您通过网络页面点击确认或以其他方式选择接受本协议之日起成立。</b>
+					阅读本协议的过程中，如果您不同意本协议或其中任何条款约定，请勿进行签约动作。</h6>
+
+					<h4 style="text-align:center; margin-top: 20px;"> <b>服务条款</b></h4>
+					<h6 class="subtitle"><b>1.签约主体及协议范围</b></h6>
+					<h6>本服务协议是 <b>您与苏州宏控软件系统有限公司</b> 就您使用 <b>宏控软件测试工具</b> 所签署的服务协议。</h6>
+
+					<h6 class="subtitle"><b>2. 服务内容</b></h6>
+					<h6>本协议中“服务”指：宏控软件 <a href="https://utpcloud.macrosoftsys.com">utpcloud.macrosoftsys.com</a>
+					网站和客户端（以下单独或统称“宏控软件网站”）所展示的测试工具服务以及相关的技术及网络支持服务。</h6>
+
+					<h6 class="subtitle"><b>3. 服务费用</b></h6>
+					<h6>3.1. 服务费用将在您订购页面予以列明公示，您可自行选择具体服务类型并按列明的价格予以支付。
+						您可选择先付费或后付费的服务。</h6>
+					<h6><b>3.2. 先付费：</b></h6>
+					<h6>3.2.1. 在您付费之后，宏控软件才开始为您提供服务。您未在下单后立即付费并关闭付款页面的，订单失效，
+					订单失效后宏控软件与您就服务所达成的合意失效。</h6>
+					<h6>3.2.2. 服务期满双方愿意继续合作的，您至少应在服务期满前1天内支付续费款项，以使服务得以继续进行。</h6>
+					<h6><b>3.3. 宏控软件保留在您未按照约定支付全部费用之前不向您提供服务和/或技术支持，或者终止服务和/或技术支持的权利。
+					同时，宏控软件保留对您的欠费要求您按日承担万分之五的违约金以及追究其他法律责任的权利。</b></h6>
+					<h6>3.4. 您完全理解宏控软件价格体系中所有的赠送服务项目或优惠活动均为宏控软件在正常服务价格之外的一次性特别优惠，
+					赠送的服务项目或优惠活动不可折价、冲抵服务价格。</h6>
+
+						<h6 class="subtitle"><b>4. 您的权利和义务</b></h6>
+					<h6>4.1. 成功订购服务后，您有权要求宏控软件按照本服务协议以及宏控软件网站相关页面所展示的服务说明、
+					技术规范等内容向您提供服务。</h6>
+					<h6>4.2. 您订购宏控软件的服务后，您可享受免费的售后服务。除此之外宏控软件还提供其他付费的售后服务。</h6>
+					<h6><b>4.3. 您应按照宏控软件的网站页面提示及本服务协议的约定支付相应服务费用。</b></h6>
+					<h6><b>4.4. 就宏控软件服务的使用应符合宏控软件的《服务使用规则》以及本服务协议。</b></h6>
+					<h6>4.5. 您对自己存放在宏控软件上的数据以及进入和管理宏控软件上各类产品与服务的口令、密码的完整性和保密性负责。
+					因您维护不当或保密不当致使上述数据、口令、密码等丢失或泄漏所引起的损失和后果均由您承担。</h6>
+					<h6><b>4.6. 为了数据的安全，您应负责您数据的备份工作。宏控软件的产品或服务会为您配置数据备份的功能或工具，您负责操作以完成备份。</b></h6>
+					<h6>4.7. 您还应仔细阅读并遵守宏控软件在网站页面上展示的相应服务说明、技术规范、使用流程、帮助文档等内容 （以上简称“操作指引”），
+					依照相关操作指引进行操作。您将承担违反相关操作指引所引起的后果；同时，宏控软件郑重提示您，请把握风险谨慎操作。</h6>
+					<h6>4.8. 您承诺：</h6>
+					<h6>4.8.1. 不应进行非正常业务的测试，不应大量占用宏控软件平台的云计算资源，
+					并给宏控软件云平台或者宏控软件的其他用户的正常业务测试活动带来严重的影响；</h6>
+					<h6>4.8.2. 不进行任何破坏或试图破坏网络安全的行为（包括但不限于各种攻击行为如扫描、嗅探、ARP欺骗、DOS等）；</h6>
+					<h6>4.8.3. 不利用宏控软件的账号资源服务为其他用户提供服务；</h6>
+					<h6>4.8.4. 不从事其他违法、违规或违反宏控软件服务条款的行为。</h6>
+					<h6>4.8.5. 如宏控软件发现您违反上述条款的约定，有权根据情况采取相应的处理措施，包括但不限于立即终止服务、
+					中止服务或删除相应信息等。</h6>
+
+							<h6 class="subtitle"><b>5. 宏控软件的权利、义务</b></h6>
+					<h6>5.1. 宏控软件应按照约定提供服务。</h6>
+					<h6>5.2. 服务期限内，宏控软件将为您提供如下售后服务：</h6>
+					<h6>5.2.1宏控软件将为您提供免费的售后基础服务，即通过400电话及宏控软件客服微信提供5*8的咨询支持。支持范围包括：</h6>
+					<div><h6>（1）关于宏控软件服务与产品功能的咨询；</h6>
+					<h6>（2）宏控软件的产品相关的使用咨询，技术问题、故障诊断；</h6>
+					<h6>（3）与宏控软件资源相关的操作或系统问题的技术支持；</h6>
+					<h6>（4）与宏控软件产品相关的部分第三方软件配置指导以及故障排查；</h6>
+					<h6>（5）宏控软件的产品故障、异常上报；</h6>
+					<h6>（6）与宏控软件相关的账号问题咨询支持；</h6></div>
+					<h6><b>5.3. 您了解宏控软件无法保证其所提供的服务毫无瑕疵（如宏控软件安全产品并不能保证您的硬件或软件的绝对安全），
+					但宏控软件承诺不断提升服务质量及服务水平。所以您同意：即使宏控软件提供的服务存在瑕疵，
+					但上述瑕疵是当时行业技术水平所无法避免的，其将不被视为宏控软件违约。您同意和宏控软件一同合作解决上述瑕疵问题。</b></h6>
+
+								<h6 class="subtitle"><b>6. 用户业务数据</b></h6>
+					<h6>6.1 宏控软件理解并认可，您通过宏控软件提供的服务所产生的测试用例、测试执行结果等数据，</h6>
+					均为您的用户业务数据，您完全拥有您的用户业务数据。
+					<h6>6.2 就用户业务数据，宏控软件除执行您的服务要求外，不进行任何未获授权的使用及披露。</h6>
+					<h6>6.3 您可自行对您的用户业务数据进行删除、更改等操作。如您自行删除数据的，宏控软件将删除您的数据，
+					按照您的指令不再保留该等数据。就数据的删除、更改等操作，您应谨慎操作。</h6>
+					<h6>6.4. 当服务期届满、服务提前终止，宏控软件将为在一定的缓冲期（一年）内继续存储您的用户业务数据（如有），
+					缓冲期届满宏控软件将删除所有用户业务数据，包括所有缓存或者备份的副本，不再保留您的任何用户业务数据。</h6>
+					<h6>6.5. 用户业务数据一经删除，即不可恢复；您应自行承担数据因此被删除所引发的后果和责任，您理解并同意，
+					宏控软件没有继续保留、导出或者返还用户业务数据的义务。</h6>
+					<h6 class="subtitle"><b>7. 知识产权</b></h6>
+					<h6>7.1. 您承认宏控软件向您提供的任何资料、技术或技术支持、软件、服务等的知识产权均属于宏控软件或第三方所有。
+					除宏控软件或第三方明示同意外，您无权复制、传播、转让、许可或提供他人使用上述资源，否则应承担相应的责任。</h6>
+					<h6>7.2. 您应保证提交宏控软件的素材、对宏控软件服务的使用及使用宏控软件服务所产生的成果未侵犯任何第三方的合法权益。
+					宏控软件应保证向您提供的服务未侵犯任何第三方的合法权益。</h6>
+
+									<h6 class="subtitle"><b>8. 保密条款</b></h6>
+					<h6>8.1. 本服务条款所称保密信息，是指一方（以下简称“接受方”）从对方（以下简称“披露方”）取得的、获知的、
+						或因双方履行本协议而产生的商业秘密（包括财务秘密）、技术秘密、经营诀窍和（或）其他应予保密的信息和资料
+						（包括产品资料，产品计划，价格，财务及营销规划，业务战略，客户信息，客户数据，研发，软件，硬件，API应用数据接口，
+						技术说明，设计，特殊公式，特殊算法等），无论上述信息和资料以何种形式或载于何种载体，无论披露方在披露时是否以口头、
+						图像或书面等方式表明其具有保密性。</h6>
+					<h6>8.2. 双方应采取适当措施妥善保存对方提供的保密信息，措施的审慎程度不少于其保护自身的保密信息时的审慎程度。
+					双方仅能将保密信息用于与本协议项下的有关用途或目的。</h6>
+					<h6>8.3. 双方保证保密信息仅可在各自一方从事该业务的负责人和雇员范围内知悉，并严格限制接触上述保密信息的员工遵守本条之保密义务。</h6>
+					<h6>8.4. 本条上述限制条款不适用于以下情况：</h6>
+					<h6>8.4.1. 在签署本协议之时或之前，该保密信息已以合法方式属接受方所有；</h6>
+					<h6>8.4.2. 保密信息在通知给接受方时，已经公开或能从公开领域获得；</h6>
+					<h6>8.4.3. 保密信息是接受方从与其没有保密或不透露义务的第三方获得的；</h6>
+					<h6>8.4.4. 在不违反本协议约定责任的前提下，该保密信息已经公开或能从公开领域获得；</h6>
+					<h6>8.4.5. 该保密信息是接受方或其关联或附属公司独立开发，而且未从通知方或其关联或附属公司获得的信息中获益；</h6>
+					<h6>8.4.6. 接受方应法院或其它法律、行政管理部门要求（通过口头提问、询问、要求资料或文件、传唤、民事或刑事调查或其他程序）
+					因而透露保密信息；</h6>
+					<h6>8.4.7. 接受方为向行政管理部门、行业协会等机构申请某项业务资质、获得某项认定、或符合国家、行业标准/认证，
+					需结合对方情况向前述机构提交材料或进行说明的而披露的信息，在该等情况下，
+					接受方应秉持必要情况下最少披露原则及要求因此获知保密信息的机构按不低于本协议的标准予以保密。</h6>
+					<h6><b>8.5. 您和宏控软件都应尽最大的努力保护上述保密信息不被泄露。一旦发现有上述保密信息泄露事件，
+					双方应合作采取一切合理措施避免或者减轻损害后果的产生。如因此给对方造成损失的，应赔偿因此给对方造成的直接经济损失。</b></h6>
+
+										<h6 class="subtitle"><b>9. 违约责任</b></h6>
+					<h6><b>9.1. 您违反本协议中的承诺、保证条款、服务使用规则或义务的任一内容，
+					或宏控软件根据其判断认为您的使用行为存在异常的，宏控软件均有权就其情节，
+					根据独立判断并单方采取以下措施中的一种或多种：
+					（1）限制、中止使用服务；
+					（2）终止提供服务，终止本协议；
+					（3）追究您的法律责任；
+					（4）其他宏控软件认为适合的处理措施。宏控软件依据前述约定采取中止服务、终止服务等措施而造成的用户损失将由您承担。</b></h6>
+					<h6><b>9.2. 如因您违反有关法律法规或者本协议、相关规则之规定，使宏控软件遭受任何损失、受到其他用户、
+						任何第三方的索赔或任何行政管理部门的处罚，您应对宏控软件、其他用户或相关第三方的实际损失进行全额赔偿，
+						包括合理的律师费用。</b></h6>
+					<h6><b>9.3. 您理解且同意，鉴于计算机、互联网的特殊性，下述情况不属于宏控软件违约：</b></h6>
+					<h6><b>9.3.1. 宏控软件在进行系统及服务器配置、维护、升级时，需要短时间中断服务；</b></h6>
+					<h6><b>9.3.2. 由于Internet上的通路阻塞造成您访问网站速度下降。</b></h6>
+					<h6>9.4. 如果因宏控软件原因造成您连续72小时不能正常使用服务的，您可终止接受服务，但非宏控软件控制之内的原因引起的除外。</h6>
+					<h6>9.5. 在任何情况下，宏控软件均不对任何间接性、后果性、惩戒性、偶然性、特殊性的损害，
+					包括您使用宏控软件服务而遭受的利润损失承担责任（即使您已被告知该等损失的可能性）。</h6>
+					<h6><b>9.6. 在法律允许的情况下，宏控软件在本协议项下所承担的损失赔偿责任不超过就该服务过往12个月所缴纳的服务费用的总和。</b></h6>
+
+											<h6 class="subtitle"><b>10. 不可抗力</b></h6>
+					<h6>10.1. 因不可抗力或者其他意外事件，使得本服务协议的履行不可能、不必要或者无意义的，
+					遭受不可抗力、意外事件的一方不承担责任。</h6>
+					<h6>10.2. 不可抗力、意外事件是指不能预见、不能克服并不能避免且对一方或双方当事人造成重大影响的客观事件，
+					包括自然灾害如洪水、地震、瘟疫流行等以及社会事件如战争、动乱、政府行为、电信主干线路中断、黑客、网路堵塞、电信部门技术调整和政府管制等。</h6>
+
+												<h6 class="subtitle"><b>11. 法律适用及争议解决</b></h6>
+					<h6><b>11.1. 本协议之订立、生效、解释、修订、补充、终止、执行与争议解决均适用中华人民共和国法律；
+					如法律无相关规定的，参照商业惯例及/或行业惯例。</b></h6>
+					<h6><b>11.2. 您因使用宏控软件服务所产生及与宏控软件服务有关的争议，由宏控软件与您协商解决。
+					协商不成时，任何一方均可向苏州市工业园区人民法院提起诉讼。</b></h6>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-bind="click: isAllow" data-dismiss="modal">同意</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="guestWarning" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3 class="modal-title">游客须知</h3>
+			</div>
+			<div class="modal-body" style="font-size: 16px">
+				<p style="text-indent: 2em">游客您好！欢迎体验宏控UTP协同自动化测试系统， 系统为您自动生成唯一的体验账号信息：</p>
+				<p>账号：<small style="font-size: 16px" data-bind="text: loginManager.account.length != 0 ? loginManager.account : userAccount"></small></p>
+				<p>密码：123456</p>
+				<p style="text-indent: 2em"><span style="color: red">游客账号有效期为2天，请复制并保存账号和密码，您可用这个账号在有效期时间内登录UTP公有云平台和测试机器人体验自动化测试。</span><p>
+				<p>请参考下面链接进行体验：<a href="app/help_doc/help/try_guide.html" target="_Blank">体验步骤</a></p>
+				<p><span style="color: red">如需更长时间的试用，请注册账号，注册后可获得1个月的免费试用。</span></p>
+				<p style="text-align: right">苏州宏控软件系统有限公司</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-bind="click: guestIsCheck">我已知晓</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal modal-info fade" id="scriptGroupConfigModal"
+	tabindex="-1" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">请输入测试用例组信息:</h4>
+			</div>
+			<div class="modal-body">
+				<div data-bind="with:selectedScriptGroup">
+					<div class="form-group">
+						<label><span lang="en">测试用例组名称</span></label> <input type="text"
+							class="form-control" placeholder=""
+							data-bind="value:name" lang="en">
+					</div>
+					<div class="form-group">
+						<label lang="en">描述信息</label> <input type="text"
+							class="form-control" placeholder=""
+							data-bind="value:description" lang="en">
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline " data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-outline" data-dismiss="modal"
+					data-bind="click:updateScriptGroup">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal modal-info fade in" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">操作提示</h4>
+			</div>
+			<div class="modal-body">
+				<div data-bind="text: operationPropInfo"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline pull" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="waitingModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="box box-danger box-solid">
+			<div class="box-header">
+				<h3 class="box-title">等待中 ...</h3>
+			</div>
+			<div class="box-body" data-bind="text: busyPropInfo"></div>			
+			<div class="overlay">
+				<i class="fa fa-refresh fa-spin"></i>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog"	aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="box-body">
+			<div class="alert alert-danger alert-dismissible">
+				<h4>
+					<i class="icon fa fa-ban"></i>错误!
+				</h4>
+				<div data-bind="text: errorPropInfo"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style type="text/css">
+.userEditStyle {
+  width:49%; text-align:center;
+}
+
+#userPurchaseProtocol h6{
+	text-indent: 1em;
+	margin-left: 18px;
+	line-height: 20px;
+}
+
+#userPurchaseProtocol .subtitle{
+	text-indent: 0;
+	line-height: 18px;
+	margin-left: 0px;
+	margin-top: 15px;
+}
+
+.menu button{
+	width: 120px;
+	height: 43.8px;
+	font-size: 18px;
+	border: none;
+}
+
+.dropdown-menu{
+	margin: 0;
+	padding:0;
+}
+
+.dropdown-menu li{
+	width: 120px;
+}
+
+.dropdown-menu a{
+	height: 50px;
+	font-size: 16px;
+	text-align: left;
+	line-height: 50px;
+}
+
+#tool-purchase th, #confirmCartList th{
+	text-align: center;
+}
+
+
+</style>

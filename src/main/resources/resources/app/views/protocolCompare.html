@@ -1,0 +1,82 @@
+<div class="box box-primary">
+	<div class="box-body" style="max-height: 500px;">
+		<div class="row">
+			<div class="col-md-6">
+				<div id="containerLeft"></div>
+        <button type="button" class="btn btn-default pull-right" data-bind="click: previous">上一个</button>
+			</div>
+			<div class="col-md-6">
+				<div id="containerRight"></div>
+        <button type="button" class="btn btn-default pull-left" data-bind="click: next">下一个</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<style type="text/css">
+    code {
+      background-color: #f5f5f5;
+    }
+
+    #containerLeft {
+      display: inline-block;
+      width: 100%;
+      height: 400px;
+      margin-right: 10px;
+    }
+
+    #containerRight {
+      display: inline-block;
+      width: 100%;
+      height: 400px;
+    }
+	
+    #containerRight .different_element {
+      background-color: #acee61;
+    }
+    #containerRight .different_element div.jsoneditor-field,
+    #containerRight .different_element div.jsoneditor-value {
+      color: red;
+    }
+
+    #containerLeft .different_element {
+      background-color: pink;
+    }
+    #containerLeft .different_element div.jsoneditor-field,
+    #containerLeft .different_element div.jsoneditor-value {
+      color: red;
+    }
+
+    @keyframes blink-diff-value {
+      0% {
+        opacity: 1;
+      }
+      70% {
+        opacity: 0.3;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .jsoneditor-values.blink-diff-value {
+      animation: blink-diff-value 0.3s infinite;
+    }
+
+    .diff-create {
+      background-color: rgba(140, 193, 82, 0.3);
+    }
+    .diff-update {
+      background-color: rgba(255, 165, 0, 0.3);
+    }
+
+    .diff-delete {
+      background: rgba(233, 87, 63, 0.3);
+    }
+
+    .diff-child-update {
+      background-color: rgba(255, 165, 0, 0.3);
+    }
+  </style>
+</style>

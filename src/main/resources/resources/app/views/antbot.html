@@ -1,0 +1,273 @@
+<div style="max-height: 700px; overflow-y: auto;">
+	<table class="table table-bordered table-striped table-hover">
+		<thead>
+			<tr>
+				<th><small>名称 </small></th>
+				<th><small>类型名称</small></th>
+				<th data-bind="visible:loginManager.isCloud()"><small>有效期至</small></th>
+				<th>
+					<div class="box-tools pull-right">
+						<button type="button" class="btn btn-box-tool"
+							data-bind="click: addAntbot,visible:!systemConfig.getConfig('utpclient.testcase_mgr.readonlymode')"
+							data-toggle="tooltip" title="新建测试机器人"><i class="fa fa-plus"></i></button>
+						<button type="button" class="btn btn-box-tool" data-bind="click: refreshAntbot"
+							data-toggle="tooltip" title="刷新"><i class="fa fa-refresh"></i></button>
+					</div>
+				</th>
+			</tr>
+		</thead>
+		<tbody data-bind='foreach: projectManager.agentsConfigData'
+			data-bind="visible: projectManager.agentsConfigData().length > 0">
+			<tr>
+				<td><small><label data-bind='text:antbotName'></label></small></td>
+				<td><small><label data-bind="text:$parent.typeAlias($data.antbotType)"></label></small></td>
+				<td
+					data-bind="visible:$parent.loginManager.isCloud() && (isDue && !isOverDue), style:{color: isDue&&!isOverDue?'red':''}">
+					<small><label data-bind="text:agentValidity"></label></small>
+				</td>
+				<td
+					data-bind="visible:$parent.loginManager.isCloud() && (!isDue && !isOverDue), style:{color: !isDue&&!isOverDue?'green':''}">
+					<small><label data-bind="text:agentValidity"></label></small>
+				</td>
+				<td
+					data-bind="visible:$parent.loginManager.isCloud() && (isDue && isOverDue), style:{color: isDue&&isOverDue?'gray':''}">
+					<small><label data-bind="text:agentValidity"></label>
+						<label data-bind="visible:agentValidity=='Error'">
+							<i class="fa fa-info-circle" data-toggle="tooltip" data-placement="right"
+								title="这是一个无效或已弃用的机器人数据，请手动删除"></i>
+						</label>
+						<label data-bind="visible:agentValidity!=='Error'"><i class="fa fa-info-circle"
+								data-toggle="tooltip" data-placement="right" title="这是一个已过期或未购买的机器人，请先购买"></i>
+						</label></small>
+				</td>
+				<td>
+					<small data-bind="visible:!$parent.systemConfig.getConfig('utpclient.testcase_mgr.readonlymode')">
+						<button class="btn btn-primary btn-sm" data-toggle="modal" title="编辑测试机器人"
+							data-original-title="Edit" data-bind="click: $parent.enterEditItemMode">
+							<i class="glyphicon glyphicon-edit"></i>
+						</button>
+						<button class="btn btn-danger btn-sm" data-toggle="tooltip" title="删除测试机器人"
+							data-original-title="Delete" data-bind="click: $parent.remove">
+							<i class="glyphicon glyphicon-trash"></i>
+						</button>
+					</small>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<!--
+	<h5 class="text-center" style="color: grey; font-style: italic;" data-bind="visible: projectManager.agentsConfigData().length == 0">
+				<small>暂无数据！</small>
+			</h5>
+	-->
+</div>
+
+<div class="modal fade" id="AntBotEditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	data-backdrop="static">
+	<div class="modal-dialog" role="document">
+		<form id="antbotForm" data-toggle="validator">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="myModalLabel">测试机器人配置信息</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="antbotName" class="control-label">测试机器人名称<font color="red">*</font></label> <input
+							type="text" class="form-control" id="antbotName"
+							data-bind="value:editingAgentConfig.antbotName" placeholder="点击输入测试机器人名称" required>
+					</div>
+					<div class="form-group">
+						<label for="antbotType" class="control-label"><span lang="en">测试机器人类型<font color="red">*</font>
+							</span></label>
+						<br>
+						<select class="form-control1" style="width: 25%" 
+							data-bind="visible: !isEditMode(), enable: isEditMode()==false, options: antbotClassification, optionsText: 'type'
+							, optionsValue: 'type', value: selectedAntbotTypeClassification, optionsCaption: '请选择分类', event: { change: selectedAntbotTypeClassificationChanged }">
+						</select>
+						<select class="form-control1" id="antbotType" style="width: 70%;margin-left: 10px" 
+							data-bind="visible: !isEditMode(), enable: selectedAntbotTypeClassification() || isEditMode()==false, options: classificationAntbotTypes, optionsText: function(item){
+								if(item.description != null && item.description != '' && item.description.length != 0)
+									return item.alias + ' : ' + item.description
+								return item.name
+							}, optionsValue: 'name', value: selectedUnexpiredAntbotType, optionsCaption: '请选择类型', event: { change: selectedUnexpiredAntbotTypeChanged }">
+						</select>
+						<select class="form-control" data-bind="visible: isEditMode(), enable: isEditMode()==false, options: showAntbotTypes, optionsText: function(item){
+							if(item.description != null && item.description != '' && item.description.length != 0)
+								return item.alias + ' : ' + item.description
+							return item.name
+						}, optionsValue: 'name', value: selectedAntbotType, event: { change: selectedAntbotTypeChanged }">
+						</select>
+					</div>
+					<div class="form-group" data-bind="visible:needRecordSet()">
+						<label for="antbotRecordSet" class="control-label">
+							<span lang="en">选择录制集<font color="red">*</font></span>
+						</label>
+						<select class="form-control" id="antbotRecordSet" required data-bind="enable: isAmend()==true||isEditMode()==false, options: recordsetCandidates,
+							attr:{'data-validate': needRecordSet() ? 'true':'false'},
+							optionsText: function(item){
+								return item.name + ' ( ' + item.lastUpdateTime+ ' ) '
+							},
+							optionsValue: 'id',
+							value: selectedRecordset,
+							optionsCaption: '选择....'">
+						</select>
+					</div>
+					<div class="form-group" data-bind="visible:needRecordSet()">
+						<div data-bind="visible: showEmptyRecordSet()==true">
+							<font color="red">录制集不存在,请先录制！</font>
+						</div>
+					</div>
+
+					<div class="form-group"
+						data-bind="visible:(needBigData() && isEditMode()) || (isSelectProtocolType() && needBigData()) || addEdit()">
+						<label for="protocolType" class="control-label">协议类型<font color="red">*</font></label>
+						<select class="form-control" id="protocolType" data-bind="options: allProtocolType,
+								attr:{'data-validate': needBigData()||signalNeedBigData() ? 'true':'false'},
+								value: selectedProtocolType,
+								optionsCaption: '请选择类型',
+								event: { change: protocolTypeChanged }">
+						</select>
+					</div>
+					<!-- 协议类型选择 -->
+					<div class="form-group"
+						data-bind="visible:((needBigData() && isEditMode()) || (isSelectProtocolType() && needBigData()) || addEdit())">
+						<label for="antbotRecordSet" class="control-label">
+							<span lang="en" data-bind="visible: needBigData()">通信协议<font color="red">*</font></span>
+						</label>
+						<select class="form-control" id="antbotBigData"
+							data-bind="options: protocols,
+								attr:{'data-validate': needBigData()||signalNeedBigData() ? 'true':'false','required': needBigData()},
+								optionsText: function(item){
+									return item.fileName + ' ( ' + item.createdAt + ' ) '
+								},
+								optionsValue: 'id',
+								value: selectedBigData,
+								optionsCaption: '选择....', 
+								visible: protocols().length > 0">
+						</select>
+						<div class="form-group" data-bind="visible: !protocols().length > 0">
+							<font color="red">您还没有创建协议/信号表，请</font>
+							<button type="button" class="btn btn-default" style="background-color:yellowgreen;"
+								data-bind="click: showTestProtocol">创建</button>
+						</div>
+						<div class="form-group" style="text-align: right;margin-top: 5px;margin-right: 10px"
+							data-bind="visible: protocols().length>0">
+							<button type="button" class="btn btn-default" style="background-color:yellowgreen;"
+								data-bind="click: showTestProtocol">新增协议/信号表</button>
+						</div>
+					</div>
+					<!-- 信号配置表选择 -->
+					<div class="form-group"
+						data-bind="visible:((needBigData() && isEditMode()) || (isSelectProtocolType() && needBigData())||signalNeedBigData()|| addEdit())
+						&& signalNeedBigData() && !systemConfig.getConfig('utpclient.signal_mgr.antbot_signal_config')">
+						<label for="antbotRecordSet" class="control-label">
+							<span lang="en"
+								data-bind="visible: signalNeedBigData() && !systemConfig.getConfig('utpclient.signal_mgr.antbot_signal_config')">信号配置表
+								<font color="red">*</font>
+							</span>
+						</label>
+						<select class="form-control" id="antbotBigData"
+							data-bind="options: protocols,
+								attr:{'data-validate': (needBigData()||signalNeedBigData()) && !systemConfig.getConfig('utpclient.signal_mgr.antbot_signal_config')? 'true':'false',
+									'required': signalNeedBigData() && !systemConfig.getConfig('utpclient.signal_mgr.antbot_signal_config')},
+								optionsText: function(item){
+									return item.fileName + ' ( ' + item.createdAt + ' ) '
+								},
+								optionsValue: 'id',
+								value: selectedBigData,
+								optionsCaption: '选择....', 
+								visible: protocols().length > 0 && !systemConfig.getConfig('utpclient.signal_mgr.antbot_signal_config')">
+						</select>
+						<div class="form-group" data-bind="visible: !protocols().length > 0">
+							<font color="red">您还没有创建协议/信号表，请</font>
+							<button type="button" class="btn btn-default" style="background-color:yellowgreen;"
+								data-bind="click: showTestProtocol">创建</button>
+						</div>
+						<div class="form-group" style="text-align: right;margin-top: 5px;margin-right: 10px"
+							data-bind="visible: protocols().length>0">
+							<button type="button" class="btn btn-default" style="background-color:yellowgreen;"
+								data-bind="click: showTestProtocol">新增协议/信号表</button>
+						</div>
+					</div>
+					<div class="form-group" data-bind="visible:needAgentType && loginManager.isCloud()">
+						<small><label>有效期至：</label></small>
+						<small><label data-bind="text:antbotValidity"></label></small>
+					</div>
+					<div class="form-group" data-bind="visible: loginManager.isCloud()">
+						<font>如果您需要更多测试机器人支持，请联系客服</font>
+						<!-- 暂时关闭购买入口 -->
+						<!-- <button type="button" class="btn btn-default" style="background-color:yellowgreen;" data-bind="click: showTool">购买</button> -->
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary"
+							data-bind="enable: (isEditMode() == false && selectedUnexpiredAntbotType() != undefined) || isEditMode() == true||isAmend()==true">
+							<span lang="en">确定</span>
+						</button>
+						<button type="button" class="btn btn-default pull-left"
+							data-bind="click: cancelAgentConfig">取消</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="modal modal-warning fade in" id="deleteAntbotModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">提醒</h4>
+			</div>
+			<div class="modal-body">
+				<div>删除测试机器人，有可能导致与此相关联的脚本及历史记录显示不准确，确认删除该测试机器人？</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline" data-dismiss="modal">否</button>
+				<button type="button" class="btn btn-outline" data-dismiss="modal"
+					data-bind="click:deleteCurrentAntbot">是</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="selectAntbotType" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">请选择测试机器人类型</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary"
+					data-bind="enable: selectedAntbotType(), click: selectedAntbotTypeConfirm">确认</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	.form-control1 {
+		display: inline;
+		height: 34px;
+		padding: 6px 12px;
+		font-size: 14px;
+		line-height: 1.42857143;
+		color: #555;
+		background-color: #fff;
+		background-image: none;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+		box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+		-webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+		-o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+		transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+	}
+</style>

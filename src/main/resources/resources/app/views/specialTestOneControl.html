@@ -1,0 +1,220 @@
+<div class="panel panel-default text-center special-test-module">
+    <div class="pull-right">
+        <button type="button" class="btn btn-default btn-sm" style="margin-left: 10px;"
+            data-bind="click: refreshExecutionNode, enable: !isExecuting()" title="刷新执行器">
+            <i class="fa fa-refresh"></i>
+        </button>
+        <button type="button" class="btn btn-default" data-placement="bottom" data-toggle="tooltip" title="历史记录"
+            data-bind="click: getOutputHistoryConfig , visible: viewManager.selectedSpecialTestsetActiveData.subpageNumber == 1">
+            <i class="glyphicon glyphicon-list-alt"></i>
+        </button>
+    </div>
+    <div class="panel-body" style="height: 800px; overflow-y: auto; overflow-x: hidden;">
+        <div style="width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center;">
+            <!-- 使用Bootstrap的栅格系统来实现响应式布局 -->
+            <div class="container" style="width: 80%; height: 100%;">
+                <!-- 表单组 -->
+                <div class="form-group mr-auto"  
+                style="width: 100%; display: flex; 
+                justify-content: space-between;
+                 align-items: center; margin-bottom: 25px;"
+                 data-bind="visible: false">
+
+                    <!-- select元素占宽度的50%，文字居中显示，高度更高 -->
+                   <select class="form-control"
+                         style="flex: 0 0 45%; font-size: 1em; padding: 10px; height: 50px; text-align: center; text-align-last: center;"
+                        data-bind="options: allEngineNames, optionsText: 'engineName', value: engineName, optionsValue: 'engineName'">
+                    </select>
+
+                    <!-- 按钮容器，使用flex布局 -->
+                    <div style="display: flex; flex: 0 0 50%; justify-content: space-between;">
+                        <button type="button" class="btn btn-default btn-sm"
+                            style="flex: 0 0 75%; font-size: 1em; padding: 10px 20px; height: 50px;"
+                            data-bind="click: nextAction, enable: !isExecuting()">下一组</button>
+
+                        <button type="button" class="btn btn-default btn-sm"
+                            style="flex: 0 0 20%; font-size: 1em; padding: 10px 20px; height: 50px;"
+                            data-bind="click: refreshExecutionNode, enable: !isExecuting()">刷新</button>
+                    </div>
+                </div>
+                <!-- 按钮组 -->
+                <div class="btn-group" style="width: 100%; text-align: center; margin-bottom: 10px;">
+                    <!-- 开始测试按钮 -->
+                    <button type="button" class="btn btn-primary btn-lg" style="width: 100%;display: none;"
+                        data-bind="click: prepareExecution, enable: !isExecuting(), text: isExecuting() ? '正在执行中' : '开始测试'">
+                    </button>
+                </div>
+                <ul class="list-group" data-bind="foreach: outputSpecialTestOneControlData">
+                    <li class="list-group-item"
+                        data-bind="css: { 'bg-danger': $data.some(item => item.outputValue() === 'NG'), 'bg-success': $data.some(item => item.outputValue() === 'OK') }">
+                        <div class="row" data-bind="foreach: $data">
+                            <div class="col-xs-6" data-bind="text: outputName"></div>
+                            <div class="col-xs-6"
+                                data-bind="css: { 'bg-danger': outputValue() == 'NG', 'bg-success': outputValue() == 'OK' }">
+                                <input type="text" class="form-control" data-bind="value: outputValue" disabled />
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="specialTestOneExecutoryModalLabel" tabindex="-1" role="dialog" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="specialTestOneExecutoryModalLabel">测试记录</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
+                <div>
+                    <table class="table table-condensed table-bordered table-striped table-hover"
+                        data-bind="visible: outputHistorys().length > 0">
+                        <thead>
+                            <tr data-bind="foreach: outputNames">
+                                <th data-bind="text: $data"></th>
+                            </tr>
+                        </thead>
+                        <tbody data-bind="foreach: outputHistorys">
+                            <tr data-bind="foreach: $data">
+                                <td data-bind='text: $data'></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="alert alert-info text-center" data-bind="visible: outputHistorys().length == 0">
+                        暂无数据！
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.special-test-module .bg-danger .form-control {
+    background-color: #ffe6e6; /* 更浅的红色背景 */
+    color: black; /* 黑色文字 */
+}
+
+.special-test-module .bg-success .form-control {
+    background-color: #ccffcc; /* 更浅的绿色背景 */
+    color: black; /* 黑色文字 */
+}
+    /* 使开始测试按钮更加明显 */
+    .special-test-module .btn-primary.btn-lg {
+        background-color: #3498db;
+        border-color: #3498db;
+        font-weight: bold;
+        padding: 15px 20px !important;
+        font-size: 2.5em;
+        /* 恢复正常字体大小 */
+        letter-spacing:  0.8em;
+        /* 恢复正常文字间隔 */
+    }
+
+    .special-test-module .list-group-item {
+        padding: 10px;
+        border-top: 2px solid #000;
+        border-bottom: 2px solid #000;
+        /* 加黑加粗的顶部和底部边框 */
+        background-color: #fff;
+        position: relative;
+    }
+
+    .special-test-module .form-control {
+        border: 1px solid #ccc;
+        /* 输入框边框 */
+        border-radius: 4px;
+        /* 边框圆角 */
+        padding: 5px;
+        /* 输入框内边距 */
+        max-width: 100%;
+        /* 限制输入框最大宽度 */
+        box-sizing: border-box;
+        /* 包括内边距和边框在内的宽度计算 */
+    }
+
+    /* 按钮组的样式调整 */
+    .special-test-module .btn-group .btn {
+        margin-right: 5px;
+        margin-left: 5px;
+        /* 按钮之间的间距 */
+    }
+
+    /* 容器的样式 */
+    .special-test-module .container {
+        padding: 1px;
+        /* 容器内边距 */
+    }
+
+    /* 使下拉框和表单组靠左对齐 */
+    .special-test-module .form-group {
+        margin-right: auto;
+    }
+
+    /* 新增样式：当行数据为NG时，设置背景色为红色 */
+    .special-test-module .bg-danger {
+        background-color: #fe7070 !important;
+    }
+
+    /* 新增样式：当行数据为OK时，设置背景色为绿色 */
+    .special-test-module .bg-success {
+        background-color: #64ee2d !important;
+    }
+
+    /* 新增样式：当list-group-item为NG时，设置背景色为红色并添加"NG"文字 */
+    .special-test-module .list-group-item.bg-danger::after {
+        content: "NG";
+        /* 添加的文字内容 */
+        position: absolute;
+        top: 50%;
+        left: 85%;
+        transform: translate(-50%, -50%);
+        color: rgb(235, 10, 10);
+        font-weight: bold;
+        font-size: 4em;
+        /* 恢复正常文字大小 */
+    }
+
+    /* 新增样式：当list-group-item为OK时，设置背景色为绿色并添加"OK"文字 */
+    .special-test-module .list-group-item.bg-success::after {
+        content: "OK";
+        /* 添加的文字内容 */
+        position: absolute;
+        top: 50%;
+        left: 85%;
+        transform: translate(-50%, -50%);
+        color: rgb(0, 187, 0);
+        font-weight: bold;
+        font-size: 4em;
+        /* 恢复正常文字大小 */
+    }
+
+    /* 覆盖 .row 的默认负边距 */
+    .special-test-module .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    /* 响应式断点 */
+    @media (min-width: 768px) {
+
+        /* 当屏幕宽度大于768px时，调整按钮和选择框的宽度 */
+        .special-test-module .form-control {
+            width: auto;
+            /* 选择框宽度自适应 */
+        }
+
+        .special-test-module .btn-group .btn {
+            padding: 8px 15px;
+            /* 按钮的内边距调整 */
+        }
+    }
+</style>

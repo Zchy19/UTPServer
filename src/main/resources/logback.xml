@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- 文件输出 Appender -->
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${user.home}/Documents/UTP/UTPServer/UTPServer_Logs/UTPServer_Log_%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%-4relative %d{HH:mm:ss.SSS} - [%thread] %-5level %class - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 控制台输出 Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-5p: %c - %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Spring 相关日志 -->
+    <logger name="org.springframework" level="error" additivity="false">
+        <appender-ref ref="file" />
+    </logger>
+
+    <!-- Hibernate 相关日志 -->
+    <logger name="org.hibernate" level="error" additivity="false">
+        <appender-ref ref="file" />
+    </logger>
+
+    <!-- 更具体的 Hibernate 日志级别 -->
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="error" />
+    <logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="error" />
+    <logger name="org.hibernate.SQL" level="error" />
+    <logger name="org.hibernate.type" level="error" />
+    <logger name="org.hibernate.engine.QueryParameters" level="error" />
+    <logger name="org.hibernate.engine.query.HQLQueryPlan" level="error" />
+
+    <!-- 根 Logger -->
+    <root level="debug">
+        <appender-ref ref="CONSOLE" />
+        <!-- 如果需要文件输出，可以取消注释 -->
+        <!-- <appender-ref ref="file" /> -->
+    </root>
+</configuration>

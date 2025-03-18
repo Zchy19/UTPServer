@@ -1,0 +1,435 @@
+<div class="content-wrapper">
+	<section class="content-header">
+		<h1>
+			<br />
+		</h1>
+		<ol class="breadcrumb">
+			<!-- <li><i class="fa fa-dashboard"></i> 项目</li> -->
+		</ol>
+	</section>
+	<section class="content">
+		<div class="row">
+			<div class="col-md-5" data-bind="visible:systemConfig.getConfig('utpclient.example_project')">
+				<div class="box box-primary">
+					<div class="box-header with-border">
+						<small>示例项目  （ 
+						 <a href="https://www.bilibili.com/video/BV1Eb421n7J2/" target="_Blank">帮助</a>）
+						</small>
+						<div class="box-tools pull-right">							
+							<button type="button" class="btn btn-box-tool" data-bind="click: getTemplate" data-toggle="tooltip" title="刷新">
+								<i class="fa fa-refresh"></i>
+							</button>							
+						</div>
+					</div>
+					<div class="box-body" style="max-height: 700px; overflow-y: auto;">
+						<table class="table table-bordered table-striped table-hover" data-bind="visible: systemTemplates().length > 0">
+							<thead>
+								<tr>
+									<th><small>名称</small></th>
+									<th><small>被测对象</small></th>
+									<th><small>描述信息</small></th>
+									<th></th>									
+								</tr>
+							</thead>
+							<tbody data-bind='foreach: systemTemplates'>
+								<tr>
+									<td><small><label data-bind='text:name'></label></small></td>
+									<td><small><label data-bind='text:targetObjectDescription'></label></small></td>
+									<td><small><label data-bind='text:description'></label></small></td>
+									<td>
+										<small>
+											<button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="加到我的项目"
+												data-bind="click: $parent.addTemplateToMyProject">
+												<i class="glyphicon glyphicon-plus"></i>
+											</button>
+										</small>							
+									</td>									
+								</tr>
+							</tbody>
+						</table>						
+						<h5 class="text-center" style="color: grey; font-style: italic;" data-bind="visible: systemTemplates().length == 0">						
+							<small>暂无数据！</small>
+						</h5>			
+					</div>
+				</div>
+			</div>		
+			<div data-bind="css: { 'col-md-7': systemConfig.getConfig('utpclient.example_project'), 'col-md-12': !systemConfig.getConfig('utpclient.example_project') }">
+				<div class="box box-primary">					
+					<div class="box-header with-border">
+						<small>我的项目</small>				
+						<div class="box-tools pull-right">
+			               <button type="button" class="btn btn-box-tool" data-bind="click: createProject" data-toggle="tooltip" title="新建项目"><i class="fa fa-plus"></i></button>
+			               <button type="button" class="btn btn-box-tool" data-bind="click: importProject,visible:systemConfig.getConfig('utpclient.project.import')" data-toggle="tooltip" title="导入项目"><i class="fa fa-upload"></i></button>
+			               <button type="button" class="btn btn-box-tool" data-bind="click: getOrgProject" data-toggle="tooltip" title="刷新"><i class="fa fa-refresh"></i></button>
+			            </div>
+					</div>
+
+					<div class="box-body" style="max-height: 500px; overflow-y: auto;">
+						<table class="table table-bordered table-striped table-hover" data-bind="visible: projectManager.projects().length > 0">
+							<thead>
+								<tr>
+									<th><small>名称</small></th>
+									<th><small>被测对象</small></th>
+									<th><small>描述信息</small></th>
+									<th></th>									
+								</tr>
+							</thead>
+							<tbody data-bind='foreach: projectManager.projects'>
+								<tr>
+									<td><small><label data-bind='text:name'></label></small></td>
+									<td><small><label data-bind='text:targetObjectDescription'></label></small></td>
+									<td><small><label data-bind='text:description'></label></small></td>
+									<td>
+										<small>
+											<button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" title="编辑项目"
+												data-bind="click: $parent.configProject">
+												<i class="glyphicon glyphicon-edit"></i>
+											</button>
+											<button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" title="删除项目"
+												data-bind="click: $parent.deleteProject">
+												<i class="glyphicon glyphicon-trash"></i>
+											</button>
+											<button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="导出项目"
+												data-bind="click: $parent.exportProject,visible: $parent.systemConfig.getConfig('utpclient.project.export')">
+												<i class="glyphicon glyphicon-download-alt"></i>
+											</button>
+											<button type="button" class="btn btn-info btn-sm" data-toggle="tooltip" title="进入项目"
+												data-bind="click: $parent.loadSelectedProject">
+												<i class="glyphicon glyphicon-hand-right"></i>
+											</button>
+										</small>
+									</td>									
+								</tr>
+							</tbody>
+						</table>
+						<h5 class="text-center" style="color: grey; font-style: italic;" data-bind="visible: projectManager.projects().length == 0">						
+							<small>暂无数据！</small>
+						</h5>
+					</div>
+					<!-- 
+					<div class="box-footer text-center">
+		              <a href="javascript:void(0)" class="btn btn-success btn-sm" data-bind="click: createProject"><i class="glyphicon glyphicon-plus"></i> 新建项目</a>
+		            </div>
+		             -->
+				</div>
+				<!--
+				<div data-bind="compose: viewManager.protocolActivePage"></div>
+				-->
+			</div>
+		</div>
+	</section>
+</div>
+
+<div class="modal fade" id="projectConfigModal" tabindex="-1"
+	role="dialog"  data-backdrop="static">
+	<div class="modal-dialog" style="width: 800px;" >		
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title  pull-left"><span data-bind="if: inEdit() == true">编辑</span><span data-bind="if: inEdit() == false">创建</span>项目信息</h4>
+					<div class="pull-right" data-bind="if: inEdit() == false,visible: systemConfig.getConfig('utpclient.project.template')">
+						<input type="checkbox" id="startFromEmpty" data-on-text="空白" data-off-text="模板">
+					</div>			
+				</div>
+				<form id="configProjectForm" data-toggle="validator">
+					<!-- 第一步：项目基本信息 -->
+					<div id="step1" class="step-form" data-bind="visible: step() == 1">
+						<div class="modal-body" data-bind="visible: fromEmpty() == true">
+							<div class="form-group">
+								<label for="projectName" class="control-label"><span lang="en">项目名称<font color="red">*</font></span></label><input
+									type="text" class="form-control" id="projectName" placeholder="" data-bind="value:projectName">
+							</div>
+							<div class="form-group" data-bind="visible: systemConfig.getConfig('utpclient.system_config.default_project')&&!loginManager.isCloud()">
+								<label class="control-label">自动进入账号</label>
+								<select class="form-control" id="projectAutoIntoUsers" data-bind="options: projectAutoIntoUsers, optionsText: 'email',
+															optionsValue: 'email', value: projectAutoIntoUser,  optionsCaption: '选择....'">
+								</select>
+							</div>
+
+							<!-- 编辑项目展示 -->
+							<div data-bind="visible: inEdit() == true">
+								<div class="form-group">
+									<label for="targetObject" class="control-label"><span lang="en">被测对象</span></label>
+									<input type="text" class="form-control" id="targetObject" placeholder=""
+										data-bind="value:projectTargetObjectDescription">
+								</div>
+								
+								<div class="form-group">
+									<label for="projectDescription" class="control-label">描述信息</label>
+									<input type="text" class="form-control" id="projectDescription" placeholder=""
+										data-bind="value:projectDescription">
+								</div>
+								
+								<div class="form-group" data-bind="visible: systemConfig.getConfig('utpclient.project.template')">
+									<label class="control-label">项目模板</label>&nbsp;&nbsp;&nbsp;&nbsp;
+									<input class="form-control" type="checkbox" id="asProjectTemplateSwitch" data-on-text="是" data-off-text="否">
+								</div>
+								
+							</div>
+
+							<!-- 创建项目方式 -->
+							<div data-bind="visible: inEdit() == false">
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="projectRadios" id="projectRadios1"
+										data-bind="checked: optionCreateProject, value: '创建空白项目'">
+									<label class="form-check-label" for="projectRadios1">
+										创建空白项目
+									</label>
+								</div>
+								<div class="form-check">
+									<input class="form-check-input" type="radio" name="projectRadios" id="projectRadios2"
+										data-bind="checked: optionCreateProject, value: '基于向导创建项目'">
+									<label class="form-check-label" for="projectRadios2">
+										基于向导创建项目
+									</label>
+								</div>
+								<!-- <div class="form-check">
+									<input class="form-check-input" type="radio" name="projectRadios" id="projectRadios3"
+										data-bind="checked: optionCreateProject, value: '基于模板创建项目'">
+									<label class="form-check-label" for="projectRadios3">
+										基于模板创建项目
+									</label>
+								</div> -->
+							</div>
+						</div>
+					</div>
+					<!-- 第二步：基于向导创建项目设置 -->
+					<div id="step2" class="step-form" data-bind="visible: step() == 2&& optionCreateProject() == '基于向导创建项目'">
+						<!-- 第二步的表单字段 -->
+						<div class="modal-body" data-bind="visible: fromEmpty() == true">
+							<!-- <div class="form-row">
+								<div class="form-group col-md-6">
+									<label for="targetObject" class="control-label"><span lang="en">被测对象</span></label>
+									<input type="text" class="form-control" id="targetObject" placeholder="" data-bind="value:projectTargetObjectDescription">
+								</div>
+								<div class="form-group col-md-6">
+									<label for="projectDescription" class="control-label">描述信息</label>
+									<input type="text" class="form-control" id="projectDescription" placeholder="" data-bind="value:projectDescription">
+								</div>
+							</div> -->
+							<div class="form-group">
+								<table class="table table-bordered">
+									<tr>
+										<td width="30%"><small><label class="control-label"><span>选择被测接口类型</span></label></small></td>
+										<td width="5%"></td>
+										<td width="65%"><small><label class="control-label"><span>接口配置表</span></label></small></td>
+									</tr>
+									<tr>
+										<td width="30%">
+											<div id="projectTreeView"
+												style="background-color: #ffffff; height: 260px;"></div>
+										</td>
+										<td width="5%">
+											<button type="button" class="btn btn-primary" style="margin: 50px 1px 20px 1px;" data-bind="click: addSelectedPorts">
+												<span lang="en" class="glyphicon glyphicon-arrow-right"></span>
+											</button>
+										</td>
+										<td width="65%">
+											<div style="overflow-x: auto; max-height: 300px;">
+												<table class="table table-bordered" style="table-layout: fixed;">
+													<thead>
+														<tr>
+															<th width="18%">被测接口</th>
+															<th width="24%">机器人类型<font color="red">*</font></th>
+															<th width="24%">机器人名称<font color="red">*</font></th>
+															<th width="24%">机器人配置<font color="red">*</font></th>
+															<th width="10%">操作</th>
+														</tr>
+													</thead>
+													<tbody data-bind="foreach: selectedPorts">
+														<tr>
+															<td width="18%" data-bind="text: portType"></td>
+															<td width="24%">
+															<select class="form-control"
+																data-bind="options:toolType , optionsText: 'alias',
+																	optionsCaption: '请选择测试机器人类型',value: toolType,
+																	event: { change: function() {$parent.selectedToolType($data) } }">
+															</select></td>
+															<td width="24%"><input type="text" class="form-control" style="max-width: 100%;" data-bind="value: portName" /></td>
+															<td width="24%">
+																<button class="btn btn-sm btn-primary" style=" white-space: normal;word-wrap: break-word;"
+																	data-bind="click: function() { $parent.showConfigModal($data) }, text: protocolData.fileName ? protocolData.fileName : '配置', disable: isButtonDisabled"></button>
+															</td>
+															<td width="10%"><button class="btn btn-sm btn-danger"
+																	data-bind="click: function() { $parent.removeInterface($data) }">移除</button></td>
+															</tr>
+													</tbody>
+												</table>
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+					<!-- 第二步：空白项目设置 -->
+					<div class="modal-body" data-bind="visible: fromEmpty() == true&& optionCreateProject() == '创建空白项目'&&step() == 2">
+						<div class="form-group">
+								<label for="targetObject" class="control-label"><span
+									lang="en">被测对象</span></label> <input type="text" class="form-control"
+									id="targetObject" placeholder=""
+									data-bind="value:projectTargetObjectDescription">
+						</div>
+
+						<div class="form-group">
+								<label for="projectDescription" class="control-label">描述信息</label>
+								<input type="text" class="form-control" id="projectDescription"
+									placeholder="" 
+									data-bind="value:projectDescription">	
+						</div>
+						<div class="form-group" data-bind="visible: systemConfig.getConfig('utpclient.project.template')">
+							<label class="control-label">项目模板</label>&nbsp;&nbsp;&nbsp;&nbsp;
+							<input class="form-control" type="checkbox" id="asProjectTemplate" data-on-text="是" data-off-text="否">
+						</div>
+					</div>
+					<div class="modal-footer" data-bind="visible: fromEmpty() == true">
+						<div class="form-group">
+							<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>	
+							<!-- 上一页按钮 -->
+							<button type="button" class="btn btn-default" data-bind="click:showPreviousStep,visible:step() !=1&&inEdit() == false">上一页</button>
+							<!-- 下一页按钮 -->
+							<button type="button" class="btn btn-default"data-bind="click:showNextStep,visible:step()!= 2&&inEdit() == false">下一页</button>						
+							<button type="submit" class="btn btn-primary" data-bind="visible:step()==2||inEdit() == true">提交</button>
+						</div>
+					</div>
+				</form>
+
+
+				<form id="configProjectFromTemplateForm" data-toggle="validator">
+					<div class="modal-body" data-bind="visible: fromEmpty() == false">
+						<div class="form-group">
+							<label class="control-label"><span
+									lang="en">项目名称<font color="red">*</font></span></label> 
+							<input type="text" class="form-control"
+									id="candidateProjectName" placeholder=""
+									data-bind="value:candidateProjectName"></input>
+						</div>
+						<!-- <div class="form-group">
+							<label class="control-label">描述信息<font color="red">*</font></label>
+								<input type="text" class="form-control" id="candidateProjectDescription"
+									placeholder="" 
+									data-bind="value:candidateProjectDescription"></input>
+						</div> -->
+						<div id="projectTemplate"></div>
+					</div>
+					<div class="modal-footer" data-bind="visible: fromEmpty() == false">
+						<div class="form-group">
+							<button type="button" class="btn btn-default pull-left"	data-dismiss="modal">取消</button>						
+							<button type="submit" class="btn btn-primary">提交</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		
+	</div>
+</div>
+
+
+<!-- 选择配置数据模态框 -->
+<div class="modal fade" id="configModal" tabindex="-1" role="dialog" aria-labelledby="configModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="configModalLabel">选择配置数据</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- 在这里添加配置数据选择的内容 -->
+				<div class="form-group">
+
+					<label class="control-label">
+						<span lang="en" >选择类型</span>
+					</label>
+					<div style="display: flex; align-items: center;">
+						<select class="form-control" required
+							data-bind="options: allProtocolType,
+									   value: selectedProtocolType,
+									   optionsCaption: '选择....', visible: allProtocolType().length > 0,
+									   valueUpdate: 'change', event: { change: updateAvailableConfigs }">
+						</select>
+					</div>
+
+					<label class="control-label">
+						<span lang="en" data-bind="text: currentConfigType() == 'SignalProtocol' ? '选择信号表文件' : '选择协议文件'"> <font color="red">*</font>
+						</span>
+					</label>
+					<div style="display: flex; align-items: center;">
+						<select class="form-control" required
+							data-bind="options: filteredAvailableConfigs,
+									   optionsText: function(item){
+										   return item.fileName + ' ( ' + item.createdAt+ ' ) '
+									   },
+									   value: availableConfig,
+									   optionsCaption: '选择....', visible: filteredAvailableConfigs().length > 0">
+						</select>
+						<!-- 刷新按钮 -->
+						<button type="button" class="btn btn-default" data-bind="click: refreshConfig" style="margin-left: 10px;">
+							<span lang="en">刷新</span>
+						</button>
+					</div>
+					<div class="form-group" data-bind="visible: !availableConfigs().length > 0">
+						<font color="red" data-bind="text: currentConfigType() == 'SignalProtocol' ? '您还没有创建信号表，请' : '您还没有创建协议，请'"></font>
+						<button type="button" class="btn btn-default" style="background-color:yellowgreen;" data-bind="click: gotoProtocolOrsignalProtocol">创建</button>
+					</div>
+					<div class="form-group" style="text-align: right;margin-top: 5px;margin-right: 10px" data-bind="visible: availableConfigs().length>0">
+						<button type="button" class="btn btn-default" style="background-color:yellowgreen;" data-bind="click: gotoProtocolOrsignalProtocol, text: currentConfigType() == 'SignalProtocol' ? '新增信号表' : '新增协议'">
+						</button>
+					</div>
+				</div>
+                <!-- <select class="form-control" data-bind="options: availableConfigs, value: availableConfig"></select>
+				<button type="button" class="btn btn-success pull-right" data-bind="click: gotoProtocolOrsignalProtocol">创建协议/信号表</button> -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-bind="click: saveConfig">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+ 
+<div class="modal modal-warning fade in" id="deleteProjectModal"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">提醒</h4>
+			</div>
+			<div class="modal-body">
+				<div>该项目的所有数据(包含项目信息和测试数据)将被删除, 是否继续删除？</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline" data-dismiss="modal">否</button>
+				<button type="button" class="btn btn-outline" data-dismiss="modal"
+					data-bind="click:deleteCurrentProject">是</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="importProjectModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="myModalLabel">项目导入</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label>选择文件</label> <input
+						id="projectInputFile" type="file" accept=".uProject"
+						data-bind="event: { change: function() { loadFromFile($element.files[0]) } }" />
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="form-group">
+					<button type="button" class="btn btn-primary" data-bind="click:submitImportedProject">
+						<span lang="en">上传</span>
+					</button>
+					<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

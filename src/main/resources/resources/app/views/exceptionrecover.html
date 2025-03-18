@@ -1,0 +1,131 @@
+<div>
+	<div class="box-header with-border">
+		<small>异常恢复</small>
+		<div class="box-tools pull-right">
+			<button type="button" class="btn btn-box-tool"
+				data-placement="bottom" data-bind="click: createExceptionRecover"
+				data-toggle="tooltip" title="新建异常恢复配置">
+				<i class="fa fa-plus"></i>
+			</button>
+			<button type="button" class="btn btn-box-tool"
+				data-placement="bottom" data-bind="click: getExceptionRecovers"
+				data-toggle="tooltip" title="刷新">
+				<i class="fa fa-refresh"></i>
+			</button>
+		</div>
+	</div>
+	<div class="box-body" style="max-height: 600px; overflow-y: auto;">
+		<table class="table table-bordered table-striped table-hover" data-bind="visible: exceptionRecovers().length > 0">
+			<thead>
+				<tr>
+					<th><small>名称</small></th>
+					<th><small>描述</small></th>
+					<th><small>异常子脚本</small></th>
+					<th><small>项目默认</small></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody data-bind='foreach: exceptionRecovers'>
+				<tr>
+					<td><small><label data-bind='text:name'></label></small></td>
+					<td><small><label data-bind='text:description'></label></small></td>
+					<td><small><label data-bind='text:subscriptName'></label></small></td>
+					<td>
+						<small>
+							<div data-bind="visible: isDefault() == true" style='color: green'>
+								<i class="glyphicon glyphicon-ok"></i>
+							</div>
+						</small>
+					</td>
+					<td><small>
+						<button class="btn btn-primary btn-sm" data-toggle="modal"
+							title="编辑异常恢复配置" data-original-title="Edit"
+							data-bind="click: $parent.enterEditItemMode">
+							<i class="glyphicon glyphicon-edit"></i>
+						</button>
+						<button class="btn btn-danger btn-sm" data-toggle="tooltip"
+							title="删除异常恢复配置" title="" data-original-title="Delete"
+							data-bind="click: $parent.remove">
+							<i class="glyphicon glyphicon-trash"></i>
+						</button>
+						</small>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<h5 class="text-center" style="color: grey; font-style: italic;" data-bind="visible: exceptionRecovers().length == 0">
+			<small>暂无数据！</small>
+		</h5>
+	</div>
+</div>
+
+<div class="modal fade" id="exceptionRecoverLoadModal" tabindex="-1"
+	role="dialog" aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog">
+		<form id="exceptionRecoverForm" data-toggle="validator">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title pull-left">编辑异常恢复配置</h4>
+					<div class="pull-right">
+						<input type="checkbox" id="exceptionRecoverEnable"
+							data-on-text="项目默认" data-off-text="非默认">
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="exceptionRecoverName" class="control-label"><span>名称<font
+								color="red">*</font></span></label> <input type="text" class="form-control"
+							id="exceptionRecoverName"
+							data-bind="value:editingExceptionRecover.name" required />
+					</div>
+					<div class="form-group">
+						<label for="exceptionRecoverDescription" class="control-label">描述<font
+							color="red">*</font></label> <input type="text" class="form-control"
+							id="exceptionRecoverDescription"
+							data-bind="value:editingExceptionRecover.description" required>
+					</div>
+					<div class="form-group">
+						<label><span lang="en">请选择子脚本<font color="red">*</font></span></label>
+						<div id="exceptionSubScriptTreeview"
+							style="background-color: #ffffff; height: 260px;"></div>
+					</div>
+					<div class="form-group">
+						<div data-bind="visible: showEmptyExceptionRecover() == true">
+							<font color="red">请选择一个子脚本！</font>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary">
+							<span lang="en">确定</span>
+						</button>
+						<button type="button" class="btn btn-default pull-left"
+							data-bind="click: cancel">
+							<span lang="en">取消</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div class="modal modal-warning fade in" id="deleteExceptionRecoverModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">提醒</h4>
+			</div>
+			<div class="modal-body">
+				<div>删除该异常恢复配置？</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline" data-dismiss="modal">否</button>
+				<button type="button" class="btn btn-outline" data-dismiss="modal"
+					data-bind="click:deleteCurrentExceptionRecover">是</button>
+			</div>
+		</div>
+	</div>
+</div>

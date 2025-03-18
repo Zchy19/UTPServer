@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+	<title>Changing View Configuration</title>
+	<meta  name = "viewport" content = "initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no">
+
+	<script src="../../codebase/webix/webix.js?v=7.0.4" type="text/javascript"></script>
+	<script src="../../codebase/filemanager.js?v=7.0.4" type="text/javascript"></script>
+
+	<link rel="stylesheet" type="text/css" href="../../codebase/webix/webix.css?v=7.0.4">
+	<link rel="stylesheet" type="text/css" href="../../codebase/filemanager.css?v=7.0.4">
+
+	<style>
+		.header{
+			background: #e5e5e5;
+		}
+		.header div{
+			padding: 0 10px;
+		}
+
+	</style>
+</head>
+<body>
+<script type="text/javascript">
+	webix.ready(function(){
+		webix.ui({
+			rows:[
+				{ view: "label", css: "header", label: "onViewInit event handler allows customizing views configuration. In this sample multi-selection is turned off for the 'table' and 'files' views" },
+				{
+					view:"filemanager",
+					id:"files",
+					url:"/filemanager/samples/server",
+					on:{
+						"onViewInit": function(name, config){
+							// disable multi-selection for "table" and "files" views
+							if (name == "table" || name == "files"){
+								config.select = true;
+							}
+						}
+					}
+				}
+			]
+
+		});
+	});
+</script>
+</body>
+</html>

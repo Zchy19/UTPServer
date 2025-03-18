@@ -1,0 +1,77 @@
+<div id = "requirementContent" class="content-wrapper">
+	<div id="requirement_div" style="width: 100%; height: 100%;"></div>
+</div>
+<div class="modal modal-warning fade in" id="deleteRequirementModal"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">提醒</h4>
+			</div>
+			<div class="modal-body">
+				<div>确定删除？</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline" data-dismiss="modal">否</button>
+				<button type="button" class="btn btn-outline" data-dismiss="modal"
+					data-bind="click:deleteTargetRequirement">是</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal modal-warning fade in" id="deleteRequirementWithMappingModal"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">提醒</h4>
+			</div>
+			<div class="modal-body">
+				<div>该需求/检查点已被脚本引用，确定删除？</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline" data-dismiss="modal">否</button>
+				<button type="button" class="btn btn-outline" data-dismiss="modal"
+					data-bind="click:deleteTargetRequirementWithMaping">是</button>
+			</div>
+		</div>
+	</div>
+</div>
+			
+<div class="modal fade" id="exportRequirementConfigModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">包括关联用例</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+                  <label><input type="radio" name="requirementExportType" value="0" data-bind="checked: selectRequirementExportType" />否</label>
+                  <label><input type="radio" name="requirementExportType" value="1" data-bind="checked: selectRequirementExportType" />是</label>
+                </div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" data-bind="click:confirmRequirementExportConfig">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="requirementCustomizedFieldModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" data-backdrop="static">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="myModalLabel">自定义字段</h4>
+			</div>
+			<div class="modal-body">
+				<div id="testReport" data-bind="compose: customizedFieldContainer"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-right" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" data-bind="click:updateRequirementCustomizedFields">更新</button>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,48 @@
+server:
+  port: 6601
+
+spring:
+  mvc:
+    view:
+      suffix: .html
+    servlet:
+      load-on-startup: -1
+
+
+  http:
+    multipart:
+      max-file-size: 256MB
+      max-request-size: 256MB
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/utp_master?characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai&useSSL=false
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: false
+        multiTenancy: DATABASE
+        tenant_identifier_resolver: com.macrosoft.datasource.CurrentTenantIdentifierResolverImpl
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+
+
+
+
+app:
+  ipAddress: http://localhost:6600/
+logging:
+  level:
+    org:
+      springframework:
+        security: debug

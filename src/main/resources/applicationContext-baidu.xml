@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean id="baiduConfig" class="com.macrosoft.utilities.BaiduConfig">		
+		<property name="ocrAppId" value="11028948" />
+		<property name="ocrApiKey" value="nMCbQtiZNFwlNsTXhatoCG55"/>		
+		<property name="ocrSecretKey" value="kUTstZ1XSVshIdu0QHQg7OgbdDRmLq4h" />
+		<property name="qrAppId" value="11107120"/>		
+		<property name="qrApiKey" value="ykCesKdRTssWlEIQSBneOl2G" />
+		<property name="qrSecretKey" value="XaG8IWR4ssPGQ57WgCNGuwuZIyCQgvyt"/>
+	</bean>
+</beans>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean id="harmonizedConfig" class="com.macrosoft.utilities.HarmonizedConfig">
+		<property name="mysqlExePath" value="C:\Program Files\MySQL\MySQL Server 5.7\bin\mysql.exe" />
+		<property name="dbUserName" value="root" />
+		<property name="dbPassword" value="root" />
+		<property name="restoreTemplatePath" value="C:\UTPServer_Data\utp3_template.sql" />
+		<property name="cachingPath" value="C:\UTPServer_Data\utp_caching\" />
+		
+	</bean>
+</beans>

@@ -1,0 +1,122 @@
+// Grid system
+//
+// Generate semantic grid columns with these mixins.
+
+// Centered container element
+.container-fixed(@gutter: @grid-gutter-width) {
+  margin-right: auto;
+  margin-left: auto;
+  padding-left:  (@gutter / 2);
+  padding-right: (@gutter / 2);
+  &:extend(.clearfix all);
+}
+
+// Creates a wrapper for a series of columns
+.make-row(@gutter: @grid-gutter-width) {
+  margin-left:  (@gutter / -2);
+  margin-right: (@gutter / -2);
+  &:extend(.clearfix all);
+}
+
+// Generate the extra small columns
+.make-xs-column(
+  position: relative;
+  float: left;
+  width: percentage((
+  min-height: 1px;
+  padding-left:  (@gutter / 2);
+  padding-right: (@gutter / 2);
+}
+.make-xs-column-offset(
+  margin-left: percentage((
+}
+.make-xs-column-push(
+  left: percentage((
+}
+.make-xs-column-pull(
+  right: percentage((
+}
+
+// Generate the small columns
+.make-sm-column(
+  position: relative;
+  min-height: 1px;
+  padding-left:  (@gutter / 2);
+  padding-right: (@gutter / 2);
+
+  @media (min-width: @screen-sm-min) {
+    float: left;
+    width: percentage((
+  }
+}
+.make-sm-column-offset(
+  @media (min-width: @screen-sm-min) {
+    margin-left: percentage((
+  }
+}
+.make-sm-column-push(
+  @media (min-width: @screen-sm-min) {
+    left: percentage((
+  }
+}
+.make-sm-column-pull(
+  @media (min-width: @screen-sm-min) {
+    right: percentage((
+  }
+}
+
+// Generate the medium columns
+.make-md-column(
+  position: relative;
+  min-height: 1px;
+  padding-left:  (@gutter / 2);
+  padding-right: (@gutter / 2);
+
+  @media (min-width: @screen-md-min) {
+    float: left;
+    width: percentage((
+  }
+}
+.make-md-column-offset(
+  @media (min-width: @screen-md-min) {
+    margin-left: percentage((
+  }
+}
+.make-md-column-push(
+  @media (min-width: @screen-md-min) {
+    left: percentage((
+  }
+}
+.make-md-column-pull(
+  @media (min-width: @screen-md-min) {
+    right: percentage((
+  }
+}
+
+// Generate the large columns
+.make-lg-column(
+  position: relative;
+  min-height: 1px;
+  padding-left:  (@gutter / 2);
+  padding-right: (@gutter / 2);
+
+  @media (min-width: @screen-lg-min) {
+    float: left;
+    width: percentage((
+  }
+}
+.make-lg-column-offset(
+  @media (min-width: @screen-lg-min) {
+    margin-left: percentage((
+  }
+}
+.make-lg-column-push(
+  @media (min-width: @screen-lg-min) {
+    left: percentage((
+  }
+}
+.make-lg-column-pull(
+  @media (min-width: @screen-lg-min) {
+    right: percentage((
+  }
+}

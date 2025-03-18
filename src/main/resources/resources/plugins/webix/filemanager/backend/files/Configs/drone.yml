@@ -1,0 +1,4 @@
+pipeline:
+  test:
+    steps:
+      - node index.js

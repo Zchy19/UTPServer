@@ -1,0 +1,114 @@
+<div class="box box-primary">
+	<div class="box-header with-border">
+		<small>协议字段分析报告</small>
+		<div class="box-tools pull-right">
+			<button type="button" class="btn btn-box-tool" data-bind="click: protocolConditionSetting" data-toggle="tooltip"><i class="fa fa-wrench"></i></button>
+			<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>		                
+		 </div>		             
+	</div>				
+	<div class="box-body">
+		<div>
+			<h5 class="text-center" style="color: grey; font-style: italic;"
+				data-bind="visible: showChart() == false">
+				<small>暂无数据，请设置分析条件！</small>
+			</h5>
+			<div id="protocolChart" style="height: 250px" data-bind="visible: showChart() == true"></div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="protocolConditionSettingModal" tabindex="-1" role="dialog"
+	aria-labelledby="protocolConditionSettingModalLabel" data-backdrop="static">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">协议字段查询设置</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-md-4">
+						<div class="form-group">
+							<label><span lang="en">开始时间</span></label>
+							<div class="input-group date" id="searchBeginDate">
+								<div class="input-group-addon">
+									<i class="fa fa-calendar"></i>
+								</div>
+								<input type="text" class="form-control" data-bind="value:startFromDate" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label><span lang="en">结束时间</span></label>
+							<div class="input-group date" id="searchEndDate">
+								<div class="input-group-addon">
+									<i class="fa fa-calendar"></i>
+								</div>
+								<input type="text" class="form-control" data-bind="value:endByDate">
+							</div>
+						</div>
+						<div class="form-group" data-bind="visible: protocolTypes().length > 0">
+							<label class="control-label">协议类型</label>
+							<small>
+								<select class="form-control" data-bind="options: protocolTypes,
+									optionsText: 'name',
+									value: selectedProtocolType,
+									event: { change: protocolTypeChanged }">
+								</select>
+							</small>
+						</div>
+						<div class="form-group" data-bind="visible: protocols().length > 0">
+							<label class="control-label">协议</label>
+							<small>
+								<select class="form-control" data-bind="options: protocols,
+									optionsText: 'fileName',
+									value: selectedProtocol, 
+									event: { change: protocolChanged }">
+								</select>
+							</small>
+						</div>
+						<div class="form-group" data-bind="visible: protocols().length == 0">
+							<h5 class="text-center" style="color: grey; font-style: italic;"
+								data-bind="visible: showChart() == false">
+								<small>暂无该类型协议数据！</small>
+							</h5>
+						</div>
+						<div class="form-group" data-bind="visible: messages().length > 0">
+							<label class="control-label">消息</label>
+							<small>
+								<select class="form-control" data-bind="options: messages,
+									optionsText: 'messageName',
+									value: selectedMessage,
+									event: { change: messageChanged }">
+								</select>
+							</small>
+						</div>
+						<div class="form-group" data-bind="visible: messages().length == 0">
+							<h5 class="text-center" style="color: grey; font-style: italic;"
+								data-bind="visible: showChart() == false">
+								<small>该协议不存在消息数据！</small>
+							</h5>
+						</div>
+					</div>
+					<div class="col-md-8">
+						<div class="form-group">						
+							<div id="protocolFieldSelectionConfigModal"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" data-bind="click: createProtocolFieldStatistics">查看</button>
+			</div>
+		</div>
+	</div>
+</div>
+<style type="text/css">
+    code {
+      background-color: #f5f5f5;
+    }
+
+    #protocolFieldSelectionConfigModal {
+      width: 100%;
+      height: 400px;
+    }
+</style>
+

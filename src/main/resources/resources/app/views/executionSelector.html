@@ -1,0 +1,59 @@
+<div class="modal modal-info fade" id="selectExecutionModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<!-- 
+          <button type="button" class="close" data-dismiss="alert">x</button>
+           -->
+				<h4 class="modal-title">请选择一个测试执行实例:</h4>
+			</div>
+			<div class="modal-body">
+				<table class="table table-condensed">
+					<thead>
+						<tr>
+							<th>实例名称</th>
+							<th>执行人员</th>
+							<th>开始时间</th>
+							<th />
+						</tr>
+					</thead>
+					<tbody data-bind='foreach: executionList'>
+						<tr>
+							<td><label data-bind="text: executionName"></label></td>
+							<td><label data-bind="text: executedByUserId"></label></td>
+							<td><label data-bind="text: startTime"></label></td>
+							<td><input type="radio" name="execution" data-bind="checkedValue:executionId, checked: $root.selectedExecutionId" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline pull"
+					data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-outline pull-left"
+					data-bind="click:selectExecution">切换</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal modal-info fade" id="emptyExecutionModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<!-- 
+          <button type="button" class="close" data-dismiss="alert">x</button>
+           -->
+				<h4 class="modal-title">提示</h4>
+			</div>
+			<div class="modal-body">
+				<span style="color: blue">当前没有正在执行的测试实例！</span>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline pull"
+					data-dismiss="modal">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+

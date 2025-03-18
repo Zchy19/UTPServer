@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+	<title>File Preview</title>
+	<meta  name = "viewport" content = "initial-scale = 1.0, maximum-scale = 1.0, user-scalable = no">
+
+	<script src="../../codebase/webix/webix.js?v=7.0.4" type="text/javascript"></script>
+	<script src="../../codebase/filemanager.js?v=7.0.4" type="text/javascript"></script>
+
+	<link rel="stylesheet" type="text/css" href="../../codebase/webix/webix.css?v=7.0.4">
+	<link rel="stylesheet" type="text/css" href="../../codebase/filemanager.css?v=7.0.4">
+
+	<style>
+
+		.header div{
+			padding: 0 10px;
+		}
+
+	</style>
+</head>
+<body>
+<script type="text/javascript">
+	webix.ready(function(){
+
+		webix.ui({
+			rows:[
+				{ view: "label", css: "header", label: "Double-click a file to see its content."},
+				{
+					view: "filemanager",
+					id: "fmanager",
+					url:"/filemanager/samples/server"
+				},
+				{view: "resizer",height:2},
+				{
+					id: "preview",
+					template: " ",
+					gravity: 0.6,
+					scroll: true,
+					hidden: true
+				}
+			]
+		});
+
+		// load file content on double click and show it in 'preview'
+		$$("fmanager").attachEvent("onBeforeRun",function(id){
+			webix.ajax().post("/filemanager/samples/server/preview", {source: id}, function(text){
+				if(text){
+					var content = "";
+					if(text.indexOf("data:image")==0){
+						content = '<img src="'+text+'">';
+					}
+					else{
+						content = '<pre>'+text+'</pre>';
+					}
+					$$("preview").show();
+					$$("preview").setHTML(content);
+				}
+			});
+			return false;
+		});
+	});
+</script>
+</body>
+</html>

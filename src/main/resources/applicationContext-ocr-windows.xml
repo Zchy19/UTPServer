@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean id="ocrConfig" class="com.macrosoft.utilities.OcrConfig">		
+		<property name="tesseractPath" value="C:\\Program Files\\Tesseract-OCR" />
+		<property name="tesseractExe" value="tesseract" />
+		<property name="tesseractOutput" value="output" />
+		<property name="tesseractEnv" value='[{"key": "TESSDATA_PREFIX", "value" : "C:\\Program Files\\Tesseract-OCR\\tessdata"}]'/>		
+		<property name="tesseractLang" value="chi_sim" />
+		<property name="tesseractPagesegmode" value="3, 6, 8" />
+		<property name="tesseractOcrenginemode" value="3" />		
+	</bean>
+</beans>

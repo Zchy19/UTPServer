@@ -1,0 +1,155 @@
+<div>
+	<section class="content">
+		<div class="box box-info">
+			<div class="box-header with-border">
+				<small>
+					<label>
+						控制操作
+					</label>
+					<select class="btn btn-box-tool" style="color: black"
+						data-bind="
+								visible: containControlData,
+							    options: monitorControlData,
+								value: selectedControlCmdInfo,
+								optionsText: 'name',
+								optionsValue: 'value',
+								event: { change: monitorControlDataChanged }">
+					</select>
+				</small>
+				<div class="box-tools pull-right" style="margin-right: 48.7%">
+					<button class="btn btn-primary" data-bind="visible: containControlData, click: prepareExecution">发送</button>
+				</div>
+				<div class="box-tools pull-right">
+					<button  class="btn btn-primary" data-bind="visible: monitorControlSaveHide, click: saveOneMonitorControlDataToScript">保存</button>
+				</div>
+			</div>			
+			<div class="box-body" style="height: 300px; overflow-y: auto;">
+				<div class="modal-body" data-bind="visible: containControlData() == true">
+					<div class="from-group" data-bind="visible:canPage()==false" style="text-align: center;">
+						<label>
+							<span lang="en" data-bind='text:genericProtocolName'></span>
+						</label>
+						<div class="row">
+							<!-- 信号组显示 -->
+							<div data-bind="visible:displayGroupsSignals">
+								<small style="font-size: 150%;">通道配置:</small>
+								<select style="margin-right: 10px;width: 131.6px;height: 31.6px;margin-bottom: 20px;margin-top: 10px;"
+									id="groupSignalSelectivity">
+									<option style="display: none;"></option>
+								</select>
+								<button id="add" class="btn btn-primary">新增</button>
+								<div id="inputBox"> </div>
+							</div>
+							  <!-- 单信号显示 -->
+							<div data-bind="visible:displaySignal" >
+								<select style="height: 26.6px;margin-right: 5px;" id="signalSelectivity">
+								  <option style="display: none;"></option>
+								</select>
+								<input id="inputSignal" type="text"></input>
+							</div>
+						</div>
+					</div>
+					<div class="form-group" data-bind="visible:canPage">
+						<label>
+							<span lang="en" data-bind='text:genericProtocolName'></span>
+						</label>
+						<div class="row" >
+							<div class="col-md-4">
+								<div class="form-group">
+									<div id="monitorTestsetProtocolTreeview"
+										style="background-color: #ffffff; height: 350px;"></div>
+								</div>
+							</div>
+
+
+							<div class="col-md-8">
+								<div class="form-group">
+									<div id="monitorTestsetProtocolConfigView"></div>
+								</div>
+								<div class="form-group" data-bind="visible: exceptionCheck()">
+									<!--之前为全部数据-->
+									<label data-bind="visible: onlySelection() == true"><span lang="en">全部字段</span></label>
+									<!--之前为异常数据设定-->
+									<label data-bind="visible: onlySelection() == false"><span lang="en">全部字段</span></label>
+									<input type="checkbox" id="monitorTestsetExceptionCheckConfig"
+										data-on-text="是" data-off-text="否">
+								</div>
+							</div>
+						</div>			
+					</div>
+				</div>
+				<div data-bind="visible: containControlData() == false">
+					不存在控制变量!
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+
+<div class="modal fade" id="monitorTestControlDynamicTargetEngineModal" tabindex="-1"
+	 role="dialog" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">UTP执行器:</h4>
+			</div>
+			<div class="modal-body">
+				<table class="table table-condensed"
+					   data-bind='visible: targetEngineCandidates().length > 0'>
+					<thead>
+					<tr>
+						<th></th>
+						<th>节点标识</th>
+<!--						<th>类型</th>-->
+						<th>描述</th>
+					</tr>
+					</thead>
+					<tbody data-bind='foreach: targetEngineCandidates'>
+					<tr>
+						<td><input type="radio" data-bind="value: id, checked: $parent.selectTargetEngineId" /></td>
+						<td><span data-bind="text: engineName"></span></td>
+<!--						<td><span data-bind="text:property "></span></td>-->
+						<td><span data-bind="text: describe"></span></td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left"
+						data-bind="click: cancelTargetEngine">取消</button>
+				<button type="button" class="btn btn-primary"
+						data-bind="click:confirmTargetEngine">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style type="text/css">
+    code {
+      background-color: #f5f5f5;
+    }
+	#inputBox{
+		display: flex;
+		flex-direction: column;
+	}
+
+    #monitorTestsetProtocolConfigView {
+      width: 100%;
+      height: 400px;
+    }
+
+	.jsoneditor-is-not-default {
+      font-weight: bold;
+    }
+
+    #monitorTestsetProtocolConfigView .different_element {
+      background-color: pink;
+    }
+    #monitorTestsetProtocolConfigView .selected_element {
+      background-color: #acee61;
+    }
+    #monitorTestsetProtocolConfigView .different_element div.jsoneditor-field,
+    #monitorTestsetProtocolConfigView .different_element div.jsoneditor-value {
+      color: red;
+    }
+</style>

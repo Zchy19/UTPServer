@@ -1,0 +1,122 @@
+<div>	
+	<section class="content">		
+		<div class="row">
+			<div class="col-md-6" data-bind="visible:systemConfig.getConfig('utpclient.report_mgr.quality_report_curves')">
+				<div class="box box-primary" style="height: 480px; overflow-y: auto;">
+					<div class="box-header with-border" style="margin-bottom: 80px;">
+						<small>质量走势报告</small>
+						<div class="box-tools pull-right">
+							<div class="btn-group">
+								<button type="button" class="btn btn-box-tool dropdown-toggle" data-toggle="modal" data-target="#qualityConditionSettingModal">
+									<i class="fa fa-wrench"></i>
+								</button>
+								<button type="button" class="btn btn-box-tool" data-bind="click: refreshQualityReport"><i class="fa fa-refresh"></i></button>			                 		                 
+							</div>
+							<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>		                
+						</div>		             
+					</div>				
+					<div class="box-body">
+						<div id="qualityReport" data-bind="compose: viewManager.qualityReportActivePage"></div>		
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6" data-bind="visible:systemConfig.getConfig('utpclient.report_mgr.test_report')">
+				<!--<div id="testReport" data-bind="compose: {model: viewManager.testReportActivePage, activationData : viewManager.testReportActiveData}"></div-->
+				<div id="testReport" data-bind="compose: workspaceContainer"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6" data-bind="visible:systemConfig.getConfig('utpclient.report_mgr.protfield_variant_curves')">
+				<div id="protocolReport" data-bind="compose: viewManager.protocolReportActivePage"></div>		
+		   </div>
+		   <div class="col-md-6" data-bind="visible:systemConfig.getConfig('utpclient.report_mgr.hist_proto_data')">
+				<div id="protocolHistory" data-bind="compose: viewManager.protocolHistoryActivePage"></div>
+			</div>	
+		</div>
+		<div class="row">
+			<div class="col-md-6" data-bind="visible:systemConfig.getConfig('utpclient.report_mgr.test_check_point_chart')">
+				<div id="testsetCheckPoint" data-bind="compose: viewManager.testsetCheckPointActivePage"></div>
+			</div>
+			<div class="col-md-6" data-bind="visible:systemConfig.getConfig('utpclient.report_mgr.cumulative_execute_count_chart')">
+				<div id="testsetAreaReport" data-bind="compose: viewManager.testsetAreaReportActivePage"></div>
+			</div>
+		
+		</div>
+		<div class="row">
+			<div class="col-md-6" data-bind="visible:systemConfig.getConfig('utpclient.report_mgr.test_quality_trends_chart')">
+				<div id="testsetLineReport" data-bind="compose: viewManager.testsetLineReportActivePage"></div>
+			</div>
+			<div class="col-md-6" data-bind="visible:systemConfig.getConfig('utpclient.report_mgr.one_execute_result_chart')">
+				<div id="testsetPieChartReport" data-bind="compose: viewManager.testsetPieChartReportActivePage"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6" data-bind="visible:systemConfig.getConfig('utpclient.report_mgr.cumulative_execute_time_chart')">
+				<div id="testsetHistogramReport" data-bind="compose: viewManager.testsetHistogramReportActivePage"></div>
+			</div>
+			<div class="col-md-6" data-bind="visible:systemConfig.getConfig('utpclient.report_mgr.testset_statistics_chart')">
+				<div id="testsetElectricReport" data-bind="compose: viewManager.testsetElectricReportActivePage"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6" data-bind="visible:systemConfig.getConfig('utpclient.report_mgr.testset_statistics_chart')">
+				<div id="testsetElectricReportOne" data-bind="compose: viewManager.testsetElectricReportOneActivePage"></div>
+			</div>
+			<div class="col-md-6" data-bind="visible:systemConfig.getConfig('utpclient.report_mgr.testset_statistics_chart')">
+				<div id="testsetElectricReportTwo" data-bind="compose: viewManager.testsetElectricReportTwoActivePage"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6" data-bind="visible:systemConfig.getConfig('utpclient.report_mgr.alltestset_checkpoint_chart')">
+				<div id="testsetCheckPointHgReport" data-bind="compose: viewManager.testsetCheckPointHgReportActivePage"></div>
+			</div>
+			<div class="col-md-6" data-bind="visible:systemConfig.getConfig('utpclient.report_mgr.testset_checkpoint_mdl_chart')">
+				<div id="testsetCheckPointPCReport" data-bind="compose: viewManager.testsetCheckPointPCReportActivePage"></div>
+			</div>
+		</div>
+		<!-- <div class="row">
+			<div class="col-md-6" data-bind="visible:systemConfig.getConfig('utpclient.report_mgr.test_data_record_table')">
+				<div id="testsetDataTable" data-bind="compose: viewManager.testsetDataTableActivePage"></div>
+			</div>
+			
+		</div> -->
+	</section>
+</div>
+<div class="modal fade" id="qualityConditionSettingModal" tabindex="-1" role="dialog" 
+			aria-labelledby="qualityConditionSettingModalLabel" data-backdrop="static">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">质量走势报告时间设置</h4>
+			</div>
+			<div class="modal-body">
+				<div data-bind="with:searchCondition">
+					<div class="form-group">
+						<label><span lang="en">开始时间</span></label>
+						<div class="input-group date" id="searchBeginDate">
+							<div class="input-group-addon">
+								<i class="fa fa-calendar"></i>
+							</div>
+							<input type="text" class="form-control" data-bind="value:begin" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label><span lang="en">结束时间</span></label>
+						<div class="input-group date" id="searchEndDate">
+							<div class="input-group-addon">
+								<i class="fa fa-calendar"></i>
+							</div>
+							<input type="text" class="form-control" data-bind="value:end">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" data-bind="click: createQualityChart">查看</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+

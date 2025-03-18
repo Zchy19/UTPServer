@@ -1,0 +1,16 @@
+{
+	"token": {
+		"User Role":"用户角色",
+		"User Role List":"用户角色列表",
+		"Name":"名称",
+		"Description":"描述",
+		"Submit":"提交",
+		"Cancel":"取消",
+		"Edit":"编辑",
+		"Add User Role": "新增角色",
+		"Edit User Role": "编辑角色",
+		"Enter ...":"输入",
+		"Search":"搜索",
+		"Delete" : "删除"
+	}
+}

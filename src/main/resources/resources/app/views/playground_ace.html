@@ -1,0 +1,437 @@
+<div>	
+	<section class="content">		
+		<div class="nav-tabs-custom">
+			<ul class="nav nav-tabs">
+				<li class="" data-bind="click:initRequirementReference"><a
+					href="#testbasic" data-toggle="tab" aria-expanded="true">基本信息</a></li>				
+				<li class="active" data-bind="click: showScriptInStepsView"><a
+					href="#teststep" data-toggle="tab" aria-expanded="false">测试步骤</a></li>
+				<li class="" data-bind="click: enableBlockScriptEdit"><a
+					href="#testedit" data-toggle="tab" aria-expanded="false">编辑用例</a></li>
+				<li class="" data-bind="click: showScriptInSequenceView"><a
+					href="#testdiagram" data-toggle="tab" aria-expanded="false">交互图</a></li>
+				<li class="pull-right"><a href="#" data-bind="click: gotoTestcase">
+					<i class="glyphicon glyphicon-hand-left"></i>TestCase管理</a>
+				</li>
+			</ul>
+			<div class="tab-content">				
+				<div id="script-edit">					
+					<div class="form-group">
+						<input type="checkbox" class="btn btn-primary" id="scripEditingtModeInput" data-on-text="命令模式" data-off-text="Block模式">
+						<button class="btn btn-primary" data-bind="click: insertRecordCmd">
+							<span lang="en">命令</span>
+						</button>
+						<button class="btn btn-primary" data-bind="click: insertSubScriptCmd">
+							<span lang="en">脚本</span>
+						</button>
+						<button class="btn btn-primary" data-bind="click: insertCheckpointCmd,visible: isTestcase == true">
+							<span lang="en">检查点</span>
+						</button>
+						<button class="btn btn-primary"
+							data-bind="enable:false, visible:testcaseSavedFlag()==true, click: saveScript">
+							<span lang="en">保存</span>
+						</button>
+						<button class="btn btn-warning"
+							data-bind="visible:testcaseSavedFlag()==false, click: saveScript">
+							<span lang="en">保存</span>
+						</button>
+						<button class="btn btn-primary" data-bind="click: insertParaSeparator, visible: commandMode() == true">
+							<span lang="en">参数分隔符</span>
+						</button>
+						<button class="btn btn-primary" data-bind="click: insertCmdSeparator, visible: commandMode() == true">
+							<span lang="en">命令分隔符</span>
+						</button>
+						<button class="btn btn-primary" data-bind="click: expandBlocky, visible: commandMode() == false">
+							<span lang="en">展开</span>
+						</button>
+						<button class="btn btn-primary" data-bind="click: collapseBlocky, visible: commandMode() == false">
+							<span lang="en">收起</span>
+						</button>
+						<div class="pull-right">
+					      <label>剩余Block：</label><label  data-bind="text:remainNumberOfBlocks"></label>
+					    </div>						
+					</div>
+					<div class="form-group">
+						<div id="blocklyDiv" style="height: 600px; width: 100%;" data-bind="visible: commandMode() == false"></div>
+						<pre id="editor" style="margin: 0; height:60%; width:100%; border-right:1px solid #ddd;" data-bind="visible: commandMode() == true"></pre>
+					</div>
+				</div>
+				<div class="tab-pane active" id="teststep" style="height: 660px; overflow-y: auto;">
+					<pre class="hierarchy bring-up">
+						<code class="language-bash" data-lang="bash"
+							data-bind="text:scriptInTestSteps">步骤</code>
+				  	</pre>
+				</div>
+				<div class="tab-pane" id="testedit"></div>
+				<div class="tab-pane" id="testdiagram" style="height: 660px; overflow-y: auto;">
+					<a href="#" id='download'> <span lang="en">下载</span>
+					</a>
+					<div id="diagram"></div>
+				</div>
+				<div class="tab-pane" id="testbasic" style="height: 600px;">
+					<div class="row">
+						<section class="col-md-7">
+							 <div class="form-group">
+							  	<label class="control-label">名称<font color="red">*</font></label>
+								<input type="text" class="form-control" data-bind="value:currentScript.name" placeholder="名称 ...">
+			                  </div>
+			                   <div class="form-group">
+			                     <label class="control-label">测试用例ID</label>
+			                   	<input type="text" class="form-control" data-bind="value:currentScript.customizedId" placeholder="测试用例ID...">
+			                  </div>
+			                  <div class="form-group">
+			                    <label class="control-label">备注</label>
+			                   	<textarea class="form-control" rows="4" data-bind="value:currentScript.description" placeholder="备注 ..."></textarea>	 
+			                  </div>         
+			                  <div class="form-group">
+			                    <button type="button" class="btn btn-primary pull-right" data-bind="click: updateBasic"><span>更新</span></button>
+			                  </div>
+		                  </section>
+		                  <section class="col-md-5" data-bind="visible: isTestcase == true">
+			                  <div class="form-group">
+			                  	<label class="control-label">关联的检查点</label>
+			                    <div id="requirement_reference"></div>	
+			                  </div>
+		                  </section>
+	                 </div>	
+				</div>
+			</div>
+		</div>
+	</section>	
+</div>
+
+<!-- Modal - waiting dialog -->
+<div class="modal fade" id="waitingModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="myModalLabel">
+		<div class="box box-danger box-solid">
+			<div class="box-header">
+				<h3 class="box-title">等待 ...</h3>
+			</div>
+			<div class="box-body" data-bind="text: busyPropInfo"></div>
+			<div class="overlay">
+				<i class="fa fa-refresh fa-spin"></i>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal - Insert Existing Command -->
+<div class="modal fade" id="insertCommandModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<!-- 
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span>X</span></button>
+			-->
+				<h4 class="modal-title">为AntBot插入操作步骤</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label><span lang="en">1: 选择AntBot:</span></label>
+					<select
+						style="color: black"
+						data-bind="
+							    options: projectManager.agentsConfigData,
+								value: selectedAgent,
+								optionsText: 'antbotName',
+								event: { change: agentChangedOnInsertCommands }">
+					</select>
+				</div>
+				<div class="form-group" data-bind="visible: needRecordSelected()==true">
+					<label><span lang="en">2: 选择录制集:</span></label>
+					<select
+						style="color: black"
+						data-bind="
+								options: agentsRecordData, 
+								value: selectedRecord,
+								optionsText: 'scriptName',
+								event: { change: onRecordSelected }">
+					</select>
+					<table>
+						<tr>
+							<td style="overflow: auto">
+								<div id="recordListView"></div>
+							</td>							
+						</tr>
+					</table>
+				</div>
+				<div class="form-group">
+					<label>
+						<span lang="en" data-bind="visible: needRecordSelected()==true">3: 选择录制步骤:</span>
+						<span lang="en" data-bind="visible: needRecordSelected()==false">2: 选择操作步骤:</span>
+					</label>
+					<div id="commandSelectionView" style="height:200px;"></div>					
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-bind="click: $root.insertCommands">插入</button>
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal - Insert Existing Script -->
+<div class="modal fade" id="insertScriptModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">				
+				<h4 class="modal-title">插入子脚本</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label><span lang="en">请选择子脚本<font color="red">*</font></span></label>
+					<div id="subScriptTreeview" style="background-color: #ffffff; height: 260px;"></div>
+				</div>
+				 <div class="form-group">
+                  <label><input type="radio" name="scriptFunType" value="0" data-bind="checked: selectScriptFunType" />调用子脚本</label>
+                  <label><input type="radio" name="scriptFunType" value="1" data-bind="checked: selectScriptFunType" />获取脚本内容</label>
+                </div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-bind="click: $root.insertSubScript"><span lang="en">确定</span></button>
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal - Insert Existing requirement/checkpoint -->
+<div class="modal fade" id="insertCheckPointModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">				
+				<h4 class="modal-title">插入检查点</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<div class="form-group">
+						<label><span lang="en">请选择检查点<font color="red">*</font></span></label>
+						<div id="checkPointTreeview"
+							style="background-color: #ffffff; height: 260px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-bind="click: $root.insertCheckPoint"><span lang="en">确定</span></button>
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal modal-warning fade in" id="changeEditorModal"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">提醒</h4>
+			</div>
+			<div class="modal-body">
+				<div>使用block导出的文本覆盖已有文本格式脚本？</div>
+			</div>
+			<div class="modal-footer">				
+				<button type="button" class="btn btn-outline" data-dismiss="modal" data-bind="click:overWriteText">是</button>
+				<button type="button" class="btn btn-outline" data-dismiss="modal">否</button>
+			</div>
+		</div>
+	</div>
+</div>
+ 
+<div class="modal fade" id="genericProtocolFieldSettingModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">消息帧结构设置</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label>
+						<span lang="en" data-bind='text:genericProtocolName'></span>
+					</label>
+					<div class="row">
+						<div class="col-md-4">
+							<div class="form-group">
+								<div id="genericProtocolTreeview"
+									style="background-color: #ffffff; height: 400px;"></div>
+							</div>
+						</div>
+						<div class="col-md-8">
+							<div class="form-group">
+								<div id="protocolConfigView"></div>
+							</div>
+						</div>
+					</div>			
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-bind="click: $root.composeGenericFrameField"><span lang="en">提交</span></button>
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style type="text/css">
+    code {
+      background-color: #f5f5f5;
+    }
+
+    #protocolConfigView {
+      width: 100%;
+      height: 400px;
+    }
+
+	.jsoneditor-is-not-default {
+      font-weight: bold;
+    }
+
+    #protocolConfigView .different_element {
+      background-color: pink;
+    }
+    #protocolConfigView .selected_element {
+      background-color: #acee61;
+    }
+    #protocolConfigView .different_element div.jsoneditor-field,
+    #protocolConfigView .different_element div.jsoneditor-value {
+      color: red;
+    }
+</style>
+	
+<xml id="toolbox-categories" style="display: none">
+	<category name="逻辑" colour="210">
+		<block type="logic_logic"></block>
+		<block type="logic_monitor"></block>
+		<block type="logic_time"></block>
+		<block type="controls_wait"></block>
+		<block type="controls_singleIf"></block>
+		<block type="logic_compare"></block>
+		<block type="logic_operation"></block>
+		<block type="logic_negate"></block>
+		<block type="logic_boolean"></block>
+	</category>
+	<category name="循环" colour="120">
+		<block type="controls_while"></block>
+		<!-- <block type="controls_async"></block> -->
+		<block type="controls_simplefor">
+			<value name="FROM">
+				<shadow	type="math_number">
+					<field name="NUM">1</field>
+				</shadow>
+			</value>
+			<value name="TO">
+				<shadow type="math_number">
+					<field name="NUM">10</field>
+				</shadow>
+			</value>
+			<value name="BY">
+				<shadow	type="math_number">
+					<field name="NUM">1</field>
+				</shadow>
+			</value>
+		</block>
+		<block type="controls_forEachInListVariable"></block>
+	</category>
+	<category name="数值" colour="230">
+	  <block type="math_number" gap="32"></block>
+	  <block type="math_complex_number"></block>
+      <block type="math_arithmetic">
+        <value name="A">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="B">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_single">
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_trig">
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+    </category>
+	<category name="文本" colour="160">
+	  <block type="text"></block>
+	  <block type="text_area"></block>
+	  <block type="text_stringmerge">
+		<value name="STRINGARRAY">
+          <block type="lists_create_with">
+            <mutation items="1"></mutation>
+          </block>
+        </value>
+	  </block>
+	  <block type="text_stringsplit">
+		<value name="STRINGVAL">
+          <shadow type="text">
+            <field name="TEXT">str</field>
+          </shadow>
+        </value>
+		<value name="SEPARATOR">
+          <shadow type="text">
+            <field name="TEXT"></field>
+          </shadow>
+        </value>
+	  </block>
+	  <block type="logic_stringcompare"></block>
+      <block type="logic_rexcompare"></block>
+	  <block type="logic_rexcomparereturn"></block>	
+	</category>
+	<category name="数组" colour="260">
+		<block type="lists_create_with">
+			<mutation items="0"></mutation>
+		</block>
+		<block type="list_get_index_val"></block>
+		<block type="lists_set_array_from_json">
+			<value name="SOURCE">
+	          <shadow type="text">
+	            <field name="TEXT">json</field>
+	          </shadow>
+	        </value>
+	    </block>
+		<block type="lists_generate_fix_len_str_data"></block>
+		<block type="lists_create_orthogonal_array">
+			<value name="ARRAYTARGET">
+			  <block type="lists_create_with">
+				<mutation items="1"></mutation>
+			  </block>
+			</value>
+		</block>
+		<block type="lists_append_to_array">
+			<value name="ARRAYTARGET">
+			  <block type="lists_create_with">
+				<mutation items="1"></mutation>
+			  </block>
+			</value>
+		</block>
+		<block type="lists_merge_array">
+			<value name="ARRAYTARGET">
+			  <block type="lists_create_with">
+				<mutation items="1"></mutation>
+			  </block>
+			</value>
+		</block>
+		<block type="lists_generate_test_data">
+			<value name="CONDITION">
+			  <block type="lists_create_with">
+				<mutation items="1"></mutation>
+			  </block>
+			</value>
+		</block>	  
+	</category>
+	<sep></sep>
+	<category name="变量" colour="330" custom="VARIABLE"></category>
+</xml>

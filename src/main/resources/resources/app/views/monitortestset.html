@@ -1,0 +1,216 @@
+<div id="monitorTestSetInfo" class="content-wrapper">
+	<div id="monitorTestSetOverAllInfo">
+			<div class="box-header with-border">
+				<small>监控管理</small>
+				<div class="box-tools pull-right">
+					<button type="button" class="btn btn-box-tool"
+						data-bind="click: enterAddItemMode" data-placement="bottom"
+						data-toggle="tooltip" title="新建监控测试集">
+						<i class="fa fa-plus"></i>
+					</button>
+					<button type="button" class="btn btn-box-tool"
+						data-bind="click: getMonitorTestSetConfig" data-placement="bottom"
+						data-toggle="tooltip" title="刷新">
+						<i class="fa fa-refresh"></i>
+					</button>
+				</div>
+			</div>
+			<div class="box-body" style="max-height: 600px; overflow-y: auto;">
+				<table class="table table-bordered table-striped table-hover">
+					<thead>
+						<tr>
+							<th><small>名称</small></th>
+							<th><small>描述</small></th>				
+							<th><small>类型</small></th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody data-bind='foreach: monitorTestSets' data-bind="visible: monitorTestSets().length > 0">
+						<tr>
+							<td><small><label data-bind='text:name'></label></small></td>
+							<td><small><label data-bind='text:description'></label></small></td>
+							<td><small>
+								<label data-bind='if: type == 0'>监测并控制</label>
+								<label data-bind='if: type == 1'>仅监测</label>
+								<label data-bind='if: type == 2'>仅控制</label>
+							</small></td>
+							<td>
+								<small>
+									<button class="btn btn-primary btn-sm" data-toggle="modal"
+										title="编辑监控测试集" data-original-title="Edit"
+										data-bind="click: $parent.enterEditItemMode">
+										<i class="glyphicon glyphicon-edit"></i>
+									</button>
+									<button class="btn btn-danger btn-sm" data-toggle="tooltip"
+										title="删除监控测试集" data-original-title="Delete"
+										data-bind="click: $parent.remove">
+										<i class="glyphicon glyphicon-trash"></i>
+									</button>
+									<!-- 暂时关闭 -->
+									<button class="btn btn-success btn-sm" data-toggle="tooltip"
+										title="查看历史记录" data-original-title="History"
+										data-bind="click: $parent.viewResult">
+										<i class="glyphicon glyphicon-th-list"></i>
+									</button>
+									<button class="btn btn-info btn-sm"
+										data-toggle="tooltip" title="进入"
+										data-bind="click: $parent.gotoExecution">
+										<i class="glyphicon glyphicon-hand-right"></i>
+									</button>
+								</small>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<h5 class="text-center" style="color: grey; font-style: italic;" data-bind="visible: monitorTestSets().length == 0">
+					<small>暂无数据！</small>
+				</h5>
+			</div>
+	</div>
+	<div id="monitorTestSetDetail">
+		<div id="monitorTestSetEdit" data-bind="visible: showMonitorTestsetResult() == false">
+			<form id="monitorTestSetForm" data-toggle="validator">
+				<div>
+					<div class="form-group">
+						<label class="control-label">名称<font
+							color="red">*</font></label> <input type="text" class="form-control"
+							id="monitorTestSetName" data-bind="value:editingMonitorTestSetConfig.name"
+							required>
+					</div>
+					<div class="form-group">
+						<label class="control-label">描述</label> 
+						<input type="text" class="form-control"
+							id="monitorTestSetDescription" data-bind="value:editingMonitorTestSetConfig.description"
+							required>
+					</div>
+					<div class="form-group">
+						<label class="control-label">类型<font
+								color="red">*</font></label>
+						<select class="form-control" id="monitorTestSetType" data-bind="options: monitorTestsetTypes,
+																		optionsText:'name',
+																		optionsValue:'value',
+																		value:selectedMonitorTestsetType,
+																		event: {change: selectedMonitorTestsetTypeChanged}">
+						</select>
+					</div>
+					<div class="form-group" data-bind="if: editingMonitorTestSetConfig.type() == 0 || editingMonitorTestSetConfig.type() == 1">
+						<label class="control-label">启动脚本<font color="red">*</font></label>
+						<button class="btn btn-primary" data-bind="click: opensendCommandScriptUI.bind($data, 'start')">
+							<span data-bind="text:startScriptName"></span> 
+						</button>
+					</div>
+					<div class="form-group" data-bind="if: editingMonitorTestSetConfig.type() == 0 || editingMonitorTestSetConfig.type() == 2">
+						<label class="control-label">执行脚本<font color="red">*</font></label>
+						<button class="btn btn-primary" data-bind="click: opensendCommandScriptUI.bind($data, 'monitor')">
+							<span data-bind="text:sendCommandScriptName"></span> 
+						</button>
+					</div>
+					<div class="form-group" data-bind="if: editingMonitorTestSetConfig.type() == 0 || editingMonitorTestSetConfig.type() == 1">
+						<label class="control-label">停止脚本<font color="red">*</font></label>
+						<button class="btn btn-primary" data-bind="click: opensendCommandScriptUI.bind($data, 'stop')">
+							<span data-bind="text:stopScriptName"></span> 
+						</button>
+					</div>
+					<div class="form-group">
+						<button type="button" class="btn btn-primary" data-bind="click: submitMonitorTestSetConfig"><span lang="en">确定</span></button>
+					</div>
+				</div>
+			</form> 
+		</div>	
+		<div id="monitorTestSetHistory" data-bind="visible: showMonitorTestsetResult() == true">
+			<table
+					class="table table-condensed table-bordered table-striped table-hover"
+					data-bind="visible: monitorExecutionDataResult().length > 0">
+				<thead>
+				<tr>
+					<th><small>名称</small></th>
+					<th><small>时间</small></th>
+					<th></th>
+				</tr>
+				</thead>
+				<tbody data-bind='foreach: monitorExecutionDataResult'>
+				<tr>
+					<td><small><label data-bind="text: $parent.viewManager.selectedMonitorTestsetActiveData.name + '-' + startTime"></label></small></td>
+					<td><small><label data-bind='text:startTime'></label>
+						- <label data-bind='text:stopTime'></label></small></td>
+					<td><small>
+						<button class="btn btn-primary btn-sm" data-toggle="tooltip"
+								title="查看"
+								data-bind="click: $parent.viewResultDetail">
+							<i class="glyphicon glyphicon-zoom-in"></i>
+						</button>
+						<button class="btn btn-danger btn-sm" data-toggle="tooltip"
+								title="删除记录" data-original-title="Delete"
+								data-bind="click: $parent.viewRemoveResult">
+							<i class="glyphicon glyphicon-trash"></i>
+						</button>
+					</small></td>
+				</tr>
+				</tbody>
+			</table>
+			<h5 class="text-center" style="color: grey; font-style: italic;"
+				data-bind="visible: monitorExecutionDataResult().length == 0">
+				<small>暂无数据！</small>
+			</h5>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="insertsendCommandScriptModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">				
+				<h4 class="modal-title">插入脚本</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label><span lang="en">请选择脚本<font color="red">*</font></span></label>
+					<div id="scriptTreeview" style="background-color: #ffffff; height: 260px;"></div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-bind="click: $root.insertScript"><span lang="en">确定</span></button>
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal modal-warning fade in" id="deleteMonitorTestSetModal"
+	tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">提醒</h4>
+			</div>
+			<div class="modal-body">
+				<div>删除监测测试集，有可能导致与此相关联的历史记录显示不准确，确认删除该监测测试集？</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline" data-dismiss="modal">否</button>
+				<button type="button" class="btn btn-outline" data-dismiss="modal"
+					data-bind="click:deleteCurrentMonitorTestSet">是</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal modal-warning fade in" id="deleteMonitorExecutionData"
+	 tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">提醒</h4>
+			</div>
+			<div class="modal-body">
+				<div>删除监测记录，删除后不可恢复，确认删除该监测记录？</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline" data-dismiss="modal">否</button>
+				<button type="button" class="btn btn-outline" data-dismiss="modal"
+						data-bind="click:confirmRemoveExecutionResult">是</button>
+			</div>
+		</div>
+	</div>
+</div>

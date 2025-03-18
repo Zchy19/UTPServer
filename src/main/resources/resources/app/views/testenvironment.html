@@ -1,0 +1,39 @@
+<div id="testsetEnvironment" class="content-wrapper">
+	<div id="testsetInfo">
+		<div>
+			<div class="box-header with-border">
+				<small>测试执行管理</small>
+				<div class="box-tools pull-right">
+					<button type="button" class="btn btn-box-tool"
+						data-bind="click: showExceptionRecover,visible:systemConfig.getConfig('utpclient.testset_exec.recover_script')" data-placement="bottom"
+						data-toggle="tooltip" title="异常恢复配置">
+						<i class="fa fa-wrench"></i>
+					</button>
+					<button type="button" class="btn btn-box-tool"
+						data-bind="click: addTestSet" data-placement="bottom"
+						data-toggle="tooltip" title="新建测试集">
+						<i class="fa fa-plus"></i>
+					</button>
+					<button type="button" class="btn btn-box-tool"
+						data-bind="click: refreshTestSet" data-placement="bottom"
+						data-toggle="tooltip" title="刷新">
+						<i class="fa fa-refresh"></i>
+					</button>
+				</div>
+			</div>
+			<div class="box-body" style="max-height: 600px; overflow-y: auto;">
+				<div id="testrunInfo"
+					data-bind="compose: viewManager.testrunActivePage"></div>
+			</div>
+		</div>
+	</div>
+	<div id="environmentInfo">
+		<div data-bind="visible: showTestsetResult() == false">
+			<div id="exceptionRecoverInfo" data-bind="compose: viewManager.exceptionrecoverActivePage"></div>
+		</div>
+		<div data-bind="visible: showTestsetResult() == true">
+			<div id="executionReport" data-bind="compose: {model: viewManager.executionReportActivePage, activationData : viewManager.executionReportActiveData}"></div>				
+				<!-- <div id="executionReport" data-bind="compose: viewManager.executionReportActivePage"></div> -->
+		</div>
+	</div>
+</div>

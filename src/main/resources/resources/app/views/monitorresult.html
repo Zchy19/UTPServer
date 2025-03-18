@@ -1,0 +1,18 @@
+<div>
+	<div data-bind="visible: showMonitorData() == true">
+		<table class="table table-bordered"
+			style="word-break: break-all; word-wrap: break-all;">
+			<tbody data-bind='foreach: variableResults'>
+				<tr>
+					<td width="30%"><small><label data-bind='text:time'></label></small></td>
+					<td width="70%"><small><label data-bind='text:value'></label></small></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<h5 class="text-center" style="color: grey; font-style: italic;"
+		data-bind="visible: showMonitorData() == false">
+		<small>暂无数据！</small>
+	</h5>
+</div>
+
