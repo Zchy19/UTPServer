@@ -9,7 +9,12 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 public class UTPApplication {
 
     public static void main(String[] args) {
+        try {
             SpringApplication.run(UTPApplication.class, args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

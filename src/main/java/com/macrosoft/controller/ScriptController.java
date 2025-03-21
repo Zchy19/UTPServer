@@ -113,7 +113,6 @@ public class ScriptController {
 				scriptInfo.setErrorMessages("OVER_MAX_SCRIPT_NUM");
 				return new ApiResponse<>(ApiResponse.UnHandleException, scriptInfo);
 			}
-			script.setType(ScriptType.TestCaseType);
 			Script result = this.mScriptService.addScript(script.getProjectId(), script);
 			ScriptMessageInfo scriptMessageInfo = new ScriptMessageInfo(result);
 			return new ApiResponse<>(ApiResponse.Success, scriptMessageInfo);
