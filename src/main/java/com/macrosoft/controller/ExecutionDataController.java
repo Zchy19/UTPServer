@@ -1,30 +1,16 @@
 package com.macrosoft.controller;
 
-import com.macrosoft.configuration.UrsConfigurationImpl;
-import com.macrosoft.controller.dto.*;
+import com.macrosoft.controller.dto.ExecutionDataInfo;
 import com.macrosoft.controller.response.ApiResponse;
 import com.macrosoft.logging.ILogger;
 import com.macrosoft.logging.LoggerFactory;
-import com.macrosoft.master.TenantContext;
-import com.macrosoft.model.*;
-import com.macrosoft.model.composition.ExecutionStatusWithResult;
-import com.macrosoft.service.*;
-import com.macrosoft.urs.IpAddress;
-import com.macrosoft.utp.adatper.utpengine.ExecutionModelManager;
-import com.macrosoft.utp.adatper.utpengine.UtpEngineControllerManager;
-import com.macrosoft.utp.adatper.utpengine.dto.ExecutionContext;
-import org.hibernate.SQLQuery;
-import org.hibernate.transform.Transformers;
-import org.hibernate.type.StandardBasicTypes;
-import org.joda.time.DateTime;
+import com.macrosoft.model.ExecutionData;
+import com.macrosoft.service.ExecutionDataService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Handles requests for the application home page.

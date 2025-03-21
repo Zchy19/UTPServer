@@ -247,22 +247,6 @@ public class ProjectController {
         }
     }
 
-    @RequestMapping(value = "/api/scriptgroup/data/getByProjectId/{projectId}", method = RequestMethod.GET)
-    public @ResponseBody ApiResponse<ProjectScriptGroupsData> getAllScriptGroupData(@PathVariable("projectId") long projectId) {
-        try {
-
-            logger.debug(String.format("trace performance : getAllScriptGroupData begin..., projectId: %s", projectId));
-
-            ProjectScriptGroupsData projectScriptGroupsData = this.mProjectService.getAllScriptGroupData(projectId);
-            return new ApiResponse<ProjectScriptGroupsData>(ApiResponse.Success, projectScriptGroupsData);
-        } catch (Exception ex) {
-            logger.error("getAllScriptGroupData", ex);
-            return new ApiResponse<ProjectScriptGroupsData>(ApiResponse.UnHandleException, null);
-        } finally {
-            logger.debug(String.format("trace performance : getAllScriptGroupData end..., projectId: %s", projectId));
-        }
-    }
-
     @RequestMapping(value = "/api/scriptgroup/scriptdata/getByProjectId/{projectId}", method = RequestMethod.GET)
     public @ResponseBody ApiResponse<ProjectScriptGroupsData> getScriptGroupDataOnlyScript(
             @PathVariable("projectId") long projectId) {

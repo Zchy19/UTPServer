@@ -75,7 +75,8 @@ public class HibernateConfig {
             com.macrosoft.model.SpecialTest.class,
             com.macrosoft.model.SpecialTestData.class,
             com.macrosoft.model.ExecutionCheckPoint.class,
-            com.macrosoft.model.TestCase.class
+            com.macrosoft.model.TestCase.class,
+            com.macrosoft.model.RunnableScript.class
         );
 
         // 设置 Hibernate 属性

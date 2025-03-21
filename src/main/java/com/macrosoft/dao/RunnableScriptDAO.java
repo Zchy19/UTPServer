@@ -5,6 +5,6 @@ import com.macrosoft.model.RunnableScript;
 public interface RunnableScriptDAO {
     void addRunnableScript(RunnableScript runnableScript);
     void updateRunnableScript(RunnableScript runnableScript);
-    RunnableScript getRunnableScriptById(long id);
+    RunnableScript getRunnableScriptById(long projectId, long id);
     void removeRunnableScript(long id);
 }

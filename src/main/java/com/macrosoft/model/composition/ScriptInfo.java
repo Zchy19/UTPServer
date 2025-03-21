@@ -1,6 +1,11 @@
 package com.macrosoft.model.composition;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
+@Builder
+@AllArgsConstructor
 public class ScriptInfo {
 	
 	private long id;

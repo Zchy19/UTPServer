@@ -18,7 +18,6 @@ public class RunnableScript implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue
     /**
      * Id
      */
@@ -28,14 +27,9 @@ public class RunnableScript implements Serializable {
     /**
      * Scriptid
      */
-    @Column(name="Scriptid")
-    private Long scriptid;
+    @Column(name="ProjectId")
+    private Long projectId;
 
-    /**
-     * Description
-     */
-    @Column(name="Description")
-    private String description;
 
     public RunnableScript() {
     }

@@ -39,8 +39,9 @@ public class RunnableScriptServiceimpl implements RunnableScriptService {
     }
 
     @Override
-    public RunnableScript getRunnableScriptById(long id) {
-        return runnableScriptDAO.getRunnableScriptById(id);
+    @Transactional
+    public RunnableScript getRunnableScriptById(long projectId, long scriptId) {
+        return runnableScriptDAO.getRunnableScriptById(projectId, scriptId);
     }
 
     @Override

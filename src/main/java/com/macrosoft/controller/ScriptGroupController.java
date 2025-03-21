@@ -1,381 +1,406 @@
 package com.macrosoft.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.macrosoft.controller.dto.PasteScriptGroupResponse;
 import com.macrosoft.controller.dto.ScriptGroupAndScriptFlatData;
 import com.macrosoft.controller.response.ApiResponse;
-import com.macrosoft.model.composition.ScriptInfo;
 import com.macrosoft.logging.ILogger;
 import com.macrosoft.logging.LoggerFactory;
 import com.macrosoft.logging.TrailUtility;
 import com.macrosoft.model.Script;
 import com.macrosoft.model.ScriptGroup;
 import com.macrosoft.model.TestSet;
+import com.macrosoft.model.composition.ScriptInfo;
 import com.macrosoft.service.ScriptGroupService;
 import com.macrosoft.service.ScriptService;
 import com.macrosoft.service.TestSetService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 脚本组管理控制器
+ * 处理与脚本组相关的所有API请求，包括创建、删除、修改、查询等操作
+ */
+@RestController
+@RequestMapping("/api")
 public class ScriptGroupController {
 	private static final ILogger logger = LoggerFactory.Create(ScriptGroupController.class.getName());
 
-	private ScriptGroupService mScriptGroupService;
-	private ScriptService mScriptService;
-	private TestSetService mTestSetService;
+	private ScriptGroupService scriptGroupService;
+	private ScriptService scriptService;
+	private TestSetService testSetService;
 
 	@Autowired(required = true)
-	
 	public void setScriptGroupService(ScriptGroupService scriptGroupService) {
-		this.mScriptGroupService = scriptGroupService;
+		this.scriptGroupService = scriptGroupService;
 	}
 
 	@Autowired(required = true)
-	
 	public void setScriptService(ScriptService scriptService) {
-		this.mScriptService = scriptService;
+		this.scriptService = scriptService;
 	}
 
 	@Autowired(required = true)
-	
-	public void y(TestSetService testsetService) {
-		this.mTestSetService = testsetService;
+	public void setTestSetService(TestSetService testSetService) {
+		this.testSetService = testSetService;
 	}
-	
-	@RequestMapping(value = "/api/project/getProjectFlatData/{projectId}", method = RequestMethod.GET)
-	public @ResponseBody ApiResponse<ScriptGroupAndScriptFlatData> getProjectFlatData(@PathVariable("projectId") long projectId) {
+
+	/**
+	 * 获取项目的平面数据（脚本组和脚本）
+	 * @param projectId 项目ID
+	 * @param type 数据类型
+	 * @return 包含脚本组和脚本信息的API响应
+	 */
+	@GetMapping("/project/getProjectFlatData/{projectId}/{type}")
+	public ApiResponse<ScriptGroupAndScriptFlatData> getProjectFlatData(@PathVariable("projectId") long projectId,
+																		@PathVariable("type") String type) {
 		try {
 			ScriptGroupAndScriptFlatData projectFlatData = new ScriptGroupAndScriptFlatData();
-			projectFlatData.scriptGroups = this.mScriptGroupService.listScriptGroups(projectId);
-			projectFlatData.scripts = this.mScriptService.listScriptInfos(projectId);
-			return new ApiResponse<ScriptGroupAndScriptFlatData>(ApiResponse.Success, projectFlatData);
+			projectFlatData.scriptGroups = this.scriptGroupService.listScriptGroupsByType(projectId, type);
+			projectFlatData.scripts = this.scriptService.listScriptInfos(projectId, type);
+			return new ApiResponse<>(ApiResponse.Success, projectFlatData);
 		} catch (Exception ex) {
 			logger.error("getProjectFlatData", ex);
-			return new ApiResponse<ScriptGroupAndScriptFlatData>(ApiResponse.UnHandleException, null);
+			return new ApiResponse<>(ApiResponse.UnHandleException, null);
 		}
 	}
 
-	@RequestMapping(value = "/api/project/getProjectFullFlatData/{projectId}", method = RequestMethod.GET)
-	public @ResponseBody ApiResponse<ProjectFullFlatData> getProjectFullFlatData(@PathVariable("projectId") long projectId) {
+	/**
+	 * 获取项目的完整平面数据（脚本组、脚本和测试集）
+	 * @param projectId 项目ID
+	 * @param type 数据类型
+	 * @return 包含脚本组、脚本和测试集信息的API响应
+	 */
+	@GetMapping("/project/getProjectFullFlatData/{projectId}/{type}")
+	public ApiResponse<ProjectFullFlatData> getProjectFullFlatData(@PathVariable("projectId") long projectId,
+																   @PathVariable("type") String type) {
 		try {
 			ProjectFullFlatData projectFlatData = new ProjectFullFlatData();
-			projectFlatData.scriptGroups = this.mScriptGroupService.listScriptGroups(projectId);
-			projectFlatData.scripts = this.mScriptService.listScriptInfos(projectId);
-			projectFlatData.testsets = this.mTestSetService.listTestSetsByProjectId(projectId);
-			return new ApiResponse<ProjectFullFlatData>(ApiResponse.Success, projectFlatData);
+			projectFlatData.scriptGroups = this.scriptGroupService.listScriptGroupsByType(projectId, type);
+			projectFlatData.scripts = this.scriptService.listScriptInfos(projectId);
+			projectFlatData.testsets = this.testSetService.listTestSetsByProjectId(projectId);
+			return new ApiResponse<>(ApiResponse.Success, projectFlatData);
 		} catch (Exception ex) {
 			logger.error("getProjectFullFlatData", ex);
-			return new ApiResponse<ProjectFullFlatData>(ApiResponse.UnHandleException, null);
+			return new ApiResponse<>(ApiResponse.UnHandleException, null);
 		}
 	}
 
-	@RequestMapping(value = "/api/scriptgroup/create", method = RequestMethod.POST)
-	public @ResponseBody ApiResponse<ScriptGroup> createScriptGroupNew(@RequestBody ScriptGroup scriptGroup) {
+	/**
+	 * 创建新的脚本组
+	 * @param scriptGroup 脚本组对象
+	 * @return 包含创建的脚本组的API响应
+	 */
+	@PostMapping("/scriptgroup/create")
+	public ApiResponse<ScriptGroup> createScriptGroupNew(@RequestBody ScriptGroup scriptGroup) {
 		try {
-			this.mScriptGroupService.addScriptGroup(scriptGroup.getProjectId(), scriptGroup);
-			return new ApiResponse<ScriptGroup>(ApiResponse.Success, scriptGroup);
+			this.scriptGroupService.addScriptGroup(scriptGroup.getProjectId(), scriptGroup);
+			return new ApiResponse<>(ApiResponse.Success, scriptGroup);
 		} catch (Exception ex) {
 			logger.error("createScriptGroupNew", ex);
-			return new ApiResponse<ScriptGroup>(ApiResponse.UnHandleException, null);
+			return new ApiResponse<>(ApiResponse.UnHandleException, null);
 		}
 	}
 
-	@RequestMapping(value = "/api/scriptgroup/update", method = RequestMethod.POST)
-	public @ResponseBody ApiResponse<ScriptGroup> editScriptGroupNew(@RequestBody ScriptGroup scriptGroup) {
+	/**
+	 * 更新脚本组信息
+	 * @param scriptGroup 包含更新信息的脚本组对象
+	 * @return 包含更新后脚本组的API响应
+	 */
+	@PostMapping("/scriptgroup/update")
+	public ApiResponse<ScriptGroup> editScriptGroupNew(@RequestBody ScriptGroup scriptGroup) {
 		try {
 			TrailUtility.Trail(logger, TrailUtility.Trail_Update, "editScriptGroupNew");
-			this.mScriptGroupService.updateScriptGroup(scriptGroup.getProjectId(), scriptGroup);
-			return new ApiResponse<ScriptGroup>(ApiResponse.Success, scriptGroup);
+			this.scriptGroupService.updateScriptGroup(scriptGroup.getProjectId(), scriptGroup);
+			return new ApiResponse<>(ApiResponse.Success, scriptGroup);
 		} catch (Exception ex) {
 			logger.error("editScriptGroupNew", ex);
-			return new ApiResponse<ScriptGroup>(ApiResponse.UnHandleException, null);
+			return new ApiResponse<>(ApiResponse.UnHandleException, null);
 		}
 	}
 
-
-	@RequestMapping(value = "/api/script/forceDelete/{projectId}/{scriptId}", method = RequestMethod.POST)
-	public @ResponseBody ApiResponse<Boolean> forceDeleteScript(@PathVariable("projectId") long projectId,
-			@PathVariable("scriptId") long scriptId) {
-
+	/**
+	 * 强制删除脚本组及其所有子内容
+	 * @param projectId 项目ID
+	 * @param scriptgroupId 脚本组ID
+	 * @return 包含删除是否成功的API响应
+	 */
+	@PostMapping("/scriptgroup/forceDelete/{projectId}/{scriptgroupId}")
+	public ApiResponse<Boolean> forceDeleteScriptGroup(@PathVariable("projectId") long projectId,
+													   @PathVariable("scriptgroupId") long scriptgroupId) {
 		try {
-			TrailUtility.Trail(logger, TrailUtility.Trail_Deletion, "forceDeleteScript()->projectId:" + projectId + " scriptId:" + scriptId);
-			this.mScriptService.forceDeleteScript(projectId, scriptId);
-			return new ApiResponse<Boolean>(ApiResponse.Success, true);
-		} catch (Exception ex) {
-			logger.error("forceDeleteScriptGroup", ex);
-			return new ApiResponse<Boolean>(ApiResponse.UnHandleException, true);
-		}
-	}
-
-	@RequestMapping(value = "/api/scriptgroup/forceDelete/{projectId}/{scriptgroupId}", method = RequestMethod.POST)
-	public @ResponseBody ApiResponse<Boolean> forceDeleteScriptGroup(@PathVariable("projectId") long projectId,
-			@PathVariable("scriptgroupId") long scriptgroupId) {
-
-		try {
-			TrailUtility.Trail(logger, TrailUtility.Trail_Deletion, "forceDeleteScriptGroup()->projectId:" + projectId + " scriptgroupId:" + scriptgroupId);
-			
+			TrailUtility.Trail(logger, TrailUtility.Trail_Deletion,
+					"forceDeleteScriptGroup()->projectId:" + projectId + " scriptgroupId:" + scriptgroupId);
 			forceRemoveScriptGroupHierarchy(projectId, scriptgroupId);
-			return new ApiResponse<Boolean>(ApiResponse.Success, true);
+			return new ApiResponse<>(ApiResponse.Success, true);
 		} catch (Exception ex) {
 			logger.error("forceDeleteScriptGroup", ex);
-			return new ApiResponse<Boolean>(ApiResponse.UnHandleException, true);
+			return new ApiResponse<>(ApiResponse.UnHandleException, true);
 		}
 	}
 
-
-	@RequestMapping(value = "/api/scriptgroup/delete/{projectId}/{scriptgroupId}", method = RequestMethod.POST)
-	public @ResponseBody ApiResponse<Boolean> deleteScriptGroupNew(@PathVariable("projectId") long projectId,
-			@PathVariable("scriptgroupId") long scriptgroupId) {
-
+	/**
+	 * 删除脚本组（仅当脚本组为空时）
+	 * @param projectId 项目ID
+	 * @param scriptgroupId 脚本组ID
+	 * @return 包含删除是否成功的API响应（如果包含子内容则返回false）
+	 */
+	@PostMapping("/scriptgroup/delete/{projectId}/{scriptgroupId}")
+	public ApiResponse<Boolean> deleteScriptGroupNew(@PathVariable("projectId") long projectId,
+													 @PathVariable("scriptgroupId") long scriptgroupId) {
 		try {
 			TrailUtility.Trail(logger, TrailUtility.Trail_Deletion, "deleteScriptGroupNew");
-			List<ScriptInfo> containScripts = this.mScriptService.listScriptInfosByParentScriptGroupId(projectId,
-					scriptgroupId);
-			if (!containScripts.isEmpty())
-				return new ApiResponse<Boolean>(ApiResponse.Success, false);
+			List<ScriptInfo> containScripts = this.scriptService.listScriptInfosByParentScriptGroupId(projectId, scriptgroupId);
+			if (!containScripts.isEmpty()) {
+				return new ApiResponse<>(ApiResponse.Success, false);
+			}
 
-			List<ScriptGroup> containScriptGroups = this.mScriptGroupService
+			List<ScriptGroup> containScriptGroups = this.scriptGroupService
 					.listScriptGroupsByParentScriptGroupId(projectId, scriptgroupId);
-			if (!containScriptGroups.isEmpty())
-				return new ApiResponse<Boolean>(ApiResponse.Success, false);
+			if (!containScriptGroups.isEmpty()) {
+				return new ApiResponse<>(ApiResponse.Success, false);
+			}
 
 			removeScriptGroupHierarchy(projectId, scriptgroupId);
-			return new ApiResponse<Boolean>(ApiResponse.Success, true);
+			return new ApiResponse<>(ApiResponse.Success, true);
 		} catch (Exception ex) {
 			logger.error("deleteScriptGroupNew", ex);
-			return new ApiResponse<Boolean>(ApiResponse.UnHandleException, true);
+			return new ApiResponse<>(ApiResponse.UnHandleException, true);
 		}
 	}
 
-	@RequestMapping(value = "/api/scriptgroup/getByProjectId/{projectId}", method = RequestMethod.GET)
-	public @ResponseBody ApiResponse<List<ScriptGroup>> getScriptGroupByProjectId(@PathVariable("projectId") long projectId) {
+	/**
+	 * 获取项目下的脚本组列表
+	 * @param projectId 项目ID
+	 * @param type 脚本组类型
+	 * @return 包含脚本组列表的API响应
+	 */
+	@GetMapping("/scriptgroup/getByProjectId/{projectId}/{type}")
+	public ApiResponse<List<ScriptGroup>> getScriptGroupByProjectId(@PathVariable("projectId") long projectId,
+																	@PathVariable("type") String type) {
 		try {
-			List<ScriptGroup> result = this.mScriptGroupService.listScriptGroups(projectId);
-			return new ApiResponse<List<ScriptGroup>>(ApiResponse.Success, result);
+			List<ScriptGroup> result = this.scriptGroupService.listScriptGroupsByType(projectId, type);
+			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("getScriptGroupByProjectId", ex);
-			return new ApiResponse<List<ScriptGroup>>(ApiResponse.UnHandleException, null);
+			return new ApiResponse<>(ApiResponse.UnHandleException, null);
 		}
 	}
-	
-	@RequestMapping(value = "/api/scriptgroup/{projectId}/{scriptgroupId}", method = RequestMethod.GET)
-	public @ResponseBody ApiResponse<ScriptGroup> getScriptGroup(@PathVariable("projectId") long projectId,
-			@PathVariable("scriptgroupId") long scriptgroupId) {
+
+	/**
+	 * 获取指定脚本组信息
+	 * @param projectId 项目ID
+	 * @param scriptgroupId 脚本组ID
+	 * @return 包含脚本组信息的API响应
+	 */
+	@GetMapping("/scriptgroup/{projectId}/{scriptgroupId}")
+	public ApiResponse<ScriptGroup> getScriptGroup(@PathVariable("projectId") long projectId,
+												   @PathVariable("scriptgroupId") long scriptgroupId) {
 		try {
-			ScriptGroup result = this.mScriptGroupService.getScriptGroupById(projectId, scriptgroupId);
-			return new ApiResponse<ScriptGroup>(ApiResponse.Success, result);
+			ScriptGroup result = this.scriptGroupService.getScriptGroupById(projectId, scriptgroupId);
+			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("getScriptGroup", ex);
-			return new ApiResponse<ScriptGroup>(ApiResponse.UnHandleException, null);
+			return new ApiResponse<>(ApiResponse.UnHandleException, null);
 		}
 	}
 
-	@RequestMapping(value = "/api/scriptgroup/copy/{projectId}/{sourceScriptGroupId}/{targetParentScriptGroupId}", method = RequestMethod.POST)
-	public @ResponseBody ApiResponse<PasteScriptGroupResponse> copyScriptGroup(@PathVariable("projectId") long projectId,
-			@PathVariable("sourceScriptGroupId") long sourceScriptGroupId,
-			@PathVariable("targetParentScriptGroupId") long targetParentScriptGroupId) {
-
+	/**
+	 * 复制脚本组到目标位置
+	 * @param projectId 项目ID
+	 * @param sourceScriptGroupId 源脚本组ID
+	 * @param targetParentScriptGroupId 目标父脚本组ID
+	 * @return 包含复制结果的API响应
+	 */
+	@PostMapping("/scriptgroup/copy/{projectId}/{sourceScriptGroupId}/{targetParentScriptGroupId}")
+	public ApiResponse<PasteScriptGroupResponse> copyScriptGroup(@PathVariable("projectId") long projectId,
+																 @PathVariable("sourceScriptGroupId") long sourceScriptGroupId,
+																 @PathVariable("targetParentScriptGroupId") long targetParentScriptGroupId) {
 		PasteScriptGroupResponse result = new PasteScriptGroupResponse();
 		try {
-			boolean isMaxScriptNum = this.mScriptService.isOverMaxScriptNum(projectId, "utpserver", "utpserver.script.count");
+			boolean isMaxScriptNum = this.scriptService.isOverMaxScriptNum(projectId, "utpserver", "utpserver.script.count");
 			if (isMaxScriptNum) {
 				result.setState(PasteScriptGroupResponse.State_OverMaxScriptNum);
-				return new ApiResponse<PasteScriptGroupResponse>(ApiResponse.UnHandleException, result);
+				return new ApiResponse<>(ApiResponse.UnHandleException, result);
 			}
-			ScriptGroup sourceScriptGroup = this.mScriptGroupService.getScriptGroupById(projectId, sourceScriptGroupId);
-
-			// if (sourceScriptGroup.getParentScriptGroupId() ==
-			// targetParentScriptGroupId) return sourceScriptGroup;
-
-			boolean destinationIsSubfolder = checkDestinationIsSubfolder(projectId, sourceScriptGroup,
-					targetParentScriptGroupId);
+			ScriptGroup sourceScriptGroup = this.scriptGroupService.getScriptGroupById(projectId, sourceScriptGroupId);
+			boolean destinationIsSubfolder = checkDestinationIsSubfolder(projectId, sourceScriptGroup, targetParentScriptGroupId);
 			if (destinationIsSubfolder) {
 				result.setState(PasteScriptGroupResponse.State_FailedByDestinationIsSubfolder);
-				return new ApiResponse<PasteScriptGroupResponse>(ApiResponse.Success, result);
+				return new ApiResponse<>(ApiResponse.Success, result);
 			}
 			ScriptGroup scriptGroup = copyScriptGroupHierarchy(projectId, sourceScriptGroup, targetParentScriptGroupId);
 			result.setScriptGroup(scriptGroup);
 			result.setState(PasteScriptGroupResponse.State_Success);
-			return new ApiResponse<PasteScriptGroupResponse>(ApiResponse.Success, result);
+			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("copyScriptGroup", ex);
 			result.setState(PasteScriptGroupResponse.State_FailedByUnknowError);
-			return new ApiResponse<PasteScriptGroupResponse>(ApiResponse.UnHandleException, null);
+			return new ApiResponse<>(ApiResponse.UnHandleException, null);
 		}
 	}
 
-	@RequestMapping(value = "/api/scriptgroup/cut/{projectId}/{sourceScriptGroupId}/{targetParentScriptGroupId}", method = RequestMethod.POST)
-	public @ResponseBody ApiResponse<PasteScriptGroupResponse> cutScriptGroup(@PathVariable("projectId") long projectId,
-			@PathVariable("sourceScriptGroupId") long sourceScriptGroupId,
-			@PathVariable("targetParentScriptGroupId") long targetParentScriptGroupId) {
-
+	/**
+	 * 剪切脚本组到目标位置
+	 * @param projectId 项目ID
+	 * @param sourceScriptGroupId 源脚本组ID
+	 * @param targetParentScriptGroupId 目标父脚本组ID
+	 * @return 包含剪切结果的API响应
+	 */
+	@PostMapping("/scriptgroup/cut/{projectId}/{sourceScriptGroupId}/{targetParentScriptGroupId}")
+	public ApiResponse<PasteScriptGroupResponse> cutScriptGroup(@PathVariable("projectId") long projectId,
+																@PathVariable("sourceScriptGroupId") long sourceScriptGroupId,
+																@PathVariable("targetParentScriptGroupId") long targetParentScriptGroupId) {
 		PasteScriptGroupResponse result = new PasteScriptGroupResponse();
-
 		try {
-			ScriptGroup scriptGroup = this.mScriptGroupService.getScriptGroupById(projectId, sourceScriptGroupId);
+			ScriptGroup scriptGroup = this.scriptGroupService.getScriptGroupById(projectId, sourceScriptGroupId);
 			if (scriptGroup.getParentScriptGroupId() == targetParentScriptGroupId) {
 				result.setScriptGroup(scriptGroup);
 				result.setState(PasteScriptGroupResponse.State_Success);
-
-				return new ApiResponse<PasteScriptGroupResponse>(ApiResponse.Success, result);
+				return new ApiResponse<>(ApiResponse.Success, result);
 			}
-
-			boolean destinationIsSubfolder = checkDestinationIsSubfolder(projectId, scriptGroup,
-					targetParentScriptGroupId);
+			boolean destinationIsSubfolder = checkDestinationIsSubfolder(projectId, scriptGroup, targetParentScriptGroupId);
 			if (destinationIsSubfolder) {
 				result.setState(PasteScriptGroupResponse.State_FailedByDestinationIsSubfolder);
-				return new ApiResponse<PasteScriptGroupResponse>(ApiResponse.Success, result);
+				return new ApiResponse<>(ApiResponse.Success, result);
 			}
-
 			scriptGroup.setParentScriptGroupId(targetParentScriptGroupId);
-			this.mScriptGroupService.updateScriptGroup(projectId, scriptGroup);
-
+			this.scriptGroupService.updateScriptGroup(projectId, scriptGroup);
 			result.setScriptGroup(scriptGroup);
 			result.setState(PasteScriptGroupResponse.State_Success);
-			return new ApiResponse<PasteScriptGroupResponse>(ApiResponse.Success, result);
+			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("cutScriptGroup", ex);
 			result.setState(PasteScriptGroupResponse.State_FailedByUnknowError);
-			return new ApiResponse<PasteScriptGroupResponse>(ApiResponse.UnHandleException, null);
+			return new ApiResponse<>(ApiResponse.UnHandleException, null);
 		}
 	}
 
+	/**
+	 * 检查目标位置是否为源脚本组的子文件夹
+	 * @param projectId 项目ID
+	 * @param sourceScriptGroup 源脚本组
+	 * @param targetParentScriptGroupId 目标父脚本组ID
+	 * @return 是否为子文件夹
+	 */
 	private boolean checkDestinationIsSubfolder(long projectId, ScriptGroup sourceScriptGroup,
-			long targetParentScriptGroupId) {
+												long targetParentScriptGroupId) {
 		if (targetParentScriptGroupId == 0) {
-			// if root project node as target, return false;
 			return false;
 		}
-
-		ScriptGroup targetParentScriptGroup = this.mScriptGroupService.getScriptGroupById(projectId,
-				targetParentScriptGroupId);
-
+		ScriptGroup targetParentScriptGroup = this.scriptGroupService.getScriptGroupById(projectId, targetParentScriptGroupId);
 		logger.info(String.format("Comparing sourceScriptGroup id :%s, targetParentScriptGroupId: %s",
 				sourceScriptGroup.getId(), targetParentScriptGroup.getId()));
-
 		if (targetParentScriptGroup.getId() == sourceScriptGroup.getId()) {
 			return true;
 		}
-
 		while (targetParentScriptGroup.getParentScriptGroupId() > 0) {
-			targetParentScriptGroup = this.mScriptGroupService.getScriptGroupById(projectId,
+			targetParentScriptGroup = this.scriptGroupService.getScriptGroupById(projectId,
 					targetParentScriptGroup.getParentScriptGroupId());
-
 			logger.info(String.format("Comparing scriptGroup :%s", targetParentScriptGroup.getName()));
-
 			if (targetParentScriptGroup.getId() == sourceScriptGroup.getId()) {
 				return true;
 			}
 		}
-
 		return false;
 	}
 
+	/**
+	 * 递归复制脚本组及其层级结构
+	 * @param projectId 项目ID
+	 * @param sourceScriptGroup 源脚本组
+	 * @param targetParentScriptGroupId 目标父脚本组ID
+	 * @return 新创建的脚本组
+	 */
 	private ScriptGroup copyScriptGroupHierarchy(long projectId, ScriptGroup sourceScriptGroup,
-			long targetParentScriptGroupId) {
-		List<ScriptGroup> targetScriptGroupChildren;
-		if (targetParentScriptGroupId == 0) {
-			targetScriptGroupChildren = this.mScriptGroupService.listScriptGroups(sourceScriptGroup.getProjectId());
-		} else {
-			targetScriptGroupChildren = this.mScriptGroupService.listScriptGroupsByParentScriptGroupId(projectId,
-					targetParentScriptGroupId);
-		}
+												 long targetParentScriptGroupId) {
+		List<ScriptGroup> targetScriptGroupChildren = (targetParentScriptGroupId == 0) ?
+				this.scriptGroupService.listScriptGroups(sourceScriptGroup.getProjectId()) :
+				this.scriptGroupService.listScriptGroupsByParentScriptGroupId(projectId, targetParentScriptGroupId);
 
-		boolean foundSameNameInTargetScriptGroupChildren = false;
-		for (ScriptGroup scriptGroup : targetScriptGroupChildren) {
-			if (scriptGroup.getName().compareToIgnoreCase(sourceScriptGroup.getName()) == 0) {
-				foundSameNameInTargetScriptGroupChildren = true;
-				break;
-			}
-		}
+		boolean foundSameNameInTargetScriptGroupChildren = targetScriptGroupChildren.stream()
+				.anyMatch(sg -> sg.getName().compareToIgnoreCase(sourceScriptGroup.getName()) == 0);
 
-		ScriptGroup newSciptGroup = new ScriptGroup();
-		String newScriptGroupName = sourceScriptGroup.getName();
-		if (foundSameNameInTargetScriptGroupChildren) {
-			newScriptGroupName = newScriptGroupName + "_Copy";
-		}
+		ScriptGroup newScriptGroup = new ScriptGroup();
+		String newScriptGroupName = foundSameNameInTargetScriptGroupChildren ?
+				sourceScriptGroup.getName() + "_Copy" : sourceScriptGroup.getName();
 
-		newSciptGroup.setName(newScriptGroupName);
-		newSciptGroup.setProjectId(sourceScriptGroup.getProjectId());
-		newSciptGroup.setDescription(sourceScriptGroup.getDescription());
-		newSciptGroup.setParentScriptGroupId(targetParentScriptGroupId);
-		this.mScriptGroupService.addScriptGroup(projectId, newSciptGroup);
+		newScriptGroup.setName(newScriptGroupName);
+		newScriptGroup.setProjectId(sourceScriptGroup.getProjectId());
+		newScriptGroup.setDescription(sourceScriptGroup.getDescription());
+		newScriptGroup.setParentScriptGroupId(targetParentScriptGroupId);
+		newScriptGroup.setType(sourceScriptGroup.getType());
+		this.scriptGroupService.addScriptGroup(projectId, newScriptGroup);
 
-		List<Script> scripts = this.mScriptService.listScriptsByParentScriptGroupId(projectId,
-				sourceScriptGroup.getId());
+		List<Script> scripts = this.scriptService.listScriptsByParentScriptGroupId(projectId, sourceScriptGroup.getId());
+		scripts.forEach(script -> copyScript(script, newScriptGroup.getId()));
 
-		for (Script script : scripts) {
-			copyScript(script, newSciptGroup.getId());
-		}
+		List<ScriptGroup> scriptGroupChildren = this.scriptGroupService
+				.listScriptGroupsByParentScriptGroupId(projectId, sourceScriptGroup.getId());
+		scriptGroupChildren.forEach(child -> copyScriptGroupHierarchy(projectId, child, newScriptGroup.getId()));
 
-		List<ScriptGroup> scriptGroupChildren = this.mScriptGroupService.listScriptGroupsByParentScriptGroupId(projectId,
-				sourceScriptGroup.getId());
-		for (ScriptGroup scriptGroupChild : scriptGroupChildren) {
-			copyScriptGroupHierarchy(projectId, scriptGroupChild, newSciptGroup.getId());
-		}
-
-		return newSciptGroup;
+		return newScriptGroup;
 	}
 
-	private void copyScript(Script sourceScript, long targetPatientScriptGroupId) {
+	/**
+	 * 复制单个脚本到指定脚本组
+	 * @param sourceScript 源脚本
+	 * @param targetParentScriptGroupId 目标脚本组ID
+	 */
+	private void copyScript(Script sourceScript, long targetParentScriptGroupId) {
 		Script newScript = new Script();
 		newScript.setName(sourceScript.getName());
 		newScript.setBlockyXml(sourceScript.getBlockyXml());
 		newScript.setDescription(sourceScript.getDescription());
 		newScript.setParameter(sourceScript.getParameter());
-		newScript.setParentScriptGroupId(targetPatientScriptGroupId);
+		newScript.setParentScriptGroupId(targetParentScriptGroupId);
 		newScript.setProjectId(sourceScript.getProjectId());
 		newScript.setScript(sourceScript.getScript());
 		newScript.setType(sourceScript.getType());
-
-		this.mScriptService.addScript(sourceScript.getProjectId(), newScript);
+		this.scriptService.addScript(sourceScript.getProjectId(), newScript);
 	}
 
+	/**
+	 * 递归删除脚本组及其层级结构
+	 * @param projectId 项目ID
+	 * @param currentScriptGroupId 当前脚本组ID
+	 */
 	private void removeScriptGroupHierarchy(long projectId, long currentScriptGroupId) {
-		this.mScriptService.removeScriptsUnderScriptGroup(projectId, currentScriptGroupId);
-		List<ScriptGroup> childScripgroups = this.mScriptGroupService.listScriptGroupsByParentScriptGroupId(projectId,
-				currentScriptGroupId);
-
-		for (ScriptGroup scriptGroup : childScripgroups) {
-			removeScriptGroupHierarchy(projectId, scriptGroup.getId());
-		}
-
-		this.mScriptGroupService.removeScriptGroup(projectId, currentScriptGroupId);
+		this.scriptService.removeScriptsUnderScriptGroup(projectId, currentScriptGroupId);
+		List<ScriptGroup> childScriptGroups = this.scriptGroupService
+				.listScriptGroupsByParentScriptGroupId(projectId, currentScriptGroupId);
+		childScriptGroups.forEach(scriptGroup -> removeScriptGroupHierarchy(projectId, scriptGroup.getId()));
+		this.scriptGroupService.removeScriptGroup(projectId, currentScriptGroupId);
 	}
 
+	/**
+	 * 强制递归删除脚本组及其层级结构
+	 * @param projectId 项目ID
+	 * @param currentScriptGroupId 当前脚本组ID
+	 */
 	private void forceRemoveScriptGroupHierarchy(long projectId, long currentScriptGroupId) {
-		this.mScriptService.forceDeleteScriptUnderScriptGroup(projectId, currentScriptGroupId);
-		List<ScriptGroup> childScripgroups = this.mScriptGroupService.listScriptGroupsByParentScriptGroupId(projectId,
-				currentScriptGroupId);
-
-		for (ScriptGroup scriptGroup : childScripgroups) {
-			forceRemoveScriptGroupHierarchy(projectId, scriptGroup.getId());
-		}
-
-		this.mScriptGroupService.removeScriptGroup(projectId, currentScriptGroupId);
+		this.scriptService.forceDeleteScriptUnderScriptGroup(projectId, currentScriptGroupId);
+		List<ScriptGroup> childScriptGroups = this.scriptGroupService
+				.listScriptGroupsByParentScriptGroupId(projectId, currentScriptGroupId);
+		childScriptGroups.forEach(scriptGroup -> forceRemoveScriptGroupHierarchy(projectId, scriptGroup.getId()));
+		this.scriptGroupService.removeScriptGroup(projectId, currentScriptGroupId);
 	}
-	
-	public class ProjectFullFlatData {
 
+	/**
+	 * 项目完整平面数据类
+	 * 包含脚本组、脚本和测试集的集合
+	 */
+	public static class ProjectFullFlatData {
 		public List<ScriptGroup> scriptGroups;
 		public List<ScriptInfo> scripts;
 		public List<TestSet> testsets;
 
 		public ProjectFullFlatData() {
-			scriptGroups = new ArrayList<ScriptGroup>();
-			scripts = new ArrayList<ScriptInfo>();
-			testsets = new ArrayList<TestSet>();
+			scriptGroups = new ArrayList<>();
+			scripts = new ArrayList<>();
+			testsets = new ArrayList<>();
 		}
 	}
-	
 }

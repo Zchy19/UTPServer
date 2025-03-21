@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -270,9 +271,24 @@ public class ScriptDAOImpl implements ScriptDAO {
 		SQLQuery query = session.createSQLQuery(sqlBuilder.toString());
 		query.setParameter("projectId", projectId);
 
-		List<ScriptInfo> scriptInfos = query.list();
-		logger.debug(String.format("trace performance : listScriptInfos end..., projectId: %s", projectId));
+		List<Object[]> rawResults = query.list();
+		List<ScriptInfo> scriptInfos = new ArrayList<>();
+		for (Object[] row : rawResults) {
+			ScriptInfo scriptInfo = new ScriptInfo();
+			scriptInfo.setId(((Number) row[0]).longValue());
+			scriptInfo.setDeclaredAntbots((String) row[1]);
+			scriptInfo.setProjectId(((Number) row[2]).longValue());
+			scriptInfo.setName((String) row[3]);
+			scriptInfo.setDescription((String) row[4]);
+			scriptInfo.setParentScriptGroupId(row[5] != null ? ((Number) row[5]).longValue() : null);
+			scriptInfo.setParameter((String) row[6]);
+			scriptInfo.setType((String) row[7]);
+			scriptInfo.setRwattribute((String) row[8]);
+			scriptInfo.setIsEmpty(((Number) row[9]).intValue() == 1); // 假设 isEmpty 是布尔值
+			scriptInfos.add(scriptInfo);
+		}
 
+		logger.debug(String.format("trace performance : listScriptInfos end..., projectId: %s", projectId));
 		return scriptInfos;
 	}
 
@@ -290,13 +306,29 @@ public class ScriptDAOImpl implements ScriptDAO {
 		query.setParameter("projectId", projectId);
 		query.setParameter("type", type);
 
-		List<ScriptInfo> scriptInfos = query.list();
+		List<Object[]> rawResults = query.list();
+		List<ScriptInfo> scriptInfos = new ArrayList<>();
+		for (Object[] row : rawResults) {
+			ScriptInfo scriptInfo = new ScriptInfo();
+			scriptInfo.setId(((Number) row[0]).longValue());
+			scriptInfo.setDeclaredAntbots((String) row[1]);
+			scriptInfo.setProjectId(((Number) row[2]).longValue());
+			scriptInfo.setName((String) row[3]);
+			scriptInfo.setDescription((String) row[4]);
+			scriptInfo.setParentScriptGroupId(row[5] != null ? ((Number) row[5]).longValue() : null);
+			scriptInfo.setParameter((String) row[6]);
+			scriptInfo.setType((String) row[7]);
+			scriptInfo.setRwattribute((String) row[8]);
+			scriptInfo.setIsEmpty(((Number) row[9]).intValue() == 1); // 假设 isEmpty 是布尔值
+			scriptInfos.add(scriptInfo);
+		}
+
+		logger.debug(String.format("trace performance : listScriptInfos end..., projectId: %s", projectId));
 		return scriptInfos;
 	}
 
 	@Override
 	public ScriptInfo getScriptInfoById(long projectId, long scriptId) {
-
 		Session session = this.sessionFactory.getCurrentSession();
 		StringBuilder sqlBuilder = new StringBuilder();
 		sqlBuilder.append(
@@ -307,18 +339,28 @@ public class ScriptDAOImpl implements ScriptDAO {
 		SQLQuery query = session.createSQLQuery(sqlBuilder.toString());
 		query.setParameter("scriptId", scriptId).setParameter("projectId", projectId);
 
-
-		List<ScriptInfo> scriptInfos = query.list();
-		if (scriptInfos == null || scriptInfos.isEmpty()) {
+		Object[] result = (Object[]) query.uniqueResult();
+		if (result == null) {
 			return null;
 		}
 
-		return scriptInfos.get(0);
+		ScriptInfo scriptInfo = new ScriptInfo();
+		scriptInfo.setId(((Number) result[0]).longValue());
+		scriptInfo.setDeclaredAntbots((String) result[1]);
+		scriptInfo.setProjectId(((Number) result[2]).longValue());
+		scriptInfo.setName((String) result[3]);
+		scriptInfo.setDescription((String) result[4]);
+		scriptInfo.setParentScriptGroupId(result[5] != null ? ((Number) result[5]).longValue() : null);
+		scriptInfo.setParameter((String) result[6]);
+		scriptInfo.setType((String) result[7]);
+		scriptInfo.setRwattribute((String) result[8]);
+		scriptInfo.setIsEmpty(((Number) result[9]).intValue() == 1);
+
+		return scriptInfo;
 	}
 
 	@Override
 	public List<ScriptInfo> findReferenceOfSubScriptByScripts(long projectId, long subscriptId) {
-
 		Session session = this.sessionFactory.getCurrentSession();
 		StringBuilder sqlBuilder = new StringBuilder();
 		sqlBuilder.append(
@@ -331,8 +373,22 @@ public class ScriptDAOImpl implements ScriptDAO {
 		query.setParameter("subscriptId", subscriptId);
 		query.setParameter("projectId", projectId);
 
-
-		List<ScriptInfo> scriptInfos = query.list();
+		List<Object[]> rawResults = query.list();
+		List<ScriptInfo> scriptInfos = new ArrayList<>();
+		for (Object[] row : rawResults) {
+			ScriptInfo scriptInfo = new ScriptInfo();
+			scriptInfo.setId(((Number) row[0]).longValue());
+			scriptInfo.setDeclaredAntbots((String) row[1]);
+			scriptInfo.setProjectId(((Number) row[2]).longValue());
+			scriptInfo.setName((String) row[3]);
+			scriptInfo.setDescription((String) row[4]);
+			scriptInfo.setParentScriptGroupId(row[5] != null ? ((Number) row[5]).longValue() : null);
+			scriptInfo.setParameter((String) row[6]);
+			scriptInfo.setType((String) row[7]);
+			scriptInfo.setRwattribute((String) row[8]);
+			scriptInfo.setIsEmpty(((Number) row[9]).intValue() == 1);
+			scriptInfos.add(scriptInfo);
+		}
 		return scriptInfos;
 	}
 
@@ -344,12 +400,27 @@ public class ScriptDAOImpl implements ScriptDAO {
 				" select id,declaredAntbots, projectId,name,description,parentScriptGroupId,parameter,type, rwattribute, ((script is null) or (length(script) = 0)) as isEmpty ");
 		sqlBuilder.append(" from Script ");
 		sqlBuilder.append(
-				" where (parameter is null || length(parameter) < 3) and type='subscript' and projectId = :projectId");
+				" where (parameter is null OR length(parameter) < 3) and type='subscript' and projectId = :projectId");
 
 		SQLQuery query = session.createSQLQuery(sqlBuilder.toString());
 		query.setParameter("projectId", projectId);
 
-		List<ScriptInfo> scriptInfos = query.list();
+		List<Object[]> rawResults = query.list();
+		List<ScriptInfo> scriptInfos = new ArrayList<>();
+		for (Object[] row : rawResults) {
+			ScriptInfo scriptInfo = new ScriptInfo();
+			scriptInfo.setId(((Number) row[0]).longValue());
+			scriptInfo.setDeclaredAntbots((String) row[1]);
+			scriptInfo.setProjectId(((Number) row[2]).longValue());
+			scriptInfo.setName((String) row[3]);
+			scriptInfo.setDescription((String) row[4]);
+			scriptInfo.setParentScriptGroupId(row[5] != null ? ((Number) row[5]).longValue() : null);
+			scriptInfo.setParameter((String) row[6]);
+			scriptInfo.setType((String) row[7]);
+			scriptInfo.setRwattribute((String) row[8]);
+			scriptInfo.setIsEmpty(((Number) row[9]).intValue() == 1);
+			scriptInfos.add(scriptInfo);
+		}
 		return scriptInfos;
 	}
 

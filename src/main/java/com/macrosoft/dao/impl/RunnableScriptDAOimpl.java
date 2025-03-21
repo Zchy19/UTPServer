@@ -39,17 +39,13 @@ public class RunnableScriptDAOimpl implements RunnableScriptDAO {
     }
 
     @Override
-    public RunnableScript getRunnableScriptById(long id) {
+    public RunnableScript getRunnableScriptById(long projectId, long id) {
         Session session = this.sessionFactory.getCurrentSession();
-        StringBuilder sqlBuilder = new StringBuilder();
-        sqlBuilder.append("select * from RunnableScript where id=:id");
-        //根据id降序排序
-        sqlBuilder.append(" order by id desc ");
-        RunnableScript runnableScript = (RunnableScript) session.createSQLQuery(sqlBuilder.toString())
-                .addEntity(RunnableScript.class)
+        String hql = "from RunnableScript where id = :id and projectId = :projectId order by id desc";
+        return (RunnableScript) session.createQuery(hql)
                 .setParameter("id", id)
+                .setParameter("projectId", projectId)
                 .uniqueResult();
-        return runnableScript;
     }
 
     @Override

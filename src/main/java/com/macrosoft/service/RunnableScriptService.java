@@ -7,7 +7,7 @@ public interface RunnableScriptService {
 
     RunnableScript updateRunnableScript(RunnableScript runnableScript);
 
-    RunnableScript getRunnableScriptById(long id);
+    RunnableScript getRunnableScriptById(long projectId, long scriptId);
 
     void removeRunnableScript(long id);
 }

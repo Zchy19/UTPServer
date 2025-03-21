@@ -1,9 +1,9 @@
 package com.macrosoft.dao;
 
-import java.util.List;
-
 import com.macrosoft.model.ScriptGroup;
 import com.macrosoft.model.composition.ScriptInfo;
+
+import java.util.List;
 
 public interface ScriptGroupDAO {
 	public ScriptGroup addScriptGroup(long projectId, ScriptGroup scriptGroup);
@@ -16,4 +16,5 @@ public interface ScriptGroupDAO {
 	public List<ScriptInfo> findAllReferenceOfSubScriptByRecoverScript(long projectId, long scriptGroupId);
 	public List<ScriptInfo> findAllReferenceOfSubScriptByScript(long projectId, long scriptGroupId);
 	public List<ScriptInfo> findAllScriptReferencedByTestset(long projectId, long scriptGroupId);
+	public List<ScriptGroup> listScriptGroupsByType(long projectId, String type);
 }

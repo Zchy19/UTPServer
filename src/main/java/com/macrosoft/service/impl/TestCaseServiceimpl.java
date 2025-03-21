@@ -4,6 +4,7 @@ import com.macrosoft.dao.TestCaseDAO;
 import com.macrosoft.logging.ILogger;
 import com.macrosoft.logging.LoggerFactory;
 import com.macrosoft.model.TestCase;
+import com.macrosoft.model.composition.TestCaseInfo;
 import com.macrosoft.service.TestCaseService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +47,24 @@ public class TestCaseServiceimpl implements TestCaseService {
 
     @Override
     @Transactional
+    public TestCaseInfo updateTestCase(TestCaseInfo testCaseInfo) {
+        try {
+            TestCase testCase = TestCase.builder()
+                        .id(testCaseInfo.getScriptInfo().getId())
+                        .projectId(testCaseInfo.getScriptInfo().getProjectId())
+                        .userTestCaseId(testCaseInfo.getUserTestCaseId())
+                        .customizedFileds(testCaseInfo.getCustomizedFileds())
+                        .build();
+            testCaseDAO.updateTestCase(testCase);
+            return testCaseInfo;
+        } catch (Exception e) {
+            logger.error("Error updating test case: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional
     public void removeTestCase(long projectId, long id) {
         try {
             testCaseDAO.removeTestCase(projectId, id);
@@ -65,4 +84,7 @@ public class TestCaseServiceimpl implements TestCaseService {
             throw e;
         }
     }
+
+
+
 }

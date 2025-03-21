@@ -1,40 +1,35 @@
 package com.macrosoft.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
-import com.mangofactory.swagger.models.dto.ApiInfo;
-import com.mangofactory.swagger.plugin.EnableSwagger;
-import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
-@EnableSwagger
+@EnableSwagger2
 public class SwaggerConfig {
 
-	private SpringSwaggerConfig springSwaggerConfig;
-
-	@Autowired
-	public void setSpringSwaggerConfig(SpringSwaggerConfig springSwaggerConfig) {
-		this.springSwaggerConfig = springSwaggerConfig;
-	}
-
-	@Bean
-    public SwaggerSpringMvcPlugin customImplementation()
-    {
-        return new SwaggerSpringMvcPlugin(this.springSwaggerConfig).apiInfo(apiInfo()).includePatterns(".*");//这里是支持正则匹配的。仅仅有这里配置了才干够在页面看到。
+    @Bean
+    public Docket api() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.macrosoft.controller"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo());
     }
 
-	private ApiInfo apiInfo()
-    {
-        ApiInfo apiInfo = new ApiInfo(
-                "My Apps API Title",
-                "My Apps API Description",
-                "My Apps API terms of service",
-                "My Apps API Contact Email",
-                "My Apps API Licence Type",
-                "My Apps API License URL");
-        return apiInfo;
+    private ApiInfo apiInfo() {
+        return new ApiInfoBuilder()
+                .title("Spring Boot 1.5 集成 Swagger 2 示例")
+                .description("这是一个示例项目，展示如何在 Spring Boot 1.5 中集成 Swagger 2")
+                .version("1.0.0")
+                .build();
     }
 }

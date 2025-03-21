@@ -3,7 +3,6 @@
 	
 	function utpService() {
 	    var self = this;
-		this.monitorHistoryCheck = false; // 监控是否是查看历史记录
 	    
 	    // Org	    
 	    this.getOrgProject = function(orgId, successFunction, errorFunction){
@@ -80,10 +79,16 @@
 			ajaxService.AjaxPost(projectInfo, "./api/project/copyProjectWithInfo", successFunction, errorFunction);
 		};
 		
+		// this.exportProject = function(projectId, successFunction, errorFunction){
+		// 	var exportProjectApi = "./api/project/export/" + projectId;
+	    // 	ajaxService.AjaxGetNoBlock(exportProjectApi, successFunction, errorFunction);
+		// };
+
 		this.exportProject = function(projectId, successFunction, errorFunction){
 			var exportProjectApi = "./api/project/export/" + projectId;
-	    	ajaxService.AjaxGetNoBlock(exportProjectApi, successFunction, errorFunction);
+	    	ajaxService.NativeAjaxGetBlob(exportProjectApi, successFunction, errorFunction);
 		};
+		
 		
 		this.importProject = function(file, successFunction, errorFunction){
 			var api = "./api/project/import";
@@ -277,8 +282,8 @@
 			ajaxService.AjaxGet(selectSubScriptApi, successFunction, errorFunction);
 	    };
 	    
-	    this.getFlatScriptGroupByProject = function(projectId, successFunction, errorFunction){	    	
-	    	var selectScriptGroupApi = "./api/project/getProjectFlatData/" + projectId;	    	
+	    this.getFlatScriptGroupByProject = function(projectId, type, successFunction, errorFunction){	    	
+	    	var selectScriptGroupApi = "./api/project/getProjectFlatData/" + projectId +"/" + type;	    	
 			ajaxService.AjaxGet(selectScriptGroupApi, successFunction, errorFunction);
 	    };
 
@@ -370,6 +375,11 @@
 	    	var selectScriptApi = "./api/script/" + projectId + "/" + scriptId;	    	
 			ajaxService.AjaxGet(selectScriptApi, successFunction, errorFunction);
 	    };
+
+		this.getTestCase = function(projectId, scriptId, successFunction, errorFunction){	    	
+	    	var selectScriptApi = "./api/testcase/" + projectId + "/" + scriptId;	    	
+			ajaxService.AjaxGet(selectScriptApi, successFunction, errorFunction);
+	    };
 	    
 	    this.getFullScript = function(projectId, scriptId, successFunction, errorFunction){	    	
 	    	var selectScriptApi = "./api/script/data/" + projectId + "/" + scriptId;
@@ -387,6 +397,10 @@
 	    this.updateScript = function(editingScriptObj, successFunction, errorFunction){
 	    	ajaxService.AjaxPost(editingScriptObj, "./api/script/update", successFunction, errorFunction);
 	    };
+
+		this.updateTestCase = function(editingScriptObj, successFunction, errorFunction){
+	    	ajaxService.AjaxPost(editingScriptObj, "./api/testcase/update", successFunction, errorFunction);
+	    };
 	
 	    this.renameScript = function(editingScriptObj, successFunction, errorFunction){
 	    	ajaxService.AjaxPost(editingScriptObj, "./api/script/rename", successFunction, errorFunction);
@@ -395,13 +409,26 @@
 	    this.updateFullScript = function(editingScriptObj, successFunction, errorFunction){
 	    	ajaxService.AjaxPost(editingScriptObj, "./api/script/data/update", successFunction, errorFunction);
 	    };
+
+		this.updateFullTestCase = function(editingScriptObj, successFunction, errorFunction){
+	    	ajaxService.AjaxPost(editingScriptObj, "./api/testcase/data/update", successFunction, errorFunction);
+	    };
 	    
 	    this.createScript = function(newScriptObj, successFunction, errorFunction){
 	    	ajaxService.AjaxPost(newScriptObj, "./api/script/create", successFunction, errorFunction);	    	
 	    };
+
+		this.createTestcase = function(newScriptObj, successFunction, errorFunction){
+	    	ajaxService.AjaxPost(newScriptObj, "./api/testcase/create", successFunction, errorFunction);	    	
+	    };
 	   
 	    this.deleteScript = function(projectId, scriptId, successFunction, errorFunction){
 	    	var deleteScriptApi = "./api/script/delete/" + projectId + "/" + scriptId;
+	    	ajaxService.AjaxPost(null, deleteScriptApi, successFunction, errorFunction);
+	    };
+
+		this.deleteTestCase = function(projectId, scriptId, successFunction, errorFunction){
+	    	var deleteScriptApi = "./api/testcase/delete/" + projectId + "/" + scriptId;
 	    	ajaxService.AjaxPost(null, deleteScriptApi, successFunction, errorFunction);
 	    };
 	    
@@ -414,14 +441,29 @@
 	    	var copyScriptApi = "./api/script/copy/" + projectId + "/" + sourceScriptId + "/" + targetParentScriptGroupId;
 	    	ajaxService.AjaxPost(null, copyScriptApi, successFunction, errorFunction);	    	
 	    }
+
+		this.copyTestCase = function(projectId, sourceScriptId, targetParentScriptGroupId, successFunction, errorFunction){
+	    	var copyScriptApi = "./api/testcase/copy/" + projectId + "/" + sourceScriptId + "/" + targetParentScriptGroupId;
+	    	ajaxService.AjaxPost(null, copyScriptApi, successFunction, errorFunction);	    	
+	    }
 	    
 	    this.cutScript = function(projectId, sourceScriptId, targetParentScriptGroupId, successFunction, errorFunction){
 	    	var cutScriptApi = "./api/script/cut/" + projectId + "/" + sourceScriptId + "/" + targetParentScriptGroupId;
 	    	ajaxService.AjaxPost(null, cutScriptApi, successFunction, errorFunction);	    	
 	    }
+
+		this.cutTestCase = function(projectId, sourceScriptId, targetParentScriptGroupId, successFunction, errorFunction){
+	    	var cutScriptApi = "./api/testcase/cut/" + projectId + "/" + sourceScriptId + "/" + targetParentScriptGroupId;
+	    	ajaxService.AjaxPost(null, cutScriptApi, successFunction, errorFunction);	    	
+	    }
 	    
 	    this.getReferenceOfScript = function(projectId, scriptId, successFunction, errorFunction){	    	
 	    	var api = "./api/script/reference/" + projectId + "/" + scriptId;	    	
+			ajaxService.AjaxGet(api, successFunction, errorFunction);
+	    };
+
+		this.getReferenceOfTestCase = function(projectId, scriptId, successFunction, errorFunction){	    	
+	    	var api = "./api/testcase/reference/" + projectId + "/" + scriptId;	    	
 			ajaxService.AjaxGet(api, successFunction, errorFunction);
 	    };
 	    
