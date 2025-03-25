@@ -49,7 +49,6 @@ public class ProjectDAOImpl implements ProjectDAO {
 	public void addProjectWithDefalutScriptGroup(Project project) {
         try {
         	lock.lock();
-            
     		Session session = this.sessionFactory.getCurrentSession();
     		session.saveOrUpdate(project);
     		SQLQuery sqlQuery = session.createSQLQuery("CALL sp_project_onProjectCreated(:projectId)");
