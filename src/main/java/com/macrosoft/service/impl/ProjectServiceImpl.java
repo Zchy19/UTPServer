@@ -114,7 +114,9 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	@Transactional
 	public void addProject(Project p) {
-		p.setId(0);
+		UUID uuid = UUID.randomUUID();
+		long newProjectId = uuid.getMostSignificantBits() & Long.MAX_VALUE;
+		p.setId(newProjectId);
 		this.ProjectDAO.addProjectWithDefalutScriptGroup(p);
 	}
 

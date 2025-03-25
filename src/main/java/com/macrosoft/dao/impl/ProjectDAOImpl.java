@@ -1,11 +1,10 @@
 package com.macrosoft.dao.impl;
 
-import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-
 import com.macrosoft.dao.ProjectDAO;
+import com.macrosoft.logging.ILogger;
+import com.macrosoft.logging.LoggerFactory;
+import com.macrosoft.logging.TrailUtility;
+import com.macrosoft.model.Project;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -13,10 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import com.macrosoft.logging.ILogger;
-import com.macrosoft.logging.LoggerFactory;
-import com.macrosoft.logging.TrailUtility;
-import com.macrosoft.model.Project;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Repository
 public class ProjectDAOImpl implements ProjectDAO {
@@ -37,15 +35,12 @@ public class ProjectDAOImpl implements ProjectDAO {
 	public void addProject(Project project) {
         try {
         	lock.lock();
-
     		Session session = this.sessionFactory.getCurrentSession();
     		session.saveOrUpdate(project);
-
     		TrailUtility.Trail(logger, TrailUtility.Trail_Creation, "addProject", String.format("id: %s", project.getId()));
         } catch (Exception ex) {
         	logger.error("addProject", ex);
         }finally{
-            //release lock
             lock.unlock();
         }
 	}
@@ -57,8 +52,6 @@ public class ProjectDAOImpl implements ProjectDAO {
             
     		Session session = this.sessionFactory.getCurrentSession();
     		session.saveOrUpdate(project);
-    		
-    		//Session session = this.sessionFactory.getCurrentSession();
     		SQLQuery sqlQuery = session.createSQLQuery("CALL sp_project_onProjectCreated(:projectId)");
     		sqlQuery.setParameter("projectId", project.getId());
     		sqlQuery.executeUpdate();
@@ -67,7 +60,6 @@ public class ProjectDAOImpl implements ProjectDAO {
         } catch (Exception ex) {
         	logger.error("addProjectWithDefalutScriptGroup", ex);
         }finally{
-            //release lock
             lock.unlock();
         }
 	}
