@@ -47,20 +47,53 @@ public class ProjectDAOImpl implements ProjectDAO {
 
 	@Override
 	public void addProjectWithDefalutScriptGroup(Project project) {
-        try {
-        	lock.lock();
-    		Session session = this.sessionFactory.getCurrentSession();
-    		session.saveOrUpdate(project);
-    		SQLQuery sqlQuery = session.createSQLQuery("CALL sp_project_onProjectCreated(:projectId)");
-    		sqlQuery.setParameter("projectId", project.getId());
-    		sqlQuery.executeUpdate();
+		try {
+			lock.lock();
+			Session session = this.sessionFactory.getCurrentSession();
+			project.setNextEntityLogicId(9L);
+			session.saveOrUpdate(project);
 
-    		TrailUtility.Trail(logger, TrailUtility.Trail_Creation, "addProjectWithDefalutScriptGroup", String.format("id: %s", project.getId()));
-        } catch (Exception ex) {
-        	logger.error("addProjectWithDefalutScriptGroup", ex);
-        }finally{
-            lock.unlock();
-        }
+			// Insert into scriptgroup
+			session.createSQLQuery("INSERT INTO scriptgroup(Id, ProjectId, Name, Description, ParentScriptGroupId, Type) VALUES (1, :projectId, '功能1测试', '', 0, 'testcase')")
+					.setParameter("projectId", project.getId())
+					.executeUpdate();
+
+			session.createSQLQuery("INSERT INTO scriptgroup(Id, ProjectId, Name, Description, ParentScriptGroupId, Type) VALUES (2, :projectId, '功能2测试', '', 0, 'testcase')")
+					.setParameter("projectId", project.getId())
+					.executeUpdate();
+
+			// Insert into script
+			session.createSQLQuery("INSERT INTO script(Id, ProjectId, Name, Description, ParentScriptGroupId, Type) VALUES (3, :projectId, '测试用例1-1', '', 1, 'testcase')")
+					.setParameter("projectId", project.getId())
+					.executeUpdate();
+
+			session.createSQLQuery("INSERT INTO script(Id, ProjectId, Name, Description, ParentScriptGroupId, Type) VALUES (4, :projectId, '测试用例1-2', '', 1, 'testcase')")
+					.setParameter("projectId", project.getId())
+					.executeUpdate();
+
+			session.createSQLQuery("INSERT INTO script(Id, ProjectId, Name, Description, ParentScriptGroupId, Type) VALUES (5, :projectId, '测试用例2-1', '', 2, 'testcase')")
+					.setParameter("projectId", project.getId())
+					.executeUpdate();
+
+			session.createSQLQuery("INSERT INTO script(Id, ProjectId, Name, Description, ParentScriptGroupId, Type) VALUES (6, :projectId, '测试用例2-2', '', 2, 'testcase')")
+					.setParameter("projectId", project.getId())
+					.executeUpdate();
+
+			// Insert into testset
+			session.createSQLQuery("INSERT INTO testset(Id, ProjectId, Name, Description) VALUES (7, :projectId, '测试集1', '')")
+					.setParameter("projectId", project.getId())
+					.executeUpdate();
+
+			session.createSQLQuery("INSERT INTO testset(Id, ProjectId, Name, Description) VALUES (8, :projectId, '测试集2', '')")
+					.setParameter("projectId", project.getId())
+					.executeUpdate();
+
+			TrailUtility.Trail(logger, TrailUtility.Trail_Creation, "addProjectWithDefalutScriptGroup", String.format("id: %s", project.getId()));
+		} catch (Exception ex) {
+			logger.error("addProjectWithDefalutScriptGroup", ex);
+		} finally {
+			lock.unlock();
+		}
 	}
 	
 
