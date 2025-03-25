@@ -1508,8 +1508,8 @@ define(['knockout', 'jquery', 'komapping',
 					if (typeof selectionManager.refreshTreeNodeCallback === "function") {
 						selectionManager.refreshTreeNodeCallback(self.currentScript.name());
 					}
-					if (selectionManager.selectedNodeType == 'testcase')
-						notificationService.showSuccess('更新测试用例成功');
+					if (selectionManager.selectedNodeType == 'runablescript')
+						notificationService.showSuccess('更新业务脚本成功');
 					else
 						notificationService.showSuccess('更新子脚本成功');
 					self.updated = true;
@@ -1650,7 +1650,7 @@ define(['knockout', 'jquery', 'komapping',
 					scriptContent = subScriptBegCmd + scriptContent + subScriptEndCmd;
 				}
 
-				if (selectionManager.selectedNodeType === 'testcase') {
+				if (selectionManager.selectedNodeType === 'runablescript') {
 					//	var testcaseBegCmd = "TESTCASE_BEGIN" + cmdConvertService.PARA_SEPARATOR + selectionManager.selectedNodeId() + cmdConvertService.CMD_SEPARATOR;
 					var testcaseBegCmd = "TESTCASE_BEGIN" + cmdConvertService.CMD_SEPARATOR;
 					var testcaseEndCmd = "TESTCASE_END";
@@ -1662,7 +1662,7 @@ define(['knockout', 'jquery', 'komapping',
 				//var xml = Blockly.Xml.domToPrettyText(xmlDom);
 				var xml = Blockly.Xml.domToText(xmlDom);
 				self.currentScript.blockyXml(xml);
-				if (selectionManager.selectedNodeType === 'testcase')
+				if (selectionManager.selectedNodeType === 'runablescript')
 					self.utpService.updateFullScript(komapping.toJS(self.currentScript), self.updateScriptSuccessFunction, self.updateScriptErrorFunction);
 				else if (selectionManager.selectedNodeType === 'subscript') {
 					var selectedScript = {
@@ -2182,7 +2182,7 @@ define(['knockout', 'jquery', 'komapping',
 					var txt = cmdConvertService.scriptToTxt(self.currentScript.script());
 					var blob = new Blob([txt]);
 					var a = document.createElement("a");
-					a.runscdownload = self.currentScript.name() + ".txt";
+					a.download = self.currentScript.name() + ".txt";
 					a.href = URL.createObjectURL(blob);
 					$("body").append(a);
 					a.click();

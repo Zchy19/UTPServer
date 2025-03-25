@@ -2182,7 +2182,7 @@ define(['knockout', 'jquery', 'komapping',
 					var txt = cmdConvertService.scriptToTxt(self.currentScript.script());
 					var blob = new Blob([txt]);
 					var a = document.createElement("a");
-					a.comscdownload = self.currentScript.name() + ".txt";
+					a.download = self.currentScript.name() + ".txt";
 					a.href = URL.createObjectURL(blob);
 					$("body").append(a);
 					a.click();
