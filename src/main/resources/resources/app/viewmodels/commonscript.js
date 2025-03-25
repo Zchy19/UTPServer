@@ -608,52 +608,52 @@ define(
             };
 
             // create sub script
-            // this.createSubScriptSuccessFunction = function (data) {
-            // 	if (data && data.status === 1) {
-            // 		var retNewSubScript = data.result;
-            // 		if (retNewSubScript != null) {
-            // 			$$("rfm").add({
-            // 				id: retNewSubScript.id,
-            // 				value: retNewSubScript.name,
-            // 				date: new Date(),
-            // 				type: "text",
-            // 				dataType: "subscript"
-            // 			}, 0, retNewSubScript.parentScriptGroupId);
-            // 			self.treeAdjust();
-            // 			$$("rfm").refreshCursor();
-            // 			notificationService.showSuccess('创建子脚本成功');
-            // 			self.getScriptGroupByProject();
-            // 		} else
-            // 			self.createSubScriptErrorFunction();
-            // 	} else if (data && data.status === 0 && data.result != null) {
-            // 		self.createSubScriptErrorFunction(data.result.errorMessages);
-            // 	} else {
-            // 		self.createSubScriptErrorFunction();
-            // 	}
-            // };
+            this.createSubScriptSuccessFunction = function (data) {
+            	if (data && data.status === 1) {
+            		var retNewSubScript = data.result;
+            		if (retNewSubScript != null) {
+            			$$("cfm").add({
+            				id: retNewSubScript.id,
+            				value: retNewSubScript.name,
+            				date: new Date(),
+            				type: "text",
+            				dataType: "subscript"
+            			}, 0, retNewSubScript.parentScriptGroupId);
+            			self.treeAdjust();
+            			$$("cfm").refreshCursor();
+            			notificationService.showSuccess('创建子脚本成功');
+            			self.getScriptGroupByProject();
+            		} else
+            			self.createSubScriptErrorFunction();
+            	} else if (data && data.status === 0 && data.result != null) {
+            		self.createSubScriptErrorFunction(data.result.errorMessages);
+            	} else {
+            		self.createSubScriptErrorFunction();
+            	}
+            };
 
-            // this.createSubScriptErrorFunction = function (errorMessages) {
-            // 	if (errorMessages === 'OVER_MAX_SUBSCRIPT_NUM') {
-            // 		notificationService.showError('子脚本数量已达上限,请安装对应的许可文件!');
-            // 	} else {
-            // 		notificationService.showError('创建子脚本失败');
-            // 	}
-            // };
+            this.createSubScriptErrorFunction = function (errorMessages) {
+            	if (errorMessages === 'OVER_MAX_SUBSCRIPT_NUM') {
+            		notificationService.showError('子脚本数量已达上限,请安装对应的许可文件!');
+            	} else {
+            		notificationService.showError('创建子脚本失败');
+            	}
+            };
 
-            // this.createSubScript = function (parentId) {
-            // 	var defNewScriptGroup = {
-            // 		id: 0,
-            // 		customizedId: '',
-            // 		projectId: self.selectionManager.selectedProject().id,
-            // 		parentScriptGroupId: parentId,
-            // 		description: '',
-            // 		name: '新建子脚本',
-            // 		parameter: ""
-            // 	};
-            // 	self.utpService.createSubScript(defNewScriptGroup,
-            // 		self.createSubScriptSuccessFunction,
-            // 		self.createSubScriptErrorFunction);
-            // };
+            this.createSubScript = function (parentId) {
+            	var defNewScriptGroup = {
+            		id: 0,
+            		customizedId: '',
+            		projectId: self.selectionManager.selectedProject().id,
+            		parentScriptGroupId: parentId,
+            		description: '',
+            		name: '新建公共逻辑',
+            		parameter: ""
+            	};
+            	self.utpService.createSubScript(defNewScriptGroup,
+            		self.createSubScriptSuccessFunction,
+            		self.createSubScriptErrorFunction);
+            };
 
             // edit
             this.editName = function (name) {
@@ -1747,7 +1747,7 @@ define(
                                             var parent = $$("cfm").getCurrentFolder();
                                             if (parent === fileManagerUtility.root)
                                                 parent = "";
-                                            self.createScript(parent);
+                                            self.createSubScript(parent);
                                             $$("cfm").getMenu().hide();
                                         }
                                         if (id === "createTimeSeriesTestCase") {
@@ -1824,11 +1824,11 @@ define(
                                         }
 
                                         // if (id === "createSubScript") {
-                                        // 	var parent = $$("rfm").getCurrentFolder();
+                                        // 	var parent = $$("cfm").getCurrentFolder();
                                         // 	if (parent === fileManagerUtility.root)
                                         // 		parent = "";
                                         // 	self.createSubScript(parent);
-                                        // 	$$("rfm").getMenu().hide();
+                                        // 	$$("cfm").getMenu().hide();
                                         // }
                                         return true;
                                     },

@@ -2269,9 +2269,9 @@ define(['knockout', 'jquery', 'komapping',
 				self.scriptIncomscsteps([]);
 				self.isCommonScript = selectionManager.selectedNodeType == 'testcase';
 				if (selectionManager.selectedNodeType == 'testcase')
-					self.utpService.getFullScript(selectionManager.selectedProject().id, selectionManager.selectedNodeId(), self.getScriptSuccessFunction, self.getScriptErrorFunction);
+					self.utpService.getFullScript(0, selectionManager.selectedNodeId(), self.getScriptSuccessFunction, self.getScriptErrorFunction);
 				else
-					self.utpService.getFullSubScript(selectionManager.selectedProject().id, selectionManager.selectedNodeId(), self.getScriptSuccessFunction, self.getScriptErrorFunction);
+					self.utpService.getFullSubScript(0, selectionManager.selectedNodeId(), self.getScriptSuccessFunction, self.getScriptErrorFunction);
 			};
 
 			this.closeBlock = function (xmlId) {
