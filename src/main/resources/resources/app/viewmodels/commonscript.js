@@ -6,9 +6,9 @@ define(
         'services/utpService', 'services/notificationService', 'lodash',
         'services/cmdConvertService', 'services/utilityService'],
     function ($, komapping, system, app, lang, ko, blockUI, loginManager, projectManager,
-        executionManager, viewManager, systemConfig, protocolService, fileManagerUtility,
-        selectionManager, sequencediagram, JSONEditor, utpService, notificationService, _,
-        cmdConvertService, utilityService) {
+              executionManager, viewManager, systemConfig, protocolService, fileManagerUtility,
+              selectionManager, sequencediagram, JSONEditor, utpService, notificationService, _,
+              cmdConvertService, utilityService) {
 
         function CommonScriptViewModel() {
             var self = this;
@@ -63,7 +63,7 @@ define(
 
             this.getScriptGroupByProject = function () {
                 self.utpService.getFlatScriptGroupByProject(
-                    self.selectionManager.selectedProject().id,
+                    0,
                     self.scriptType,
                     self.getScriptGroupByProjectSuccessFunction,
                     self.getScriptGroupByProjectErrorFunction);
@@ -99,7 +99,7 @@ define(
             this.createScriptGroup = function (parentId) {
                 var defNewScriptGroup = {
                     id: 0,
-                    projectId: self.selectionManager.selectedProject().id,
+                    projectId: 0,
                     parentScriptGroupId: parentId,
                     description: '',
                     name: '新建公共逻辑组',
@@ -316,7 +316,7 @@ define(
                                     self.currentGenericFrameMessageName = self.selectedMessage.messageName;
                                     self.genericFrameInfo.id = self.selectedMessage.id;
                                     self.selectedMessage.fieldValues = null;
-                                    // self.genericCommandField(self.selectedMessage.messageName);											
+                                    // self.genericCommandField(self.selectedMessage.messageName);
                                     self.initProtocolConfigView(self.selectedMessage, true, true);
                                     if (self.protocolNeedFieldSetting()) {
                                         self.getActiveMessageTemplate(self.genericFrameInfo.protocolId, self.selectedMessage.messageName)
@@ -539,7 +539,7 @@ define(
                 //创建用例
                 var parentId = self.sourceId;
                 self.currentScript.parentScriptGroupId(parentId);
-                self.currentScript.projectId(self.selectionManager.selectedProject().id)
+                self.currentScript.projectId(0)
                 self.currentScript.name("新建时序用例")
                 self.currentScript.type("testcase")
 
@@ -596,13 +596,13 @@ define(
                 var defNewscript = {
                     id: 0,
                     customizedId: '',
-                    projectId: self.selectionManager.selectedProject().id,
+                    projectId: 0,
                     parentScriptGroupId: parentId,
                     description: '',
                     name: '新建公共逻辑',
                     type: self.scriptType
                 };
-                self.utpService.createSubScript(defNewscript,
+                self.utpService.createScript(defNewscript,
                     self.createScriptSuccessFunction,
                     self.createScriptErrorFunction);
             };
@@ -772,13 +772,13 @@ define(
             };
 
             this.deleteScriptGroup = function (id) {
-                self.utpService.deleteScriptGroup(self.selectionManager.selectedProject().id, id,
+                self.utpService.deleteScriptGroup(0, id,
                     self.deleteScriptGroupSuccessFunction,
                     self.deleteScriptGroupErrorFunction);
             };
 
             this.forceDeleteScriptGroup = function (id) {
-                self.utpService.forceDeleteScriptGroup(self.selectionManager.selectedProject().id, id,
+                self.utpService.forceDeleteScriptGroup(0, id,
                     self.deleteScriptGroupSuccessFunction,
                     self.deleteScriptGroupErrorFunction);
             };
@@ -817,7 +817,7 @@ define(
 
             this.deleteScript = function (id) {
                 self.utpService.deleteScript(self.selectionManager
-                    .selectedProject().id, id,
+                        .selectedProject().id, id,
                     self.deleteScriptSuccessFunction,
                     self.deleteScriptErrorFunction);
             };
@@ -843,7 +843,7 @@ define(
 
             this.forceDeleteScript = function (id) {
                 self.utpService.forceDeleteScript(self.selectionManager
-                    .selectedProject().id, id,
+                        .selectedProject().id, id,
                     self.forceDeleteScriptSuccessFunction,
                     self.forceDeleteScriptErrorFunction);
             };
@@ -893,7 +893,7 @@ define(
 
             this.deleteSubScript = function (id) {
                 self.utpService.deleteSubScript(self.selectionManager
-                    .selectedProject().id, id,
+                        .selectedProject().id, id,
                     self.deleteSubScriptSuccessFunction,
                     self.deleteSubScriptErrorFunction);
             };
@@ -929,11 +929,11 @@ define(
             this.moveScriptGroup = function (sourceId, targetId, copyOrCut) {
                 if (copyOrCut) {
                     $.blockUI(utilityService.template);
-                    self.utpService.copyScriptGroup(self.selectionManager.selectedProject().id, sourceId, targetId,
+                    self.utpService.copyScriptGroup(0, sourceId, targetId,
                         self.moveScriptGroupSuccessFunction,
                         self.moveScriptGroupErrorFunction);
                 } else
-                    self.utpService.cutScriptGroup(self.selectionManager.selectedProject().id, sourceId, targetId,
+                    self.utpService.cutScriptGroup(0, sourceId, targetId,
                         self.moveScriptGroupSuccessFunction,
                         self.moveScriptGroupErrorFunction);
             };
@@ -988,11 +988,11 @@ define(
 
             this.moveScript = function (sourceId, targetId, copyOrCut) {
                 if (copyOrCut)
-                    self.utpService.copyScript(self.selectionManager.selectedProject().id, sourceId, targetId,
+                    self.utpService.copyScript(0, sourceId, targetId,
                         self.moveScriptSuccessFunction,
                         self.moveScriptErrorFunction);
                 else
-                    self.utpService.cutScript(self.selectionManager.selectedProject().id, sourceId, targetId,
+                    self.utpService.cutScript(0, sourceId, targetId,
                         self.moveScriptSuccessFunction,
                         self.moveScriptErrorFunction);
             };
@@ -1016,7 +1016,7 @@ define(
 
             this.referenceOfScript = function (sourceId) {
                 self.utpService.getReferenceOfScript(self.selectionManager
-                    .selectedProject().id, sourceId,
+                        .selectedProject().id, sourceId,
                     self.getReferenceOfScriptSuccessFunction,
                     self.getReferenceOfScriptErrorFunction);
             };
@@ -1047,7 +1047,7 @@ define(
 
             this.referenceOfSubScript = function (sourceId) {
                 self.utpService.getReferenceOfSubScript(
-                    self.selectionManager.selectedProject().id,
+                    0,
                     sourceId,
                     self.getReferenceOfSubScriptSuccessFunction,
                     self.getReferenceOfSubScriptErrorFunction);
@@ -1081,7 +1081,7 @@ define(
                 if (item.dataType != "testcase")
                     notificationService.showWarn('类型不匹配，无法转换！');
                 var obj = {
-                    projectId: self.selectionManager.selectedProject().id,
+                    projectId: 0,
                     scriptId: item.id,
                 };
                 self.utpService.transitToSubscript(
@@ -1135,7 +1135,7 @@ define(
                     }
                 }
                 var obj = {
-                    projectId: self.selectionManager.selectedProject().id,
+                    projectId: 0,
                     subscriptId: item.id,
                 };
                 self.utpService.transitToScript(
@@ -1175,7 +1175,7 @@ define(
                         targetScriptGroupId = 0;
                     var configObj = {
                         sourceProjectId: self.selectedTargetProject.id,
-                        targetProjectId: self.selectionManager.selectedProject().id,
+                        targetProjectId: 0,
                         targetScriptGroupId,
                         scriptIds,
                         scriptGroupIds: uniqueScriptGroupIds
@@ -1226,9 +1226,9 @@ define(
                 }
                 self.exportData = new Map();
                 self.excelReport.data = [[1, 1, "ID", ""], [1, 2, "公共逻辑ID", ""],
-                [1, 3, "路径", ""], [1, 4, "名称", ""],
-                [1, 5, "类型", ""], [1, 6, "内容", ""],
-                [1, 7, "参数", ""], [1, 8, "备注", ""]];
+                    [1, 3, "路径", ""], [1, 4, "名称", ""],
+                    [1, 5, "类型", ""], [1, 6, "内容", ""],
+                    [1, 7, "参数", ""], [1, 8, "备注", ""]];
                 var fetchDataList = [];
                 var testCaseIdList = [];
                 var subScriptIdList = [];
@@ -1245,7 +1245,7 @@ define(
                     var fetchTestCaseDataPromise = new Promise(function (
                         resolve, reject) {
                         self.utpService.getFullScripts(
-                            self.selectionManager.selectedProject().id,
+                            0,
                             testCaseIds, function (data) {
                                 if (data && data.status === 1 && data.result)
                                     resolve(data.result);
@@ -1263,7 +1263,7 @@ define(
                     var fetchSubScriptDataPromise = new Promise(function (
                         resolve, reject) {
                         self.utpService.getFullSubScripts(
-                            self.selectionManager.selectedProject().id,
+                            0,
                             subScriptIds, function (data) {
                                 if (data && data.status === 1 && data.result)
                                     resolve(data.result);
@@ -1295,7 +1295,7 @@ define(
                                                 currentNode.script = scriptContent.replace(
                                                     new RegExp(cmdConvertService.CMD_SEPARATOR, 'g'), '\n');
                                                 currentNode.parameter = node.type == "subscript" ? (node.parameter != null && node.parameter.length > 2 ? node.parameter
-                                                    : "")
+                                                        : "")
                                                     : "";
                                                 currentNode.customizedId = node.customizedId;
                                                 self.exportData.set(node.id, currentNode);
@@ -1371,10 +1371,10 @@ define(
                     var id = item.id;
                     if (id === fileManagerUtility.root)
                         id = 0;
-                    utpService.exportScriptGroup(self.selectionManager.selectedProject().id, id, self.fetchWordDataSuccessFunction, self.fetchWordDataErrorFunction);
+                    utpService.exportScriptGroup(0, id, self.fetchWordDataSuccessFunction, self.fetchWordDataErrorFunction);
                 }
                 else
-                    utpService.exportScript(self.selectionManager.selectedProject().id, item.id, self.fetchWordDataSuccessFunction, self.fetchWordDataErrorFunction);
+                    utpService.exportScript(0, item.id, self.fetchWordDataSuccessFunction, self.fetchWordDataErrorFunction);
             };
             this.sourceId = "";
             this.sourceType = ""; // text, folder, script
@@ -1689,7 +1689,7 @@ define(
                                                 id: id,
                                                 name: state.value,
                                                 description: '',
-                                                projectId: self.selectionManager.selectedProject().id,
+                                                projectId: 0,
                                                 parentScriptGroupId: parentId,
                                                 type: self.scriptType
                                             };
@@ -1698,7 +1698,7 @@ define(
                                             var selectedScript = {
                                                 id: id,
                                                 name: state.value,
-                                                projectId: self.selectionManager.selectedProject().id,
+                                                projectId: 0,
                                             }
                                             self.renameScript(selectedScript);
 
