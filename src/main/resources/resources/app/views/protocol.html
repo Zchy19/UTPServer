@@ -87,9 +87,9 @@
 
 					<!-- <div class="form-group">
 						<label for="protocolTypeName" class="control-label">类型<font color="red">*</font></label> -->
-					<!-- <input type="text" class="form-control" id="protocolTypeName"
+						<!-- <input type="text" class="form-control" id="protocolTypeName"
 							data-bind="enable: isEditMode() == false, value:protocolTypeName" required> -->
-					<!-- <select class="form-control" id="protocolType" data-bind="options: protocolTypes,
+						<!-- <select class="form-control" id="protocolType" data-bind="options: protocolTypes,
 									   value: protocolTypeName,optionsCaption: '请选择类型'">
 						</select>
 					</div> -->
@@ -120,7 +120,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<h4 class="modal-title pull-left" id="myModalLabel">协议配置信息</h4>
-					<div class="pull-right" data-bind="visible: !systemConfig.getConfig('utpclient.proto_mgr.disable_easy_edit') && !systemConfig.getConfig('utpclient.proto_mgr.pattern')">
+					<div class="pull-right" data-bind="visible: !systemConfig.getConfig('utpclient.proto_mgr.disable_easy_edit')">
 						<input type="checkbox" id="protocolPatternConfig" data-on-text="简易模式" data-off-text="高级模式"
 							data-bind="checked: protocolPattern">
 					</div>
@@ -141,7 +141,7 @@
 								</label>
 								<!-- <input type="text" class="form-control" id="protocolTypeName"
 									data-bind="enable: isEditMode() == false, value:protocolTypeName" required> -->
-								<select class="form-control" data-bind="options: protocolTypes,
+								<select class="form-control"  data-bind="options: protocolTypes,
 									   value: protocolTypeName,optionsCaption: '请选择类型'">
 								</select>
 							</div>
@@ -189,10 +189,10 @@
 							<label for="simpleMessageName">消息名称:</label>
 							<input type="text" class="form-control" id="simpleMessageName" placeholder="输入消息名称">
 						</div>
-						<!-- 消息方向选择 -->
 						<div class="form-group col-md-6">
-							<label for="messageDirection" class="form-label">消息方向</label>
-							<select id="messageDirection" class="form-control" data-bind="value: selectedMessageDirection,optionsCaption: '请选择方向...'" required>
+							<label for="messageDirection">消息方向:</label>
+							<select class="form-control" id="messageDirection">
+								<option value="" disabled selected style="display:none;">请选择消息方向</option>
 								<option value="send">仅发送</option>
 								<option value="receive">仅接收</option>
 								<option value="sendAndReceive">发送和接收</option>
@@ -376,7 +376,7 @@
 					<h4 style="padding: 7px 0;">数据块长度设置</h4>
 					<div class="form-group col-md-5">
 						<label>名称</label>
-						<input type="text" class="form-control" data-bind="value: dataBlockLengthName">
+						<input type="text"  class="form-control" data-bind="value: dataBlockLengthName">
 					</div>
 					<div class="form-group col-md-2">
 						<label>字节数</label>

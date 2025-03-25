@@ -10,7 +10,7 @@ define(
 		selectionManager, sequencediagram, JSONEditor, utpService, notificationService, _,
 		cmdConvertService, utilityService) {
 
-		function TestCaseViewModel() {
+		function RunableScriptViewModel() {
 			var self = this;
 			self.viewManager = viewManager;
 			self.systemConfig = systemConfig;
@@ -22,25 +22,23 @@ define(
 			self.reload = true;
 			self.maxNameLength = 200;
 			this.protocolService = protocolService;
-			this.scriptType = 'testcase';
+			this.scriptType = 'runablescript';
 
 			this.gotoPlayground = function () {
-				self.viewManager
-					.testcaseActivePage('app/viewmodels/playground');
+				self.viewManager.runablescriptActivePage('app/viewmodels/playground_runsc');
 			};
 
 			this.gotoExecution = function () {
 				self.executionManager.newExecutionFlag(true);
 				self.selectionManager.verificationSource = 'testcase';
-				self.viewManager
-					.testcaseActivePage('app/viewmodels/verification');
+				self.viewManager.runablescriptActivePage('app/viewmodels/verification');
 			};
 
 			this.refreshFileManager = function (data) {
 				if (data != null) {
-					$$("fm").clearAll();
+					$$("rfm").clearAll();
 					self.initFinish = false;
-					$$("fm").parse(data);
+					$$("rfm").parse(data);
 					self.treeAdjust();
 				}
 			};
@@ -60,7 +58,7 @@ define(
 			};
 
 			this.getScriptGroupByProjectErrorFunction = function () {
-				notificationService.showError('获取项目测试用例信息失败');
+				notificationService.showError('获取项目业务脚本信息失败');
 			};
 
 			this.getScriptGroupByProject = function () {
@@ -78,16 +76,16 @@ define(
 					if (retNewScriptGroup != null) {
 						if (retNewScriptGroup.parentScriptGroupId == 0)
 							retNewScriptGroup.parentScriptGroupId = fileManagerUtility.root;
-						$$("fm").add({
+						$$("rfm").add({
 							id: retNewScriptGroup.id,
 							value: retNewScriptGroup.name,
 							date: new Date(),
 							type: "folder",
 							dataType: "scriptGroup"
 						}, 0, retNewScriptGroup.parentScriptGroupId);
-						$$("fm").refreshCursor();
+						$$("rfm").refreshCursor();
 						self.treeAdjust();
-						notificationService.showSuccess('创建测试用例组成功');
+						notificationService.showSuccess('创建业务脚本组成功');
 					} else
 						self.createScriptGroupErrorFunction();
 				} else
@@ -95,7 +93,7 @@ define(
 			};
 
 			this.createScriptGroupErrorFunction = function () {
-				notificationService.showError('创建测试用例组失败');
+				notificationService.showError('创建业务脚本组失败');
 			};
 
 			this.createScriptGroup = function (parentId) {
@@ -104,7 +102,7 @@ define(
 					projectId: self.selectionManager.selectedProject().id,
 					parentScriptGroupId: parentId,
 					description: '',
-					name: '新建测试用例组',
+					name: '新建业务脚本组',
 					type: self.scriptType
 				};
 				self.utpService.createScriptGroup(defNewScriptGroup,
@@ -141,8 +139,8 @@ define(
 					}
 				}
 				var diagram = Diagram.parse(data);
-				$('#timeSeriesScriptDiagram').html('');
-				diagram.drawSVG("timeSeriesScriptDiagram", {
+				$('#runtimeSeriesScriptDiagram').html('');
+				diagram.drawSVG("runtimeSeriesScriptDiagram", {
 					theme: 'simple'
 				});
 
@@ -199,7 +197,7 @@ define(
 
 				self.composeFieldGroupSetting(self.checkedCommandNode());
 				self.prepareCommands();
-				$('#genericTimeSeriesScriptProtocolFieldSettingModal').modal('hide');
+				$('#rungenericTimeSeriesScriptProtocolFieldSettingModal').modal('hide');
 				self.diagramChart();
 
 			};
@@ -278,8 +276,8 @@ define(
 				}
 			};
 
-			this.clearTimeSeriesScriptProtocolConfigView = function () {
-				$('#timeSeriesScriptProtocolConfigView').html('');
+			this.clearruntimeSeriesScriptProtocolConfigView = function () {
+				$('#runtimeSeriesScriptProtocolConfigView').html('');
 			};
 
 			this.genericProtocolName = ko.observable('协议帧内容配置');
@@ -287,15 +285,15 @@ define(
 			this.selectedMessage = null;
 			this.currentGenericFrameMessageName = "";
 			this.initGenericTimeSeriesScriptProtocolTree = function (data) {
-				$('#genericTimeSeriesScriptProtocolTreeview').html('');
+				$('#rungenericTimeSeriesScriptProtocolTreeview').html('');
 				self.selectedMessageTemplate(undefined);
 				self.messageTemplates([]);
-				self.clearTimeSeriesScriptProtocolConfigView();
+				self.clearruntimeSeriesScriptProtocolConfigView();
 				// self.protocolFieldsconfig.removeAll();
 				self.genericProtocolName(data.value);
 				webix.ready(function () {
 					self.genericTimeSeriesScriptProtocolTree = webix.ui({
-						container: "genericTimeSeriesScriptProtocolTreeview",
+						container: "rungenericTimeSeriesScriptProtocolTreeview",
 						view: "tree",
 						type: "lineTree",
 						select: true,
@@ -355,7 +353,7 @@ define(
 			};
 
 			this.initProtocolConfigView = function (message, keepAllFields, needSchemaCheck) {
-				self.clearTimeSeriesScriptProtocolConfigView();
+				self.clearruntimeSeriesScriptProtocolConfigView();
 				var currentProtocolMode = self.protocolService.protocolModeEnum.valueSelectionSetting;
 				if (self.protocolNeedFieldSetting()) {
 					currentProtocolMode = self.protocolService.protocolModeEnum.valueSetting;
@@ -365,7 +363,7 @@ define(
 
 				var multipleSelection = true;
 				var options = self.protocolService.protocolOptionInit(self.protocol, message, currentProtocolMode, multipleSelection, keepAllFields, needSchemaCheck, message.fieldValues);
-				const container = document.getElementById('timeSeriesScriptProtocolConfigView');
+				const container = document.getElementById('runtimeSeriesScriptProtocolConfigView');
 				var obj = self.protocolService.editedProtocolConfig;
 				self.editor = new JSONEditor(container, options, obj);
 				self.protocolService.editor = self.editor;
@@ -393,7 +391,7 @@ define(
 					}
 					root.data.push(equiNode);
 				}
-				$('#genericTimeSeriesScriptProtocolFieldSettingModal').modal({ show: true }, { data: root });
+				$('#rungenericTimeSeriesScriptProtocolFieldSettingModal').modal({ show: true }, { data: root });
 			};
 
 
@@ -453,7 +451,7 @@ define(
 						}
 					}
 					self.diagramChart();
-					$('#editNameModal').modal('hide');
+					$('#runeditNameModal').modal('hide');
 				} else {
 					notificationService.showError('名称不能为空');
 				}
@@ -463,7 +461,7 @@ define(
 				self.newName(item.alias)
 				self.newNameItem(item);
 				// 显示模态框
-				$('#editNameModal').modal('show');
+				$('#runeditNameModal').modal('show');
 			};
 			this.currentBigDatatype = null;
 			this.protocol = { "equipments": [{ "index": "002", "name": "Flight Management Computer (702)", "labels": [{ "index": "001", "name": "Distance to Go", "minTxInterval": 100, "maxTxInterval": 200, "fields": [{ "name": "Distance to Go", "unit": "N.M.", "startBit": "29", "endBit": "11", "codeField": null, "bcd": { "digits": 5, "digit_Size": 4, "minva1": 0, "maxva1": 3999.9, "msd_Size": 3 } }, { "name": "SSM", "startBit": "31", "endBit": "30", "codeField": { "codes": [{ "value": "0", "String": "+" }, { "value": "1", "String": "NO Computed Data" }, { "value": "2", "String": "Functional Test" }, { "value": "3", "String": "-" }] } }] }, { "index": "002", "name": "Time to Go", "minTxInterval": 100, "maxTxInterval": 200, "fields": [{ "name": "Time to Go", "unit": "Min", "startBit": 29, "endBit": 15, "codeField": null, "bcd": { "digits": 4, "digit_Size": 4, "minva1": 0, "maxva1": 3999.9, "msd_Size": 3 } }] }, { "index": "003", "name": "Cross Track Distance", "minTxInterval": 100, "maxTxInterval": 200, "fields": [{ "name": "Cross Track Distance", "unit": "N.M.", "startBit": 29, "endBit": 15, "codeField": null, "bcd": { "digits": 4, "digit_Size": 4, "minva1": 0, "maxva1": 399.9, "msd_Size": 3 } }] }, { "index": "010", "name": "Present Position - Latitude", "minTxInterval": 250, "maxTxInterval": 500, "fields": [{ "name": "Degrees", "unit": "Deg", "startBit": 29, "endBit": 21, "codeField": null, "bcd": { "digits": 3, "digit_Size": 4, "minva1": 0, "maxva1": 180, "msd_Size": 1 } }, { "name": "minutes", "unit": "'", "startBit": 20, "endBit": 9, "codeField": null, "bcd": { "digits": 3, "digit_Size": 4, "minva1": 0, "maxva1": 180, "msd_Size": 4 } }] }, { "index": "012", "name": "Ground Speed", "minTxInterval": "250", "maxTxInterval": "500", "fields": [{ "name": "Ground Speed", "unit": "Knots", "startBit": "29", "endBit": "15", "bcd": { "digits": "4", "msd_Size": "3", "digit_Size": "4", "minva1": "0", "maxva1": "7000" } }] }, { "index": "013", "name": "Track Angle - True", "minTxInterval": "250", "maxTxInterval": "500", "fields": [{ "name": "Track Angle - True", "unit": "Deg", "startBit": "29", "endBit": "15", "bcd": { "digits": "4", "msd_Size": "3", "digit_Size": "4", "minva1": "0", "maxva1": "359.9" } }] }, { "index": "015", "name": "Wind Speed", "minTxInterval": "250", "maxTxInterval": "500", "fields": [{ "name": "Wind Speed", "unit": "Knots", "startBit": "29", "endBit": "19", "bcd": { "digits": "3", "msd_Size": "3", "digit_Size": "4", "minva1": "0", "maxva1": "799" } }] }, { "index": "027", "name": "TACAN Selected Course", "minTxInterval": "250", "maxTxInterval": "500", "fields": [{ "name": "TACAN Selected Course", "unit": "Deg", "startBit": "29", "endBit": "19", "bcd": { "digits": "3", "msd_Size": "3", "digit_Size": "4", "minva1": "0", "maxva1": "359" } }] }, { "index": "041", "name": "Set Latitude ", "minTxInterval": "250", "maxTxInterval": "500", "fields": [{ "name": "Set Latitude ", "unit": "Deg/Min", "startBit": "29", "endBit": "21", "bcd": { "digits": "3", "msd_Size": "1", "digit_Size": "4", "minva1": "0", "maxva1": "180" } }, { "name": "minutes", "unit": "'", "startBit": "20", "endBit": "9", "bcd": { "digits": "3", "msd_Size": "4", "digit_Size": "4", "minva1": "0", "maxva1": "180" } }] }, { "index": "042", "name": "Present Position - Latitude", "minTxInterval": "250", "maxTxInterval": "500", "fields": [{ "name": "Degrees", "unit": "Deg", "startBit": "29", "endBit": "21", "bcd": { "digits": "3", "msd_Size": "1", "digit_Size": "4", "minva1": "0", "maxva1": "180" } }, { "name": "minutes", "unit": "'", "startBit": "20", "endBit": "9", "bcd": { "digits": "3", "msd_Size": "4", "digit_Size": "4", "minva1": "0", "maxva1": "180" } }] }, { "index": "043", "name": "Set Magnetic Heading", "minTxInterval": "250", "maxTxInterval": "500", "fields": [{ "name": "Set Magnetic Heading", "unit": "Deg", "startBit": "29", "endBit": "19", "bcd": { "digits": "3", "msd_Size": "3", "digit_Size": "4", "minva1": "0", "maxva1": "359" } }] }, { "index": "200", "name": "Drift Angle", "minTxInterval": "250", "maxTxInterval": "500", "fields": [{ "name": "Drift Angle", "unit": "Deg", "startBit": "29", "endBit": "15", "bcd": { "digits": "4", "msd_Size": "4", "digit_Size": "4", "minva1": "-180", "maxva1": "180" } }] }, { "index": "261", "name": "Flight Number", "minTxInterval": "500", "maxTxInterval": "1000", "fields": [{ "name": "Flight Number", "unit": "N/A", "startBit": "29", "endBit": "14", "bcd": { "digits": "4", "msd_Size": "4", "digit_Size": "4", "minva1": "0", "maxva1": "9999" } }] }] }] };
@@ -552,8 +550,8 @@ define(
 				var xml = cmdConvertService.blocklyScriptToXml(self.currentScript.type(), self.currentScript.script());
 				self.currentScript.blockyXml(xml);
 
-				self.utpService.createTestcase(komapping.toJS(self.currentScript), self.createScriptSuccessFunction, self.createScriptErrorFunction);
-				$('#createTimeSeriesScriptModal').modal('hide');
+				self.utpService.createScript(komapping.toJS(self.currentScript), self.createScriptSuccessFunction, self.createScriptErrorFunction);
+				$('#runcreateTimeSeriesScriptModal').modal('hide');
 			}
 
 
@@ -566,16 +564,16 @@ define(
 						self.currentScript.name(retNewScript.name)
 						self.currentScript.id(retNewScript.id)
 						self.currentScript.type(retNewScript.type)
-						$$("fm").add({
+						$$("rfm").add({
 							id: retNewScript.id,
 							value: retNewScript.name,
 							date: new Date(),
 							type: "file",
-							dataType: "testcase"
+							dataType: "runablescript"
 						}, 0, retNewScript.parentScriptGroupId);
 						self.treeAdjust();
-						$$("fm").refreshCursor();
-						notificationService.showSuccess('创建测试用例成功');
+						$$("rfm").refreshCursor();
+						notificationService.showSuccess('创建业务脚本成功');
 						self.getScriptGroupByProject();
 					} else
 						self.createScriptErrorFunction();
@@ -588,9 +586,9 @@ define(
 
 			this.createScriptErrorFunction = function (errorMessages) {
 				if (errorMessages === 'OVER_MAX_SCRIPT_NUM') {
-					notificationService.showError('测试用例数量已达上限,请安装对应的许可文件!');
+					notificationService.showError('业务脚本数量已达上限,请安装对应的许可文件!');
 				} else {
-					notificationService.showError('创建测试用例失败');
+					notificationService.showError('创建业务脚本失败');
 				}
 			};
 
@@ -601,19 +599,10 @@ define(
 					projectId: self.selectionManager.selectedProject().id,
 					parentScriptGroupId: parentId,
 					description: '',
-					name: '新建测试用例',
+					name: '新建业务脚本',
 					type: self.scriptType
 				};
-				let testcase = {
-					id: 0,
-					projectId: self.selectionManager.selectedProject().id,
-					userTestCaseId: 0,
-					customizedFileds: ''
-				}
-				self.utpService.createTestcase({
-					script : defNewscript,
-					testCase : testcase
-				},
+				self.utpService.createScript(defNewscript,
 					self.createScriptSuccessFunction,
 					self.createScriptErrorFunction);
 			};
@@ -623,7 +612,7 @@ define(
 			// 	if (data && data.status === 1) {
 			// 		var retNewSubScript = data.result;
 			// 		if (retNewSubScript != null) {
-			// 			$$("fm").add({
+			// 			$$("rfm").add({
 			// 				id: retNewSubScript.id,
 			// 				value: retNewSubScript.name,
 			// 				date: new Date(),
@@ -631,7 +620,7 @@ define(
 			// 				dataType: "subscript"
 			// 			}, 0, retNewSubScript.parentScriptGroupId);
 			// 			self.treeAdjust();
-			// 			$$("fm").refreshCursor();
+			// 			$$("rfm").refreshCursor();
 			// 			notificationService.showSuccess('创建子脚本成功');
 			// 			self.getScriptGroupByProject();
 			// 		} else
@@ -668,7 +657,7 @@ define(
 
 			// edit
 			this.editName = function (name) {
-				$$("fm").renameFile(self.selectedItem.id, name);
+				$$("rfm").renameFile(self.selectedItem.id, name);
 				self.treeAdjust();
 			}
 
@@ -681,7 +670,7 @@ define(
 						self.updateScriptGroupErrorFunction();
 					else {
 						self.editName(scriptGroup.name);
-						notificationService.showSuccess('更新测试用例组成功');
+						notificationService.showSuccess('更新业务脚本组成功');
 					}
 				} else
 					self.updateScriptGroupErrorFunction();
@@ -689,7 +678,7 @@ define(
 
 			this.updateScriptGroupErrorFunction = function () {
 				self.editName(self.selectedItem.value);
-				notificationService.showError('更新测试用例组失败');
+				notificationService.showError('更新业务脚本组失败');
 			};
 
 			this.updateScriptGroup = function (selectedScriptGroup) {
@@ -706,7 +695,7 @@ define(
 						self.updateScriptErrorFunction();
 					else {
 						self.editName(script.name);
-						notificationService.showSuccess('更新测试用例成功');
+						notificationService.showSuccess('更新业务脚本成功');
 					}
 				} else
 					self.updateScriptErrorFunction();
@@ -714,7 +703,7 @@ define(
 
 			this.renameScriptErrorFunction = function () {
 				self.editName(self.selectedItem.value);
-				notificationService.showError('更新测试用例失败');
+				notificationService.showError('更新业务脚本失败');
 			};
 
 			this.renameScript = function (selectedScript) {
@@ -768,18 +757,18 @@ define(
 			// delete folder
 			this.deleteScriptGroupSuccessFunction = function (data) {
 				if (data && data.status === 1 && data.result) {
-					var parentId = $$("fm").getParentId(
+					var parentId = $$("rfm").getParentId(
 						self.selectedItem.id);
-					$$("fm").deleteFile(self.selectedItem.id);
-					$$("fm").setPath(parentId);
+					$$("rfm").deleteFile(self.selectedItem.id);
+					$$("rfm").setPath(parentId);
 					self.treeAdjust();
-					notificationService.showSuccess('删除测试用例组成功');
+					notificationService.showSuccess('删除业务脚本组成功');
 				} else
-					notificationService.showError('删除测试用例组失败');
+					notificationService.showError('删除业务脚本组失败');
 			};
 
 			this.deleteScriptGroupErrorFunction = function () {
-				notificationService.showError('删除测试用例组失败');
+				notificationService.showError('删除业务脚本组失败');
 			};
 
 			this.deleteScriptGroup = function (id) {
@@ -808,26 +797,26 @@ define(
 				var State_UnknowError = "FailedByUnknowError";
 				if (data && data.status === 1 && data.result) {
 					if (data.result.state == State_Success) {
-						$$("fm").deleteFile(self.selectedItem.id);
+						$$("rfm").deleteFile(self.selectedItem.id);
 						self.treeAdjust();
-						notificationService.showSuccess('删除测试用例成功');
+						notificationService.showSuccess('删除业务脚本成功');
 					} else {
 						var message = self.getTestRunReference(data.result.referencesByTestSet);
 						if (message == "")
-							notificationService.showError("删除测试用例失败！");
+							notificationService.showError("删除业务脚本失败！");
 						else
-							notificationService.showError("该测试用例已被测试集引用：" + message);
+							notificationService.showError("该业务脚本已被测试集引用：" + message);
 					}
 				} else
 					self.deleteScriptErrorFunction();
 			};
 
 			this.deleteScriptErrorFunction = function () {
-				notificationService.showError('删除测试用例失败！');
+				notificationService.showError('删除业务脚本失败！');
 			};
 
 			this.deleteScript = function (id) {
-				self.utpService.deleteTestCase(self.selectionManager
+				self.utpService.deleteScript(self.selectionManager
 					.selectedProject().id, id,
 					self.deleteScriptSuccessFunction,
 					self.deleteScriptErrorFunction);
@@ -835,10 +824,10 @@ define(
 
 			this.forceDeleteScriptSuccessFunction = function (data) {
 				if (data && data.status === 1 && data.result) {
-					$$("fm").deleteFile(self.selectedItem.id);
+					$$("rfm").deleteFile(self.selectedItem.id);
 					self.treeAdjust();
 					if (self.selectedItem.type === "file")
-						notificationService.showSuccess('删除测试用例成功');
+						notificationService.showSuccess('删除业务脚本成功');
 					else if (self.selectedItem.type === "text")
 						notificationService.showSuccess('删除子脚本成功');
 				} else
@@ -847,7 +836,7 @@ define(
 
 			this.forceDeleteScriptErrorFunction = function () {
 				if (self.selectedItem.type === "file")
-					notificationService.showError('删除测试用例失败！');
+					notificationService.showError('删除业务脚本失败！');
 				else if (self.selectedItem.type === "text")
 					notificationService.showError('删除子脚本失败！');
 			};
@@ -881,18 +870,18 @@ define(
 				var State_UnknowError = "FailedByUnknowError";
 				if (data && data.status === 1) {
 					if (data.result.state == State_Success) {
-						$$("fm").deleteFile(self.selectedItem.id);
+						$$("rfm").deleteFile(self.selectedItem.id);
 						self.treeAdjust();
 						notificationService.showSuccess('删除子脚本成功！');
 					} else {
 						var recoverSubscriptReferenceMessage = self.getRecoverSubscriptReference(data.result.referencesByRecoverSubscript);
 						var subscriptReferenceMessage = self.getSubscriptReference(data.result.referencesByScript);
 						if (recoverSubscriptReferenceMessage == "" && subscriptReferenceMessage == "")
-							notificationService.showError("删除测试用例失败！");
+							notificationService.showError("删除业务脚本失败！");
 						if (recoverSubscriptReferenceMessage != "")
 							notificationService.showError("该子脚本已作为异常恢复脚本：" + recoverSubscriptReferenceMessage);
 						if (subscriptReferenceMessage != "")
-							notificationService.showError("该子脚本已被其它测试用例/子脚本引用：" + subscriptReferenceMessage);
+							notificationService.showError("该子脚本已被其它业务脚本/子脚本引用：" + subscriptReferenceMessage);
 					}
 				} else
 					self.deleteSubScriptErrorFunction();
@@ -917,10 +906,10 @@ define(
 						if (self.copyOrCut)
 							self.getScriptGroupByProject();
 						else
-							$$("fm").moveFile(self.sourceId, self.targetId);
-						$$("fm").refreshCursor();
+							$$("rfm").moveFile(self.sourceId, self.targetId);
+						$$("rfm").refreshCursor();
 						self.treeAdjust();
-						notificationService.showSuccess('粘贴测试用例组成功');
+						notificationService.showSuccess('粘贴业务脚本组成功');
 						$.unblockUI();
 					} else
 						self.moveScriptGroupErrorFunction();
@@ -931,9 +920,9 @@ define(
 			this.moveScriptGroupErrorFunction = function (errorMessages) {
 				$.unblockUI();
 				if (errorMessages === 'OVER_MAX_SCRIPT_NUM') {
-					notificationService.showError('测试用例数量/子脚本已达上限,请安装对应的许可文件!');
+					notificationService.showError('业务脚本数量/子脚本已达上限,请安装对应的许可文件!');
 				} else {
-					notificationService.showError('粘贴测试用例组失败');
+					notificationService.showError('粘贴业务脚本组失败');
 				}
 			};
 
@@ -951,15 +940,15 @@ define(
 
 			// move script
 			this.moveScriptSuccessFunction = function (data) {
-				$$("fm").refreshCursor();
+				$$("rfm").refreshCursor();
 				if (data && data.status === 1) {
 					var script = data.result;
 					if (script != null) {
 						if (self.copyOrCut) {
-							// $$("fm").copyFile(self.sourceId,
+							// $$("rfm").copyFile(self.sourceId,
 							// self.targetId);
 							if (self.sourceType == "file")
-								$$("fm").add({
+								$$("rfm").add({
 									id: script.id,
 									value: script.name,
 									date: new Date(),
@@ -969,7 +958,7 @@ define(
 									customizedId: script.customizedId
 								}, 0, script.parentScriptGroupId);
 							else
-								$$("fm").add({
+								$$("rfm").add({
 									id: script.id,
 									value: script.name,
 									date: new Date(),
@@ -979,10 +968,10 @@ define(
 									customizedId: script.customizedId
 								}, 0, script.parentScriptGroupId);
 						} else
-							$$("fm").moveFile(self.sourceId, self.targetId);
+							$$("rfm").moveFile(self.sourceId, self.targetId);
 						self.treeAdjust();
-						$$("fm").refreshCursor();
-						notificationService.showSuccess('粘贴测试用例/子脚本成功');
+						$$("rfm").refreshCursor();
+						notificationService.showSuccess('粘贴业务脚本/子脚本成功');
 					} else
 						self.moveScriptErrorFunction();
 				} else
@@ -991,45 +980,45 @@ define(
 
 			this.moveScriptErrorFunction = function (errorMessages) {
 				if (errorMessages === 'OVER_MAX_SCRIPT_NUM') {
-					notificationService.showError('测试用例数量/子脚本已达上限,请安装对应的许可文件!');
+					notificationService.showError('业务脚本数量/子脚本已达上限,请安装对应的许可文件!');
 				} else {
-					notificationService.showError('粘贴测试用例/子脚本失败');
+					notificationService.showError('粘贴业务脚本/子脚本失败');
 				}
 			};
 
 			this.moveScript = function (sourceId, targetId, copyOrCut) {
 				if (copyOrCut)
-					self.utpService.copyTestCase(self.selectionManager.selectedProject().id, sourceId, targetId,
+					self.utpService.copyScript(self.selectionManager.selectedProject().id, sourceId, targetId,
 						self.moveScriptSuccessFunction,
 						self.moveScriptErrorFunction);
 				else
-					self.utpService.cutTestCase(self.selectionManager.selectedProject().id, sourceId, targetId,
+					self.utpService.cutScript(self.selectionManager.selectedProject().id, sourceId, targetId,
 						self.moveScriptSuccessFunction,
 						self.moveScriptErrorFunction);
 			};
 
 			// reference of script
-			this.getReferenceOfTestCaseSuccessFunction = function (data) {
+			this.getReferenceOfScriptSuccessFunction = function (data) {
 				if (data && data.status === 1 && data.result) {
 					var message = self
 						.getTestRunReference(data.result.referencesByTestSet);
 					if (message == "")
-						notificationService.showInfo('该测试用例未被引用');
+						notificationService.showInfo('该业务脚本未被引用');
 					else
-						notificationService.showInfo("该测试用例已被测试集引用：" + message);
+						notificationService.showInfo("该业务脚本已被测试集引用：" + message);
 				} else
-					self.getReferenceOfTestCaseErrorFunction();
+					self.getReferenceOfScriptErrorFunction();
 			};
 
-			this.getReferenceOfTestCaseErrorFunction = function () {
-				notificationService.showError('获取测试用例引用失败！');
+			this.getReferenceOfScriptErrorFunction = function () {
+				notificationService.showError('获取业务脚本引用失败！');
 			};
 
 			this.referenceOfScript = function (sourceId) {
-				self.utpService.getReferenceOfTestCase(self.selectionManager
+				self.utpService.getReferenceOfScript(self.selectionManager
 					.selectedProject().id, sourceId,
-					self.getReferenceOfTestCaseSuccessFunction,
-					self.getReferenceOfTestCaseErrorFunction);
+					self.getReferenceOfScriptSuccessFunction,
+					self.getReferenceOfScriptErrorFunction);
 			};
 
 			// reference of sub script
@@ -1046,7 +1035,7 @@ define(
 						notificationService.showInfo("该子脚本已作为异常恢复脚本："
 							+ recoverSubscriptReferenceMessage);
 					if (subscriptReferenceMessage != "")
-						notificationService.showInfo("该子脚本已被其它测试用例/子脚本引用："
+						notificationService.showInfo("该子脚本已被其它业务脚本/子脚本引用："
 							+ subscriptReferenceMessage);
 				} else
 					self.getReferenceOfSubScriptErrorFunction();
@@ -1070,22 +1059,22 @@ define(
 						self.selectedItem.type = "text";
 						self.selectedItem.dataType = "subscript";
 						self.selectedItem.parameter = null;
-						notificationService.showSuccess('测试用例转换子脚成功!');
-						$$("fm").refreshCursor();
+						notificationService.showSuccess('业务脚本转换子脚成功!');
+						$$("rfm").refreshCursor();
 					}
 					if (data.result.state == "FailedByReference") {
 						var testset = data.result.referencesByTestSet;
 						if (testset && testset.length > 0)
-							notificationService.showWarn("该用例已被" + testset[0].name + "等测试集引用，不能转换成子脚本！");
+							notificationService.showWarn("该业务脚本已被" + testset[0].name + "等测试集引用，不能转换成子脚本！");
 						else
-							notificationService.showWarn("该用例已被测试集引用，不能转换成子脚本！");
+							notificationService.showWarn("该业务脚本已被测试集引用，不能转换成子脚本！");
 					}
 				} else
 					self.transitToSubscriptErrorFunction();
 			};
 
 			this.transitToSubscriptErrorFunction = function () {
-				notificationService.showError('测试用例转换成子脚本失败');
+				notificationService.showError('业务脚本转换成子脚本失败');
 			};
 
 			this.convertToSubScript = function (item) {
@@ -1107,21 +1096,21 @@ define(
 						self.selectedItem.type = "file";
 						self.selectedItem.dataType = "testcase";
 						delete self.selectedItem.parameter;
-						notificationService.showSuccess('子脚本转换为测试用例成功!');
-						$$("fm").refreshCursor();
+						notificationService.showSuccess('子脚本转换为业务脚本成功!');
+						$$("rfm").refreshCursor();
 					}
 					else if (data.result.state == "FailedByReference") {
 						var script = data.result.referencesByScript;
 						var recover = data.result.referencesByRecoverSubscript;
 						if (script && script.length > 0)
-							notificationService.showWarn("该子脚本已经被" + script[0].name + "等其它脚本或者测试用例引用，不能转换成测试用例！");
+							notificationService.showWarn("该子脚本已经被" + script[0].name + "等其它脚本或者业务脚本引用，不能转换成业务脚本！");
 						else if (recover && recover.length > 0)
-							notificationService.showWarn("该子脚本已经作为异常恢复脚本，不能转换成测试用例！");
+							notificationService.showWarn("该子脚本已经作为异常恢复脚本，不能转换成业务脚本！");
 						else
-							notificationService.showWarn("该子脚本已被引用，不能转换成测试用例！");
+							notificationService.showWarn("该子脚本已被引用，不能转换成业务脚本！");
 					}
 					else if (data.result.state == "FailedByParameterNotEmpty")
-						notificationService.showWarn("带参子脚本不能转换成测试用例！");
+						notificationService.showWarn("带参子脚本不能转换成业务脚本！");
 					else if (subscriptReferenceMessage == "FailedByUnknowError")
 						self.transitToScriptErrorFunction();
 					else
@@ -1131,7 +1120,7 @@ define(
 			};
 
 			this.transitToScriptErrorFunction = function () {
-				notificationService.showError('子脚本转换为测试用例失败');
+				notificationService.showError('子脚本转换为业务脚本失败');
 			};
 
 			this.convertToTestCase = function (item) {
@@ -1141,7 +1130,7 @@ define(
 				if (parameter) {
 					var parameters = JSON.parse(parameter);
 					if (parameters.length > 0) {
-						notificationService.showWarn('子脚本包含参数，无法转换为测试用例！');
+						notificationService.showWarn('子脚本包含参数，无法转换为业务脚本！');
 						return;
 					}
 				}
@@ -1158,7 +1147,7 @@ define(
 			this.referScript = function () {
 				var checkedIds = self.subScriptTree.getChecked();
 				if (checkedIds == null || checkedIds.length == 0) {
-					notificationService.showWarn('请选择至少一个用例或者子脚本！');
+					notificationService.showWarn('请选择至少一个脚本！');
 					return;
 				}
 				var scriptIds = [];
@@ -1195,7 +1184,7 @@ define(
 						if (data && data.status === 1 && data.result) {
 							notificationService.showSuccess('导入成功！');
 							self.getScriptGroupByProject();
-							$$("fm").refreshCursor();
+							$$("rfm").refreshCursor();
 							self.treeAdjust();
 						}
 						else
@@ -1203,10 +1192,10 @@ define(
 					}, function (error) {
 						notificationService.showError('导入失败！');
 					})
-					$('#referScriptModal').modal('hide');
+					$('#runreferScriptModal').modal('hide');
 				}
 				else
-					notificationService.showInfo('所选用例组不包含任何测试用例或者子脚本！');
+					notificationService.showInfo('所选脚本组不包含任何脚本！');
 			};
 
 			self.exportData = null;
@@ -1236,7 +1225,7 @@ define(
 					return;
 				}
 				self.exportData = new Map();
-				self.excelReport.data = [[1, 1, "ID", ""], [1, 2, "测试用例ID", ""],
+				self.excelReport.data = [[1, 1, "ID", ""], [1, 2, "业务脚本ID", ""],
 				[1, 3, "路径", ""], [1, 4, "名称", ""],
 				[1, 5, "类型", ""], [1, 6, "内容", ""],
 				[1, 7, "参数", ""], [1, 8, "备注", ""]];
@@ -1321,7 +1310,7 @@ define(
 									self.excelReport.data.push([i, 2, value.customizedId, ""]);
 									self.excelReport.data.push([i, 3, value.path, ""]);
 									self.excelReport.data.push([i, 4, value.name, ""]);
-									self.excelReport.data.push([i, 5, value.type == "testcase" ? "测试用例" : "子脚本", ""]);
+									self.excelReport.data.push([i, 5, value.type == "testcase" ? "业务脚本" : "子脚本", ""]);
 									self.excelReport.data.push([i, 6, value.script, ""]);
 									self.excelReport.data.push([i, 7, value.parameter, ""]);
 									self.excelReport.data.push([i, 8, value.description, ""]);
@@ -1362,12 +1351,12 @@ define(
 					a.click();
 				}
 				else
-					notificationService.showError('导出word用例失败');
+					notificationService.showError('导出word脚本失败');
 				$.unblockUI();
 			};
 
 			this.fetchWordDataErrorFunction = function (error) {
-				notificationService.showError('导出word用例失败');
+				notificationService.showError('导出word脚本失败');
 			};
 			this.permissionErrorFunction = function () {
 				notificationService.showError('该功能无法使用,请安装相应许可！');
@@ -1409,18 +1398,18 @@ define(
 							root.push(scriptGroups);
 							self.initScriptTree(root);
 						} else
-							notificationService.showError('获取项目测试用例信息失败');
+							notificationService.showError('获取项目业务脚本信息失败');
 					},
 					function () {
-						notificationService.showError('获取项目测试用例信息失败');
+						notificationService.showError('获取项目业务脚本信息失败');
 					});
 			};
 
 			this.initScriptTree = function (data) {
-				$('#referScriptTreeview').html('');
+				$('#runreferScriptTreeview').html('');
 				webix.ready(function () {
 					self.subScriptTree = webix.ui({
-						container: "referScriptTreeview",
+						container: "runreferScriptTreeview",
 						view: "tree",
 						template: function (obj, com) {
 							if (obj.$count === 0 && (obj.type === "folder")) {
@@ -1445,21 +1434,21 @@ define(
 			};
 
 			this.treeAdjust = function () {
-				// $$("fm").data.sort("value","asc", self.localeCompare);
-				$$("fm").$$("table").sort("#value#", "asc", "string");
-				$$("fm").$$("table").markSorting("value", "asc");
-				$$("fm").$$("table").attachEvent("onAfterSort",
+				// $$("rfm").data.sort("value","asc", self.localeCompare);
+				$$("rfm").$$("table").sort("#value#", "asc", "string");
+				$$("rfm").$$("table").markSorting("value", "asc");
+				$$("rfm").$$("table").attachEvent("onAfterSort",
 					function (by, dir, as) {
-						$$("fm").$$("tree").sort("#" + by + "#", dir, as);
+						$$("rfm").$$("tree").sort("#" + by + "#", dir, as);
 					});
-				$$("fm").$$("tree").closeAll();
+				$$("rfm").$$("tree").closeAll();
 
 				if (self.projectManager.currentTestCaseOpenFolders != null && self.projectManager.currentTestCaseOpenFolders.length > 1) {
-					$$("fm").$$("tree").open(self.projectManager.currentTestCaseOpenFolders[self.projectManager.currentTestCaseOpenFolders.length - 2], true);
-					$$("fm").$$("tree").select(self.projectManager.currentTestCaseOpenFolders[self.projectManager.currentTestCaseOpenFolders.length - 1]);
+					$$("rfm").$$("tree").open(self.projectManager.currentTestCaseOpenFolders[self.projectManager.currentTestCaseOpenFolders.length - 2], true);
+					$$("rfm").$$("tree").select(self.projectManager.currentTestCaseOpenFolders[self.projectManager.currentTestCaseOpenFolders.length - 1]);
 				} else {
-					$$("fm").$$("tree").open(fileManagerUtility.root);
-					$$("fm").$$("tree").select(fileManagerUtility.root);
+					$$("rfm").$$("tree").open(fileManagerUtility.root);
+					$$("rfm").$$("tree").select(fileManagerUtility.root);
 				}
 			}
 
@@ -1467,20 +1456,20 @@ define(
 				return;
 			}
 
-			this.initTestCaseManager = function () {
-				this.viewManager.antbotActivePage('app/viewmodels/antbot');
+			this.initRunableScriptManager = function () {
+				this.viewManager.runantbotActivePage('app/viewmodels/antbot_run');
 				webix.ready(function () {
-					fileManagerUtility.testcaseConfigInit();
+					fileManagerUtility.runablescriptConfigInit();
 					webix.ui({
-						container: "testcase_div",
-						id: "testcase_accord",
+						container: "runablescript_div",
+						id: "runablescript_accord",
 						multi: true,
 						view: "accordion",
 						minHeight: 700,
 						cols: [
 							{
 								view: "filemanager",
-								id: "fm",
+								id: "rfm",
 								minHeight: 700,
 								minWidth: 800,
 								scroll: true,
@@ -1488,7 +1477,7 @@ define(
 								on: {
 									"onViewInit": function (name, config) {
 										if (name === 'search')
-											config.placeholder = "查找ID/测试用例ID/名称";
+											config.placeholder = "查找ID/业务脚本ID/名称";
 										else if (name == "table") {
 											var columns = config.columns;
 											columns.splice(3, 1);
@@ -1533,7 +1522,7 @@ define(
 											var customizedIdColumn = {
 												id: "customizedId",
 												header: {
-													text: "测试用例ID",
+													text: "业务脚本ID",
 													css: { "text-align": "left" }
 												},
 												fillspace: 1,
@@ -1561,7 +1550,7 @@ define(
 										view.config.id = "test";
 									},
 									"onBeforeUploadDialog": function (id) {
-										$('#referScriptModal').modal({ show: true });
+										$('#runreferScriptModal').modal({ show: true });
 										self.sourceId = id;
 										return false;
 									},
@@ -1576,27 +1565,27 @@ define(
 										if (parentId === fileManagerUtility.root)
 											parentId = "";
 										self.createScriptGroup(parentId);
-										$$("fm").getMenu().hide();
+										$$("rfm").getMenu().hide();
 										return false;
 									},
 
 									// disable delete
 									// demo file
 									"onBeforeDeleteFile": function (id) {
-										var item = $$("fm").getItem(id);
+										var item = $$("rfm").getItem(id);
 										item.id = id;
-										if (item.type === "folder" && $$("fm").getFirstChildId(item.id) != null) {
-											notificationService.showError('测试用例组不为空，不允许删除！');
+										if (item.type === "folder" && $$("rfm").getFirstChildId(item.id) != null) {
+											notificationService.showError('业务脚本组不为空，不允许删除！');
 										} else {
 											self.selectedItem = item;
-											$('#deleteTestcaseModal').modal('show');
+											$('#rundeleteTestcaseModal').modal('show');
 										}
-										$$("fm").getMenu().hide();
+										$$("rfm").getMenu().hide();
 										return false;
 									},
 
 									"onBeforeMarkCopy": function (id) {
-										var item = $$("fm").getItem(id);
+										var item = $$("rfm").getItem(id);
 										self.sourceType = item.type;
 										self.copyOrCut = true;
 										self.sourceId = id;
@@ -1604,7 +1593,7 @@ define(
 									},
 
 									"onBeforeMarkCut": function (id) {
-										var item = $$("fm").getItem(id);
+										var item = $$("rfm").getItem(id);
 										self.sourceType = item.type;
 										self.copyOrCut = false;
 										self.sourceId = id;
@@ -1613,16 +1602,16 @@ define(
 
 									"onBeforePasteFile": function (targetId) {
 										if (self.sourceId == "" || self.sourceType == "") {
-											$$("fm").getMenu().hide();
+											$$("rfm").getMenu().hide();
 											return false;
 										}
 
 										var candidateTargetId = targetId;
 										while (candidateTargetId != fileManagerUtility.root && self.sourceId != candidateTargetId)
-											candidateTargetId = $$("fm").getParentId(candidateTargetId);
+											candidateTargetId = $$("rfm").getParentId(candidateTargetId);
 
 										if (self.sourceId == candidateTargetId) {
-											$$("fm").getMenu().hide();
+											$$("rfm").getMenu().hide();
 											return false;
 										}
 
@@ -1634,35 +1623,35 @@ define(
 											self.moveScriptGroup(self.sourceId, self.targetId, self.copyOrCut);
 										else
 											self.moveScript(self.sourceId, self.targetId, self.copyOrCut);
-										$$("fm").getMenu().hide();
+										$$("rfm").getMenu().hide();
 										return false;
 									},
 
 									"onHistoryChange": function (path, ids, cursor) {
 										if (self.initFinish) {
 											self.projectManager.currentTestCasePath = path;
-											self.projectManager.currentTestCaseOpenFolders = $$("fm").getPath();
+											self.projectManager.currentTestCaseOpenFolders = $$("rfm").getPath();
 										}
 										return true;
 									},
 
 									"onAfterLoad": function () {
-										$$("fm").setPath(self.projectManager.currentTestCasePath);
+										$$("rfm").setPath(self.projectManager.currentTestCasePath);
 										self.initFinish = true;
 									},
 
 									"onAfterShowTree": function () {
-										$$("fm").setPath(self.projectManager.currentTestCasePath);
+										$$("rfm").setPath(self.projectManager.currentTestCasePath);
 										self.initFinish = true;
 									},
 
 									"onBeforeEditFile": function (id) {
-										var item = $$("fm").getItem(id);
+										var item = $$("rfm").getItem(id);
 										// if (item.type === "file" || item.type === "text") {
 										// 	self.selectionManager.selectedNodeId(item.id);
 										// 	self.selectionManager.selectedNodeType = item.dataType;
 										// 	self.gotoPlayground();
-										// 	$$("fm").getMenu().hide();
+										// 	$$("rfm").getMenu().hide();
 										// 	return false;
 										// }
 										return true;
@@ -1687,7 +1676,7 @@ define(
 									},
 
 									"onAfterEditStop": function (id, state, editor, view) {
-										var item = $$("fm").getItem(id);
+										var item = $$("rfm").getItem(id);
 										if (state.value === state.old)
 											return true;
 
@@ -1714,19 +1703,19 @@ define(
 											self.renameScript(selectedScript);
 
 										}
-										$$("fm").getMenu().hide();
+										$$("rfm").getMenu().hide();
 										return false;
 									},
 
 									"onItemClick": function (id, e, node) {
 										if (id === 'configCustomizedField') {
-											$('#scriptCustomizedFieldModal').modal({ show: true });
-											$$("fm").getMenu().hide();
+											$('#runscriptCustomizedFieldModal').modal({ show: true });
+											$$("rfm").getMenu().hide();
 										}
 
 										if (id === "verify") {
-											var itemId = $$("fm").getActive();
-											var item = $$("fm").getItem(itemId);
+											var itemId = $$("rfm").getActive();
+											var item = $$("rfm").getItem(itemId);
 											if (item.type === "file") {
 												self.selectionManager.selectedNodeId(item.id);
 												self.selectionManager.selectedNodeType = item.dataType;
@@ -1736,72 +1725,72 @@ define(
 												self.selectionManager.selectedNodeType = item.dataType;
 												self.gotoExecution();
 											}
-											$$("fm").getMenu().hide();
+											$$("rfm").getMenu().hide();
 										}
 
 										if (id === "reference") {
-											var itemId = $$("fm").getActive();
-											var item = $$("fm").getItem(itemId);
+											var itemId = $$("rfm").getActive();
+											var item = $$("rfm").getItem(itemId);
 											if (item.type === "file")
 												self.referenceOfScript(item.id);
 											else if (item.type === "text")
 												self.referenceOfSubScript(item.id);
-											$$("fm").getMenu().hide();
+											$$("rfm").getMenu().hide();
 										}
 
 										if (id === "refresh") {
 											self.getScriptGroupByProject();
-											$$("fm").getMenu().hide();
+											$$("rfm").getMenu().hide();
 										}
 
 										if (id === "createTestCase") {
-											var parent = $$("fm").getCurrentFolder();
+											var parent = $$("rfm").getCurrentFolder();
 											if (parent === fileManagerUtility.root)
 												parent = "";
 											self.createScript(parent);
-											$$("fm").getMenu().hide();
+											$$("rfm").getMenu().hide();
 										}
 										if (id === "createTimeSeriesTestCase") {
-											var parent = $$("fm").getCurrentFolder();
+											var parent = $$("rfm").getCurrentFolder();
 											if (parent === fileManagerUtility.root)
 												parent = "";
-											$('#createTimeSeriesScriptModal').modal('show');
+											$('#runcreateTimeSeriesScriptModal').modal('show');
 											self.sourceId = parent;
-											$$("fm").getMenu().hide();
+											$$("rfm").getMenu().hide();
 
 										}
 										if (id === "convertScript") {
-											var itemId = $$("fm").getActive();
-											var item = $$("fm").getItem(itemId);
+											var itemId = $$("rfm").getActive();
+											var item = $$("rfm").getItem(itemId);
 											self.selectedItem = item;
 											if (item.type === "file")
 												self.convertToSubScript(item);
 											else if (item.type === "text")
 												self.convertToTestCase(item);
-											$$("fm").getMenu().hide();
+											$$("rfm").getMenu().hide();
 										}
 
 										if (id === "forceRemove") {
-											var itemId = $$("fm").getActive();
-											var item = $$("fm").getItem(itemId);
+											var itemId = $$("rfm").getActive();
+											var item = $$("rfm").getItem(itemId);
 											self.selectedItem = item;
-											$('#forceDeleteTestcaseModal').modal('show');
-											$$("fm").getMenu().hide();
+											$('#runforcerundeleteTestcaseModal').modal('show');
+											$$("rfm").getMenu().hide();
 											return false;
 										}
 										if (id === "exportWord") {
-											var itemId = $$("fm").getActive();
-											var item = $$("fm").getItem(itemId);
+											var itemId = $$("rfm").getActive();
+											var item = $$("rfm").getItem(itemId);
 											self.exportWord(item);
 											return false;
 										}
 										if (id === "export") {
-											var itemId = $$("fm").getActive();
-											var item = $$("fm").getItem(itemId);
+											var itemId = $$("rfm").getActive();
+											var item = $$("rfm").getItem(itemId);
 											var nodes = [];
 											if (item.type === "file" || item.type === "text") {
-												var parentId = $$("fm").getCurrentFolder();
-												var pathNames = $$("fm").getPathNames(parentId).map(
+												var parentId = $$("rfm").getCurrentFolder();
+												var pathNames = $$("rfm").getPathNames(parentId).map(
 													function (elem) {
 														return elem.value;
 													}).join("/");
@@ -1813,10 +1802,10 @@ define(
 												};
 												nodes.push(node);
 											} else if (item.type === "folder") {
-												$$("fm").data.eachLeaf(itemId,
+												$$("rfm").data.eachLeaf(itemId,
 													function (obj) {
-														var parentId = $$("fm").getParentId(obj.id);
-														var pathNames = $$("fm").getPathNames(parentId).map(
+														var parentId = $$("rfm").getParentId(obj.id);
+														var pathNames = $$("rfm").getPathNames(parentId).map(
 															function (elem) {
 																return elem.value;
 															})
@@ -1831,15 +1820,15 @@ define(
 													});
 											}
 											self.exportScript(nodes);
-											$$("fm").getMenu().hide();
+											$$("rfm").getMenu().hide();
 										}
 
 										// if (id === "createSubScript") {
-										// 	var parent = $$("fm").getCurrentFolder();
+										// 	var parent = $$("rfm").getCurrentFolder();
 										// 	if (parent === fileManagerUtility.root)
 										// 		parent = "";
 										// 	self.createSubScript(parent);
-										// 	$$("fm").getMenu().hide();
+										// 	$$("rfm").getMenu().hide();
 										// }
 										return true;
 									},
@@ -1848,7 +1837,7 @@ define(
 								ready: function () {
 									var actions = this.getMenu();
 									var createItem = actions.getItem("create");
-									createItem.value = "新建测试用例组";
+									createItem.value = "新建业务脚本组";
 									var uploadItem = actions.getItem("upload");
 									uploadItem.value = "跨项目脚本导入";
 									//移除actions里的导入菜单项
@@ -1859,7 +1848,7 @@ define(
 										{
 											id: "createTestCase",
 											icon: "fm-file",
-											value: "新建空白用例"
+											value: "新建空白脚本"
 										},
 										5);
 									if (self.systemConfig.getConfig("utpclient.testcase_mgr.timing_use_case")) {
@@ -1882,7 +1871,7 @@ define(
 									// 	{
 									// 		id: "convertScript",
 									// 		icon: "webix_fmanager_icon fa-exchange",
-									// 		value: "用例/脚本转换"
+									// 		value: "业务脚本/公共脚本转换"
 									// 	},
 									// 	9);
 									actions.add({
@@ -1892,7 +1881,7 @@ define(
 										{
 											id: "verify",
 											icon: "webix_fmanager_icon fa-cog",
-											value: "验证测试用例"
+											value: "验证业务脚本"
 										},
 										11);
 									actions.add(
@@ -1964,23 +1953,17 @@ define(
 
 									}
 
-									// 判断项目数量，如果只有一个项目，移除"跨项目脚本导入"菜单项
-									var projects = self.chooseProject();
-									if (projects.length <= 0) {
-										actions.remove("upload");
-									}
-
 									self.treeAdjust();
-									$$('antbot_control').collapse();
+									$$('run_antbot_control').collapse();
 								},
 
 								menuFilter: function (obj) {
-									var actions = $$("fm").getMenu();
+									var actions = $$("rfm").getMenu();
 									var dataId = actions.getContext().id;
 									if (dataId === undefined) {
 										if (obj.id === "verify" || obj.id === "reference" || obj.id === "export" || obj.id === 'exportWord' || obj.id === "convertScript" || obj.id === "forceRemove")
 											return false;
-										var parent = $$("fm").getCurrentFolder();
+										var parent = $$("rfm").getCurrentFolder();
 										if (parent === fileManagerUtility.root) {
 											if (obj.id === "createTestCase"
 												// || obj.id === "createSubScript"
@@ -1996,7 +1979,7 @@ define(
 												return false;
 										}
 									} else {
-										var item = $$("fm").getItem(dataId);
+										var item = $$("rfm").getItem(dataId);
 										if (item.type === "folder") {
 											if (obj.id === "verify" || obj.id === "reference" || obj.id == "convertScript")
 												return false;
@@ -2042,10 +2025,10 @@ define(
 								view: "resizer"
 							}, {
 								header: "测试机器人管理",
-								id: "antbot_control",
+								id: "run_antbot_control",
 								body: {
 									view: "htmlform",
-									content: "antbotinfo",
+									content: "runableScriptantbotinfo",
 								},
 								width: 400,
 								minWidth: 400,
@@ -2053,26 +2036,26 @@ define(
 								scroll: false
 							}]
 					});
-					self.projectManager.setTestCaseGroupManager($$("fm"));
-					$$("fm").$$("files").define({
+					self.projectManager.setRunableScriptGroupManager($$("rfm"));
+					$$("rfm").$$("files").define({
 						tooltip: function (obj) {
 							return obj.value;
 						}
 					});
 
-					$$("fm").$$("table").define({
+					$$("rfm").$$("table").define({
 						tooltip: function (obj, common) {
 							var column = common.column.id;
 							if (column == "type") {
 								if (obj[column] == 'folder')
-									return "测试用例组";
+									return "业务脚本组";
 								if (obj[column] == 'text')
 									return "子脚本";
 								if (obj[column] == 'file')
-									return "测试用例";
+									return "业务脚本";
 							}
 							else if (column == "location") {
-								var parents = $$("fm").getPathNames(obj.id);
+								var parents = $$("rfm").getPathNames(obj.id);
 								var path = [];
 								parents.slice(1, parents.length - 1).forEach(function (parent) {
 									path.push(parent.value);
@@ -2085,14 +2068,14 @@ define(
 						}
 					});
 
-					$$("fm").$$("tree").define({
+					$$("rfm").$$("tree").define({
 						tooltip: function (obj) {
 							return obj.value;
 						}
 					});
 
-					$$("fm").$$("table").attachEvent("onItemDblClick", function (id, e, node) {
-						var item = $$("fm").getItem(id.row);
+					$$("rfm").$$("table").attachEvent("onItemDblClick", function (id, e, node) {
+						var item = $$("rfm").getItem(id.row);
 						if (item.type === "file" || item.type === "text") {
 							self.selectionManager.selectedNodeId(item.id);
 							self.selectionManager.selectedNodeType = item.dataType;
@@ -2100,8 +2083,8 @@ define(
 						}
 					});
 
-					$$("fm").$$("files").attachEvent("onItemDblClick", function (id, e, node) {
-						var item = $$("fm").getItem(id);
+					$$("rfm").$$("files").attachEvent("onItemDblClick", function (id, e, node) {
+						var item = $$("rfm").getItem(id);
 						if (item.type === "file" || item.type === "text") {
 							self.selectionManager.selectedNodeId(item.id);
 							self.selectionManager.selectedNodeType = item.dataType;
@@ -2109,7 +2092,7 @@ define(
 						}
 					});
 
-					$$("fm").getSearchData = function (id, value) {
+					$$("rfm").getSearchData = function (id, value) {
 						var found = [];
 						this.data.each(function (obj) {
 							var text = this.config.templateName(obj);
@@ -2125,16 +2108,16 @@ define(
 
 			}
 
-			this.testcaseContainerAdjust = function () {
+			this.runablescriptContainerAdjust = function () {
 				var parent = document
-					.getElementById("testcaseinfo").parentNode;
-				$$("testcase_accord").define("width",
+					.getElementById("runablescriptinfo").parentNode;
+				$$("runablescript_accord").define("width",
 					parent.clientWidth);
-				$$("testcase_accord").resize();
-				$$("fm").define("height", "700");
-				$$("fm").resize();
-				// 增加了对 $$("fm") 是否存在的检查，以及 $view 属性是否存在 的检查
-				var fmView = $$("fm");
+				$$("runablescript_accord").resize();
+				$$("rfm").define("height", "700");
+				$$("rfm").resize();
+				// 增加了对 $$("rfm") 是否存在的检查，以及 $view 属性是否存在 的检查
+				var fmView = $$("rfm");
 				if (fmView && fmView.$view) {
 					// 获取具有 webix_ss_body 类的元素
 					var centerElements = fmView.$view.getElementsByClassName("webix_ss_hscroll webix_vscroll_x");
@@ -2155,7 +2138,7 @@ define(
 
 			this.updateScriptCustomizedFieldsSuccessFunction = function (data) {
 				if (data && data.status === 1) {
-					$('#scriptCustomizedFieldModal').modal('hide');
+					$('#runscriptCustomizedFieldModal').modal('hide');
 					self.projectManager.setProjectScriptCustomizedFieldMapping(selectionManager.selectedProject().id, JSON.stringify(self.customizedFields));
 					notificationService.showSuccess('更新自定义字段协议成功');
 				}
@@ -2206,71 +2189,65 @@ define(
 
 			this.activate = function (data) {
 				self.reload = true;
-				//	webix.event(window, "resize", function(){ $$("fm").adjust(); });
+				//	webix.event(window, "resize", function(){ $$("rfm").adjust(); });
 
 				if (data != null && data.reload != null)
 					self.reload = data.reload;
-				self.enableTestcaseSubScription = app
-					.on('enableTestcase:event')
+				self.enableRunablescripSubScription = app
+					.on('enableRunableScript:event')
 					.then(
 						function () {
-							fileManagerUtility.testcaseConfigInit();
-							self.testcaseContainerAdjust();
-							$$("fm").refreshCursor();
+							fileManagerUtility.runablescriptConfigInit();
+							self.runablescriptContainerAdjust();
+							$$("rfm").refreshCursor();
 						});
 			};
 
-			this.chooseProject = ko.observableArray([])
 			this.attached = function (view, parent) {
-				let a = self.projectManager.projects();
-				self.chooseProject(a);
-				const idToDelete = self.selectionManager.selectedProject().id;
-				self.chooseProject(self.chooseProject().filter(item => item.id !== idToDelete));
 				// self.getScriptGroupByProject();
-				self.initTestCaseManager();
-				$('#referScriptModal').on('shown.bs.modal', function (e) {
-					if (!self.selectedTargetProject) {
-						self.selectedTargetProject = self.chooseProject()[0];
-					}
+				self.initRunableScriptManager();
+				$('#runreferScriptModal').on('shown.bs.modal', function (e) {
+					if (self.selectedTargetProject == null || self.selectedTargetProject == undefined)
+						self.selectedTargetProject = self.projectManager.projects()[0];
 					self.onProjectSelected();
 				});
-				$('#createTimeSeriesScriptModal').on('shown.bs.modal', function (e) {
+				$('#runcreateTimeSeriesScriptModal').on('shown.bs.modal', function (e) {
 					//清空数据
 					self.cmdsStrings.removeAll();
 					self.selectedAntbot(null);
 					self.checkedCommandNode(null)
-					$('#timeSeriesScriptDiagram').html('');
+					$('#runtimeSeriesScriptDiagram').html('');
 				})
-				$('#genericTimeSeriesScriptProtocolFieldSettingModal').on('shown.bs.modal', function (e) {
+				$('#rungenericTimeSeriesScriptProtocolFieldSettingModal').on('shown.bs.modal', function (e) {
 					self.initGenericTimeSeriesScriptProtocolTree(e.relatedTarget.data);
 				});
-				if (self.projectManager.useBackupTestCase) {
-					if (self.projectManager.backupTestCase != null) {
-						self.refreshFileManager(self.projectManager.backupTestCase);
+				if (self.projectManager.useBackupScripts) {
+					if (self.projectManager.backupScripts != null) {
+						self.refreshFileManager(self.projectManager.backupScripts);
 						if (self.projectManager.previousEditedScript != null) {
-							$$("fm").renameFile(self.projectManager.previousEditedScript.id, self.projectManager.previousEditedScript.name, "value");
-							$$("fm").renameFile(self.projectManager.previousEditedScript.id, self.projectManager.previousEditedScript.customizedId, "customizedId");
-							$$("fm").renameFile(self.projectManager.previousEditedScript.id, self.projectManager.previousEditedScript.description, "description");
+							$$("rfm").renameFile(self.projectManager.previousEditedScript.id, self.projectManager.previousEditedScript.name, "value");
+							$$("rfm").renameFile(self.projectManager.previousEditedScript.id, self.projectManager.previousEditedScript.customizedId, "customizedId");
+							$$("rfm").renameFile(self.projectManager.previousEditedScript.id, self.projectManager.previousEditedScript.description, "description");
 							self.projectManager.previousEditedScript = null;
 						}
 					} else
 						self.getScriptGroupByProject();
 				} else
 					self.getScriptGroupByProject();
-				self.projectManager.useBackupTestCase = false;
-				self.testcaseContainerAdjust();
+				self.projectManager.useBackupScripts = false;
+				self.runablescriptContainerAdjust();
 
-				$('#scriptCustomizedFieldModal').on('shown.bs.modal', function (e) {
+				$('#runscriptCustomizedFieldModal').on('shown.bs.modal', function (e) {
 					self.getCustomizedFields();
 				});
 			};
 
 			this.detached = function () {
-				self.enableTestcaseSubScription.off();
+				self.enableRunablescripSubScription.off();
 				//disable the paste among different projects
 				self.sourceId = "";
-				self.projectManager.backupTestCase = self.projectManager.getTestCaseGroups();
+				self.projectManager.backupScripts = self.projectManager.getRunableScriptGroups();
 			};
 		};
-		return new TestCaseViewModel();
+		return new RunableScriptViewModel();
 	});

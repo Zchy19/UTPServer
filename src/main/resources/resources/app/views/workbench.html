@@ -1,194 +1,254 @@
 <div class="content-wrapper">
-  <section class="content-header" data-bind="visible:!systemConfig.getConfig('utpclient.system_config.hide_navigator_bar')">
-      <a href="#" data-bind="click:isNavigationShow"  class="content"><i class="glyphicon glyphicon-hand-down"></i>
-        <strong data-bind="text: navigationShow() ? '导航栏隐藏' : '导航栏显示'"></strong>&nbsp</a>
-        <!-- 如果不使用if,而使用visible,则导航栏会有样式>去除不掉 -->
-      <ol class="breadcrumb" data-bind="if:!loginManager.autoIntoProject()">
-          <li class="bread1">&nbsp <a href="#" data-bind="click: gotoProject"><i class="glyphicon glyphicon-hand-left"></i> <strong>返回项目管理页面  </strong>&nbsp</a></li>
-          <li >当前项目： <a data-bind="text:selectionManager.selectedProject().name"></a></li>
-      </ol>
-      <ol class="breadcrumb" data-bind="if:loginManager.autoIntoProject()">
-        <li >当前项目： <a data-bind="text:selectionManager.selectedProject().name"></a></li>
-      </ol>
-    </section>    
-	<section class="content">
-		<div>
-      <ul class="nav nav-tabs wizard" data-bind="visible:navigationShow()&&!systemConfig.getConfig('utpclient.system_config.hide_navigator_bar')">
-        <li data-bind="attr: {class: (activeTab() === 'requirementinfo') ? 'active' : ''},visible: viewManager.requirementFeatureEnable() , style: { 'width': featureWidth() }" class=""><a
-            href="#requirementinfo" data-toggle="tab" aria-expanded="false" data-bind="click: enableRequirement,disable:isButtonRequirementDisabled()"><span
-              class="nmbr" data-bind="text: requirementNumber()"></span>需求管理</a></li>
-        <li data-bind="attr: {class: (activeTab() === 'testcaseinfo') ? 'active' : ''}, visible: viewManager.testcaseFeatureEnable(), style: {'width': featureWidth()}" class="active"><a
-            href="#testcaseinfo" data-toggle="tab" aria-expanded="true" data-bind="click: enableTestcase,disable:isButtonTestcaseFeatureDisabled()"><span class="nmbr"
-              data-bind="text: testcaseNumber()"></span>用例管理</a></li>
-        <li data-bind="attr: {class: (activeTab() === 'testEnvironmentinfo') ? 'active' : ''}, visible: viewManager.testsetFeatureEnable(), style: {'width': featureWidth()}" class=""><a
-            href="#testEnvironmentinfo" data-toggle="tab" aria-expanded="false" data-bind="click: enableTestset,disable:isButtonTestsetFeatureDisabled()"><span
-              class="nmbr" data-bind="text: testsetNumber()"></span>执行管理</a></li>
-        <li data-bind="attr: {class: (activeTab() === 'autotestinfo') ? 'active' : ''}, visible: viewManager.autotestFeatureEnable(), style: {'width': featureWidth()}" class=""><a
-            href="#autotestinfo" data-toggle="tab" aria-expanded="false" data-bind="click: enableAutoTest,disable:isButtonAutotestFeatureDisabled()"><span class="nmbr"
+  <section class="content-header"
+    data-bind="visible:!systemConfig.getConfig('utpclient.system_config.hide_navigator_bar')">
+    <a href="#" data-bind="click:isNavigationShow" class="content"><i class="glyphicon glyphicon-hand-down"></i>
+      <strong data-bind="text: navigationShow() ? '导航栏隐藏' : '导航栏显示'"></strong>&nbsp</a>
+    <!-- 如果不使用if,而使用visible,则导航栏会有样式>去除不掉 -->
+    <ol class="breadcrumb" data-bind="if:!loginManager.autoIntoProject()">
+      <li class="bread1">&nbsp <a href="#" data-bind="click: gotoProject"><i class="glyphicon glyphicon-hand-left"></i>
+          <strong>返回项目管理页面 </strong>&nbsp</a></li>
+      <li>当前项目： <a data-bind="text:selectionManager.selectedProject().name"></a></li>
+    </ol>
+    <ol class="breadcrumb" data-bind="if:loginManager.autoIntoProject()">
+      <li>当前项目： <a data-bind="text:selectionManager.selectedProject().name"></a></li>
+    </ol>
+  </section>
+  <section class="content">
+    <div>
+      <ul class="nav nav-tabs wizard"
+        data-bind="visible:navigationShow()&&!systemConfig.getConfig('utpclient.system_config.hide_navigator_bar')">
+        <li
+          data-bind="attr: {class: (activeTab() === 'requirementinfo') ? 'active' : ''},visible: viewManager.requirementFeatureEnable() , style: { 'width': featureWidth() }"
+          class=""><a href="#requirementinfo" data-toggle="tab" aria-expanded="false"
+            data-bind="click: enableRequirement,disable:isButtonRequirementDisabled()"><span class="nmbr"
+              data-bind="text: requirementNumber()"></span>需求管理</a></li>
+        <li
+          data-bind="attr: {class: (activeTab() === 'testcaseinfo') ? 'active' : ''}, visible: viewManager.testcaseFeatureEnable(), style: {'width': featureWidth()}"
+          class="active"><a href="#testcaseinfo" data-toggle="tab" aria-expanded="true"
+            data-bind="click: enableTestcase,disable:isButtonTestcaseFeatureDisabled()"><span class="nmbr"
+              data-bind="text: testcaseNumber()"></span>用例库</a></li>
+        <li
+          data-bind="attr: {class: (activeTab() === 'runablescriptinfo') ? 'active' : ''}, visible: true, style: {'width': featureWidth()}"
+          class="active"><a href="#runablescriptinfo" data-toggle="tab" aria-expanded="true"
+            data-bind="click: enableRunableScript,disable:isButtonTestcaseFeatureDisabled()"><span class="nmbr"
+              data-bind="text: runablescriptNumber()"></span>脚本库</a></li>
+        <li
+          data-bind="attr: {class: (activeTab() === 'commonscriptinfo') ? 'active' : ''}, visible: true, style: {'width': featureWidth()}"
+          class="active"><a href="#commonscriptinfo" data-toggle="tab" aria-expanded="true"
+            data-bind="click: enableCommonscript,disable:isButtonTestcaseFeatureDisabled()"><span class="nmbr"
+              data-bind="text: commonscriptNumber()"></span>公共逻辑库</a></li>
+        <li
+          data-bind="attr: {class: (activeTab() === 'testEnvironmentinfo') ? 'active' : ''}, visible: viewManager.testsetFeatureEnable(), style: {'width': featureWidth()}"
+          class=""><a href="#testEnvironmentinfo" data-toggle="tab" aria-expanded="false"
+            data-bind="click: enableTestset,disable:isButtonTestsetFeatureDisabled()"><span class="nmbr"
+              data-bind="text: testsetNumber()"></span>执行管理</a></li>
+        <li
+          data-bind="attr: {class: (activeTab() === 'autotestinfo') ? 'active' : ''}, visible: viewManager.autotestFeatureEnable(), style: {'width': featureWidth()}"
+          class=""><a href="#autotestinfo" data-toggle="tab" aria-expanded="false"
+            data-bind="click: enableAutoTest,disable:isButtonAutotestFeatureDisabled()"><span class="nmbr"
               data-bind="text: autotestNumber()"></span>监控管理</a></li>
-        <li data-bind="attr: {class: (activeTab() === 'specialTestInfo') ? 'active' : ''}, visible: viewManager.specialTestFeatureEnable(), style: {'width': featureWidth()}" class=""><a
-            href="#specialTestInfo" data-toggle="tab" aria-expanded="false" data-bind="click: enableSpecialTest,disable:isButtonSpecialTestFeatureDisabled()"><span
-            class="nmbr" data-bind="text: specialTestInfoNumber()"></span>专项管理</a></li>
-        <li data-bind="attr: {class: (activeTab() === 'operationInfo') ? 'active' : ''}, visible: viewManager.operationFeatureEnable(), style: {'width': featureWidth()}" class=""><a
-            href="#operationInfo" data-toggle="tab" aria-expanded="false" data-bind="click: enableOperation,disable:isButtonOperationFeatureDisabled()"><span
-            class="nmbr" data-bind="text: operationInfoNumber()"></span>状态管理</a></li>
-        <li data-bind="attr: {class: (activeTab() === 'statisticalStateInfo') ? 'active' : ''}, visible: viewManager.statisticalStateFeatureEnable(), style: {'width': featureWidth()}"
+        <li
+          data-bind="attr: {class: (activeTab() === 'specialTestInfo') ? 'active' : ''}, visible: viewManager.specialTestFeatureEnable(), style: {'width': featureWidth()}"
+          class=""><a href="#specialTestInfo" data-toggle="tab" aria-expanded="false"
+            data-bind="click: enableSpecialTest,disable:isButtonSpecialTestFeatureDisabled()"><span class="nmbr"
+              data-bind="text: specialTestInfoNumber()"></span>专项管理</a></li>
+        <li
+          data-bind="attr: {class: (activeTab() === 'operationInfo') ? 'active' : ''}, visible: viewManager.operationFeatureEnable(), style: {'width': featureWidth()}"
+          class=""><a href="#operationInfo" data-toggle="tab" aria-expanded="false"
+            data-bind="click: enableOperation,disable:isButtonOperationFeatureDisabled()"><span class="nmbr"
+              data-bind="text: operationInfoNumber()"></span>状态管理</a></li>
+        <li
+          data-bind="attr: {class: (activeTab() === 'statisticalStateInfo') ? 'active' : ''}, visible: viewManager.statisticalStateFeatureEnable(), style: {'width': featureWidth()}"
           class=""><a href="#statisticalStateInfo" data-toggle="tab" aria-expanded="false"
-            data-bind="click: enableStatisticalState,disable:isButtonStatisticalStateFeatureDisabled()"><span class="nmbr"
-              data-bind="text: statisticalStateInfoNumber()"></span>全局管理</a></li>
-        <li data-bind="attr: {class: (activeTab() === 'testreportinfo') ? 'active' : ''}, visible: viewManager.testreportFeatureEnable(), style: {'width': featureWidth()}"
-          class=""><a href="#testreportinfo" data-toggle="tab" aria-expanded="false" data-bind="click: initTestReportPage,disable:isButtonTestReportDisabled()"><span
-              class="nmbr" data-bind="text: testreportNumber()"></span>报表管理</a></li>
-        <li data-bind="attr: {class: (activeTab() === 'testRecordingInfo') ? 'active' : ''}, visible: viewManager.testRecordingFeatureEnable(), style: {'width': featureWidth()}"
+            data-bind="click: enableStatisticalState,disable:isButtonStatisticalStateFeatureDisabled()"><span
+              class="nmbr" data-bind="text: statisticalStateInfoNumber()"></span>全局管理</a></li>
+        <li
+          data-bind="attr: {class: (activeTab() === 'testreportinfo') ? 'active' : ''}, visible: viewManager.testreportFeatureEnable(), style: {'width': featureWidth()}"
+          class=""><a href="#testreportinfo" data-toggle="tab" aria-expanded="false"
+            data-bind="click: initTestReportPage,disable:isButtonTestReportDisabled()"><span class="nmbr"
+              data-bind="text: testreportNumber()"></span>报表管理</a></li>
+        <li
+          data-bind="attr: {class: (activeTab() === 'testRecordingInfo') ? 'active' : ''}, visible: viewManager.testRecordingFeatureEnable(), style: {'width': featureWidth()}"
           class=""><a href="#testRecordingInfo" data-toggle="tab" aria-expanded="false"
             data-bind="click: enableTestRecording,disable:isButtonTestRecordingFeatureDisabled()"><span class="nmbr"
               data-bind="text: testRecordingInfoNumber()"></span>记录管理</a></li>
-        </ul>
-			  <div class="tab-content">
-          <div class="tab-pane" id="requirementinfo" data-bind="attr: {class: (activeTab() === 'requirementinfo') ? 'tab-pane active' : 'tab-pane'}, 
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane" id="requirementinfo"
+          data-bind="attr: {class: (activeTab() === 'requirementinfo') ? 'tab-pane active' : 'tab-pane'}, 
                 compose: viewManager.requirementActivePage, css: {'hide-important': !viewManager.requirementFeatureEnable()}"></div>
-			  	<div class="tab-pane active" id="testcaseinfo" data-bind="attr: {class: (activeTab() === 'testcaseinfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.testcaseActivePage, visible:viewManager.testcaseFeatureEnable()"></div>
-          <!-- 
+        <div class="tab-pane active" id="testcaseinfo"
+          data-bind="attr: {class: (activeTab() === 'testcaseinfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.testcaseActivePage, visible:viewManager.testcaseFeatureEnable()">
+        </div>
+        <div class="tab-pane" id="runablescriptinfo"
+          data-bind="attr: {class: (activeTab() === 'runablescriptinfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.runablescriptActivePage, visible:viewManager.testcaseFeatureEnable()">
+        </div>
+        <div class="tab-pane" id="commonscriptinfo"
+          data-bind="attr: {class: (activeTab() === 'commonscriptinfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.commonscriptActivePage, visible:viewManager.testcaseFeatureEnable()">
+        </div>
+        <!-- 
           <div class="tab-pane active" id="testcaseinfo" data-bind="compose: {model: viewManager.testcaseActivePage, activationData : viewManager.testcaseActiveData}">
           </div>
           -->
-          <div class="tab-pane" id="testEnvironmentinfo" data-bind="attr: {class: (activeTab() === 'testEnvironmentinfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.testenvironmentActivePage, visible:viewManager.testsetFeatureEnable()"></div>
-          <div class="tab-pane" id="autotestinfo" data-bind="attr: {class: (activeTab() === 'autotestinfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.autotestActivePage, visible:viewManager.autotestFeatureEnable()"></div>
-          <div class="tab-pane active" id="specialTestInfo" data-bind="attr: {class: (activeTab() === 'specialTestInfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.specialTestActivePage, visible:viewManager.specialTestFeatureEnable()"></div>
-          <div class="tab-pane" id="operationInfo" data-bind="attr: {class: (activeTab() === 'operationInfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.operationActivePage, visible:viewManager.operationFeatureEnable()"></div>
-          <div class="tab-pane" id="statisticalStateInfo" data-bind="attr: {class: (activeTab() === 'statisticalStateInfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.statisticalStateActivePage, visible:viewManager.statisticalStateFeatureEnable()"></div>
-          <div class="tab-pane" id="testreportinfo" data-bind="attr: {class: (activeTab() === 'testreportinfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.testreportActivePage, visible:viewManager.testreportFeatureEnable()"></div>
-          <div class="tab-pane" id="testRecordingInfo" data-bind="attr: {class: (activeTab() === 'testRecordingInfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.testRecordingActivePage, visible:viewManager.testRecordingFeatureEnable()"></div>
+        <div class="tab-pane" id="testEnvironmentinfo"
+          data-bind="attr: {class: (activeTab() === 'testEnvironmentinfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.testenvironmentActivePage, visible:viewManager.testsetFeatureEnable()">
         </div>
-		</div>		
-	</section>
+        <div class="tab-pane" id="autotestinfo"
+          data-bind="attr: {class: (activeTab() === 'autotestinfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.autotestActivePage, visible:viewManager.autotestFeatureEnable()">
+        </div>
+        <div class="tab-pane active" id="specialTestInfo"
+          data-bind="attr: {class: (activeTab() === 'specialTestInfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.specialTestActivePage, visible:viewManager.specialTestFeatureEnable()">
+        </div>
+        <div class="tab-pane" id="operationInfo"
+          data-bind="attr: {class: (activeTab() === 'operationInfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.operationActivePage, visible:viewManager.operationFeatureEnable()">
+        </div>
+        <div class="tab-pane" id="statisticalStateInfo"
+          data-bind="attr: {class: (activeTab() === 'statisticalStateInfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.statisticalStateActivePage, visible:viewManager.statisticalStateFeatureEnable()">
+        </div>
+        <div class="tab-pane" id="testreportinfo"
+          data-bind="attr: {class: (activeTab() === 'testreportinfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.testreportActivePage, visible:viewManager.testreportFeatureEnable()">
+        </div>
+        <div class="tab-pane" id="testRecordingInfo"
+          data-bind="attr: {class: (activeTab() === 'testRecordingInfo') ? 'tab-pane active' : 'tab-pane'},compose: viewManager.testRecordingActivePage, visible:viewManager.testRecordingFeatureEnable()">
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
 <style>
-	.nav-tabs.wizard {
-  background-color: transparent;
-  padding: 10px;    
-  width: 100%;    
-  margin: 0 auto;  
-  border-radius: .25em;
-  clear: both;
-  border-bottom: none;
-}
+  .nav-tabs.wizard {
+    background-color: transparent;
+    padding: 10px;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: .25em;
+    clear: both;
+    border-bottom: none;
+  }
 
-.nav-tabs.wizard li {
-  width: 100%;
-  float: none;
-  margin-bottom: 3px;
-}
-
-.nav-tabs.wizard li>* {
-  position: relative;
-  padding: 1em .8em .8em 2.5em;
-  color: #999999;
-  background-color: #dedede;
-  border-color: #dedede;
-}
-
-.nav-tabs.wizard li.completed>* {
-  color: #fff !important;
-  background-color: #96c03d !important;
-  border-color: #96c03d !important;
-  border-bottom: none !important;
-}
-
-.nav-tabs.wizard li.active>* {
-  color: #fff !important;
-  background-color: #3c8dbc !important;
-  border-color: #3c8dbc !important;
-  border-bottom: none !important;
-}
-
-.nav-tabs.wizard li::after:last-child {
-  border: none;
-}
-
-.nav-tabs.wizard > li > a {
-  opacity: 1;
-  font-size: 14px;
-}
-
-.nav-tabs.wizard a:hover {
-  color: #fff;
-  background-color: #2c3f4c;
-  border-color: #2c3f4c
-}
-
-span.nmbr {
-  display: inline-block;
-  padding: 10px 0 0 0;
-  background: #ffffff;
-  width: 35px;
-  line-height: 100%;
-  height: 35px;
-  margin: auto;
-  border-radius: 50%;
-  font-weight: bold;
-  font-size: 16px;
-  color: #555;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-@media(min-width:992px) {
   .nav-tabs.wizard li {
+    width: 100%;
+    float: none;
+    margin-bottom: 3px;
+  }
+
+  .nav-tabs.wizard li>* {
     position: relative;
-    padding: 0;
-    margin: 4px 4px 4px 0;
-    float: left;
-    text-align: center;
+    padding: 1em .8em .8em 2.5em;
+    color: #999999;
+    background-color: #dedede;
+    border-color: #dedede;
   }
-  .nav-tabs.wizard li.active a {
-    padding-top: 15px;
+
+  .nav-tabs.wizard li.completed>* {
+    color: #fff !important;
+    background-color: #96c03d !important;
+    border-color: #96c03d !important;
+    border-bottom: none !important;
   }
-  .nav-tabs.wizard li::after,
-  .nav-tabs.wizard li>*::after {
-    content: '';
-    position: absolute;
-    top: 1px;
-    left: 100%;
-    height: 0;
-    width: 0;
-    border: 45px solid transparent;
-    border-right-width: 0;
-    /*border-left-width: 20px*/
+
+  .nav-tabs.wizard li.active>* {
+    color: #fff !important;
+    background-color: #3c8dbc !important;
+    border-color: #3c8dbc !important;
+    border-bottom: none !important;
   }
-  .nav-tabs.wizard li::after {
-    z-index: 1;
-    -webkit-transform: translateX(4px);
-    -moz-transform: translateX(4px);
-    -ms-transform: translateX(4px);
-    -o-transform: translateX(4px);
-    transform: translateX(4px);
-    border-left-color: #fff;
-    margin: 0
-  }
-  .nav-tabs.wizard li>*::after {
-    z-index: 2;
-    border-left-color: inherit
-  }
-  .nav-tabs.wizard > li:nth-of-type(1) > a {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-  }
-  .nav-tabs.wizard li:last-child a {
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-  }
-  .nav-tabs.wizard li:last-child {
-    margin-right: 0;
-  }
-  .nav-tabs.wizard li:last-child a:after,
-  .nav-tabs.wizard li:last-child:after {
-    content: "";
+
+  .nav-tabs.wizard li::after:last-child {
     border: none;
   }
-  span.nmbr {
-    display: block;
-  }
-}
-</style>
 
+  .nav-tabs.wizard>li>a {
+    opacity: 1;
+    font-size: 14px;
+  }
+
+  .nav-tabs.wizard a:hover {
+    color: #fff;
+    background-color: #2c3f4c;
+    border-color: #2c3f4c
+  }
+
+  span.nmbr {
+    display: inline-block;
+    padding: 10px 0 0 0;
+    background: #ffffff;
+    width: 35px;
+    line-height: 100%;
+    height: 35px;
+    margin: auto;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  @media(min-width:992px) {
+    .nav-tabs.wizard li {
+      position: relative;
+      padding: 0;
+      margin: 4px 4px 4px 0;
+      float: left;
+      text-align: center;
+    }
+
+    .nav-tabs.wizard li.active a {
+      padding-top: 15px;
+    }
+
+    .nav-tabs.wizard li::after,
+    .nav-tabs.wizard li>*::after {
+      content: '';
+      position: absolute;
+      top: 1px;
+      left: 100%;
+      height: 0;
+      width: 0;
+      border: 45px solid transparent;
+      border-right-width: 0;
+      /*border-left-width: 20px*/
+    }
+
+    .nav-tabs.wizard li::after {
+      z-index: 1;
+      -webkit-transform: translateX(4px);
+      -moz-transform: translateX(4px);
+      -ms-transform: translateX(4px);
+      -o-transform: translateX(4px);
+      transform: translateX(4px);
+      border-left-color: #fff;
+      margin: 0
+    }
+
+    .nav-tabs.wizard li>*::after {
+      z-index: 2;
+      border-left-color: inherit
+    }
+
+    .nav-tabs.wizard>li:nth-of-type(1)>a {
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+    }
+
+    .nav-tabs.wizard li:last-child a {
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+
+    .nav-tabs.wizard li:last-child {
+      margin-right: 0;
+    }
+
+    .nav-tabs.wizard li:last-child a:after,
+    .nav-tabs.wizard li:last-child:after {
+      content: "";
+      border: none;
+    }
+
+    span.nmbr {
+      display: block;
+    }
+  }
+</style>

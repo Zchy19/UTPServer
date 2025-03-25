@@ -8,7 +8,7 @@ define(['knockout', 'jquery', 'komapping',
 		cmdConvertService, loginManager, viewManager, systemConfig, executionManager, selectionManager,
 		projectManager, protocolService, utpService, sequencediagram, notificationService, fileManagerUtility, JSONEditor, _, bootstrapSwitch, ace) {
 
-		function PlaygroundViewModel() {
+		function RunPlaygroundViewModel() {
 			var self = this;
 			this.maxBlocks = 500;
 			this.remainNumberOfBlocks = ko.observable(self.maxBlocks);
@@ -25,7 +25,7 @@ define(['knockout', 'jquery', 'komapping',
 			this.selectedAgent = null;
 			this.agentsRecordData = ko.observableArray([]);
 			this.selectedRecord = ko.observable('');
-			this.scriptInTestSteps = ko.observable('');
+			this.scriptInrunscsteps = ko.observable('');
 			this.blockyConvertedFlag = false;
 			this.testcaseSavedFlag = ko.observable(true);
 			this.needRecordSelected = ko.observable(true);
@@ -35,7 +35,7 @@ define(['knockout', 'jquery', 'komapping',
 			this.updated = false;
 			this.tree = null;
 			this.commandMapping = [];
-			this.isTestcase = false;
+			this.isRunableScript = false;
 			this.commandMode = ko.observable(false);
 			this.blockOverwriteText = false;
 			this.recordLabel = ko.observable("2: 选择录制集:");
@@ -50,10 +50,10 @@ define(['knockout', 'jquery', 'komapping',
 			this.textEdit = false; //是否处于文本编辑模式
 			this.commandDisplay = false; //是否显示禁用命令
 
-			this.gotoTestcase = function () {
+			this.gotoRunableScript = function () {
 				//	self.viewManager.testcaseActiveData({reload:self.updated});
-				self.projectManager.useBackupTestCase = true;
-				self.viewManager.testcaseActivePage('app/viewmodels/testcase');
+				self.projectManager.useBackupScripts = true;
+				self.viewManager.runablescriptActivePage('app/viewmodels/runablescript');
 			};
 
 			this.gotoVerification = function () {
@@ -61,7 +61,7 @@ define(['knockout', 'jquery', 'komapping',
 				selectionManager.selectedNodeType = self.currentScript.type();
 				selectionManager.verificationSource = 'playground';
 				executionManager.newExecutionFlag(true);
-				self.viewManager.testcaseActivePage('app/viewmodels/verification');
+				self.viewManager.runablescriptActivePage('app/viewmodels/verification');
 			};
 
 			this.busyPropInfo = ko.observable('');
@@ -118,19 +118,19 @@ define(['knockout', 'jquery', 'komapping',
 				if (!self.blockInitHappened) {
 					self.blockInitHappened = true;
 				}
-				document.getElementById('script-edit').style.display = 'block';
+				document.getElementById('runableScript-edit').style.display = 'block';
 				Blockly.svgResize(self.workspace);
 				self.workspace.render();
 			};
 
 			this.disableScriptEdit = function () {
-				if (document.getElementById('script-edit')) {
-					document.getElementById('script-edit').style.display = 'none';
+				if (document.getElementById('runableScript-edit')) {
+					document.getElementById('runableScript-edit').style.display = 'none';
 				}
 			};
 
 			this.initTextEditor = function () {
-				self.scriptEditor = ace.edit("editor");
+				self.scriptEditor = ace.edit("runsceditor");
 				self.scriptEditor.setTheme("ace/theme/tomorrow");
 				self.scriptEditor.getSession().setMode('ace/mode/text');
 				self.scriptEditor.setFontSize(16);
@@ -187,7 +187,7 @@ define(['knockout', 'jquery', 'komapping',
 					}
 				}
 
-				self.workspace = Blockly.inject('blocklyDiv',
+				self.workspace = Blockly.inject('runscBlocklyDiv',
 					{
 						comments: true,
 						collapse: true,
@@ -253,7 +253,7 @@ define(['knockout', 'jquery', 'komapping',
 				var currentPage = window.location.href;
 				var regexFile = /^file[\S]*$/;
 				// if (regexFile.test(currentPage))
-				document.getElementById('blocklyDiv').style.backgroundColor = lilac;
+				document.getElementById('runscBlocklyDiv').style.backgroundColor = lilac;
 			};
 
 			this.getToolboxElement = function () {
@@ -311,9 +311,9 @@ define(['knockout', 'jquery', 'komapping',
 						var project = [];
 						project.push(scripts);
 						if (self.protocolNeedScript()) {
-							$('#antbotScriptModal').modal({ show: true }, { data: project });
+							$('#runscAntbotScriptModal').modal({ show: true }, { data: project });
 						} else {
-							$('#insertScriptModal').modal({ show: true }, { data: project });
+							$('#runscInsertScriptModal').modal({ show: true }, { data: project });
 						}
 					}
 				}
@@ -355,8 +355,8 @@ define(['knockout', 'jquery', 'komapping',
 				};
 
 				const containerId = self.protocolNeedScript()
-					? "antbotScriptTreeview"
-					: "subScriptTreeview";
+					? "runscAntbotScriptTreeview"
+					: "runscSubScriptTreeview";
 				$(`#${containerId}`).html('');
 
 				webix.ready(() => {
@@ -467,21 +467,21 @@ define(['knockout', 'jquery', 'komapping',
 
 				self.insertSubScriptAsText(checkedNodes);
 
-				$('#insertScriptModal').modal('hide');
+				$('#runscInsertScriptModal').modal('hide');
 				self.testcaseSavedFlag(false);
 			}
 
 			// insert checkpoint
 			this.insertCheckpointCmd = function () {
 				var project = self.projectManager.getRequirements();
-				$('#insertCheckPointModal').modal({ show: true }, { data: project });
+				$('#runscInsertCheckPointModal').modal({ show: true }, { data: project });
 			}
 
 			this.initCheckPointTree = function (data) {
-				$('#checkPointTreeview').html('');
+				$('#runscCheckPointTreeview').html('');
 				webix.ready(function () {
 					self.checkPointTree = webix.ui({
-						container: "checkPointTreeview",
+						container: "runscCheckPointTreeview",
 						view: "tree",
 						template: function (obj, com) {
 							if (obj.$count === 0 && (obj.type === "folder")) {
@@ -538,7 +538,7 @@ define(['knockout', 'jquery', 'komapping',
 
 				self.insertCheckPointAsBlock(checkedNodes);
 				self.insertCheckPointAsText(checkedNodes);
-				$('#insertCheckPointModal').modal('hide');
+				$('#runscInsertCheckPointModal').modal('hide');
 				self.testcaseSavedFlag(false);
 			}
 
@@ -629,7 +629,7 @@ define(['knockout', 'jquery', 'komapping',
 
 
 			this.initCmdTree = function (data) {
-				$('#commandSelectionView').html(''); // 清空容器内容
+				$('#runscCommandSelectionView').html(''); // 清空容器内容
 
 				// 获取需要默认选中的节点路径
 				var selectedPaths = [];
@@ -660,7 +660,7 @@ define(['knockout', 'jquery', 'komapping',
 				// 初始化 Webix 树组件
 				webix.ready(function () {
 					self.tree = webix.ui({
-						container: "commandSelectionView",
+						container: "runscCommandSelectionView",
 						view: "tree",
 						template: function (obj, com) {
 							var icon = "";
@@ -804,7 +804,7 @@ define(['knockout', 'jquery', 'komapping',
 					notificationService.showWarn('请选择命令');
 					return;
 				}
-				$('#insertCommandModal').modal('hide');
+				$('#runscInsertCommandModal').modal('hide');
 				if (self.needBigData()) {
 					self.genericProtocolProcess();
 					return;
@@ -835,7 +835,7 @@ define(['knockout', 'jquery', 'komapping',
 					return;
 				}
 				self.checkedCommandNodes = [];
-				$('#insertCommandModal').modal('show');
+				$('#runscInsertCommandModal').modal('show');
 			};
 
 			this.lastAntbotName = null;
@@ -975,7 +975,7 @@ define(['knockout', 'jquery', 'komapping',
 					}
 				}
 
-				$('#antbotScriptModal').modal('hide');
+				$('#runscAntbotScriptModal').modal('hide');
 				if (self.protocolNeedFieldSetting() || self.protocolNeedConditionSetting() || self.protocolNeedMessageNameSetting() ||
 					self.protocolNeedFieldSelectionSetting() || self.protocolNeedMultipleFieldSelectionSetting() ||
 					self.protocolNeedFieldValueSetting() || self.protocolNeedFieldConditionSetting() || self.protocolNeedScript())
@@ -985,7 +985,7 @@ define(['knockout', 'jquery', 'komapping',
 			}
 
 			this.cancelAntbotScript = function () {
-				$('#antbotScriptModal').modal('hide');
+				$('#runscAntbotScriptModal').modal('hide');
 				self.protocolNeedScript(false);
 			}
 			// generic protocol
@@ -1013,7 +1013,7 @@ define(['knockout', 'jquery', 'komapping',
 						}
 						root.data.push(equiNode);
 					}
-					$('#genericProtocolFieldSettingModal').modal({ show: true }, { data: root });
+					$('#runscGenericProtocolFieldSettingModal').modal({ show: true }, { data: root });
 				}
 			};
 
@@ -1268,7 +1268,7 @@ define(['knockout', 'jquery', 'komapping',
 					self.protocolNeedMessageNameSetting() || self.protocolNeedFieldSelectionSetting() || self.protocolNeedMultipleFieldSelectionSetting())
 					self.composeFieldSetting();
 
-				$('#genericProtocolFieldSettingModal').modal('hide');
+				$('#runscGenericProtocolFieldSettingModal').modal('hide');
 				self.prepareCommands();
 			};
 
@@ -1315,16 +1315,16 @@ define(['knockout', 'jquery', 'komapping',
 				self.prepareCommands();
 			};
 
-			this.clearProtocolConfigView = function () {
-				$('#protocolConfigView').html('');
+			this.clearrunscProtocolConfigView = function () {
+				$('#runscProtocolConfigView').html('');
 			};
 
 			this.exceptionCheck = ko.observable(false);
 			this.onlySelection = ko.observable(false);
 			this.selectedMessage = null;
 
-			this.initProtocolConfigView = function (message, keepAllFields, needSchemaCheck) {
-				self.clearProtocolConfigView();
+			this.initrunscProtocolConfigView = function (message, keepAllFields, needSchemaCheck) {
+				self.clearrunscProtocolConfigView();
 				self.onlySelection(false);
 				var currentProtocolMode = self.protocolService.protocolModeEnum.valueSelectionSetting
 				if (self.protocolNeedFieldSetting() && self.protocolNeedConditionSetting() || self.protocolNeedFieldValueSetting() && self.protocolNeedFieldConditionSetting()) {
@@ -1345,17 +1345,17 @@ define(['knockout', 'jquery', 'komapping',
 				if (self.protocolNeedFieldSetting() || self.protocolNeedConditionSetting() || self.protocolNeedMultipleFieldSelectionSetting())
 					multipleSelection = true;
 				var options = self.protocolService.protocolOptionInit(self.protocol, message, currentProtocolMode, multipleSelection, keepAllFields, needSchemaCheck, message.fieldValues);
-				const container = document.getElementById('protocolConfigView');
+				const container = document.getElementById('runscProtocolConfigView');
 				var obj = self.protocolService.editedProtocolConfig;
 				self.editor = new JSONEditor(container, options, obj);
 				self.protocolService.editor = self.editor;
 			};
 
-			this.protocolConfigViewModeChange = function (state) {
+			this.runscProtocolConfigViewModeChange = function (state) {
 				if (state)
-					self.initProtocolConfigView(self.selectedMessage, true, false);
+					self.initrunscProtocolConfigView(self.selectedMessage, true, false);
 				else
-					self.initProtocolConfigView(self.selectedMessage, false, true);
+					self.initrunscProtocolConfigView(self.selectedMessage, false, true);
 			};
 
 			this.selectedMessageTemplate = ko.observable();
@@ -1381,13 +1381,13 @@ define(['knockout', 'jquery', 'komapping',
 				if (self.selectedMessageTemplate() == undefined) {
 					self.protocolFieldsconfig.removeAll();
 					self.selectedMessage.fieldValues = null;
-					self.initProtocolConfigView(self.selectedMessage, false, true);
+					self.initrunscProtocolConfigView(self.selectedMessage, false, true);
 					return;
 				}
 				if (event.originalEvent) {// user changed
 					self.protocolFieldsconfig.removeAll();
 					self.selectedMessage.fieldValues = JSON.parse(self.selectedMessageTemplate().fieldValues);
-					self.initProtocolConfigView(self.selectedMessage, false, true);
+					self.initrunscProtocolConfigView(self.selectedMessage, false, true);
 				}
 				else { // program changed
 
@@ -1395,16 +1395,16 @@ define(['knockout', 'jquery', 'komapping',
 			};
 
 			this.initGenericProtocolTree = function (data) {
-				$('#genericProtocolTreeview').html('');
+				$('#runscGenericProtocolTreeview').html('');
 				self.exceptionCheck(false);
 				self.selectedMessageTemplate(undefined);
 				self.messageTemplates([]);
-				self.clearProtocolConfigView();
+				self.clearrunscProtocolConfigView();
 				self.protocolFieldsconfig.removeAll();
 				self.genericProtocolName(data.value);
 				webix.ready(function () {
 					self.genericProtocolTree = webix.ui({
-						container: "genericProtocolTreeview",
+						container: "runscGenericProtocolTreeview",
 						view: "tree",
 						type: "lineTree",
 						select: true,
@@ -1431,16 +1431,16 @@ define(['knockout', 'jquery', 'komapping',
 									self.genericFrameInfo.id = self.selectedMessage.id;
 									self.selectedMessage.fieldValues = null;
 									self.genericCommandField(self.selectedMessage.messageName);
-									self.initProtocolConfigView(self.selectedMessage, true, true);
+									self.initrunscProtocolConfigView(self.selectedMessage, true, true);
 									if (self.protocolNeedFieldValueSetting() || self.protocolNeedFieldSetting()) {
 										self.getActiveMessageTemplate(self.genericFrameInfo.protocolId, self.selectedMessage.messageName)
 									}
 									break;
 								}
 							}
-							$('#exceptionCheckConfig').bootstrapSwitch("state", false);
-							$('#exceptionCheckConfig').on('switchChange.bootstrapSwitch', function (event, state) {
-								self.protocolConfigViewModeChange(state);
+							$('#runscExceptionCheckConfig').bootstrapSwitch("state", false);
+							$('#runscExceptionCheckConfig').on('switchChange.bootstrapSwitch', function (event, state) {
+								self.runscProtocolConfigViewModeChange(state);
 							});
 						}
 					});
@@ -1811,7 +1811,7 @@ define(['knockout', 'jquery', 'komapping',
 				scriptContent = cmdConvertService.generatecmdStepList(scriptContent, true);
 				scriptContent = scriptContent.replace(new RegExp(cmdConvertService.CMD_SEPARATOR, 'g'), '\n');
 				steps += scriptContent;
-				self.scriptInTestSteps(steps);
+				self.scriptInrunscsteps(steps);
 			};
 
 			this.UtpCmdsToSeqDiagramString = function (utpCommandsString) {
@@ -1839,7 +1839,7 @@ define(['knockout', 'jquery', 'komapping',
 				if (self.blockyConvertedFlag)
 					return;
 				self.busyPropInfo("converting to sequence diagram ...");
-				$('#waitingModal').modal('show');
+				$('#runscWaitingModal').modal('show');
 				setTimeout(
 					function () {
 						var scriptContent = '';
@@ -1870,14 +1870,14 @@ define(['knockout', 'jquery', 'komapping',
 								var sequencediagramStr = self.UtpCmdsToSeqDiagramString(scriptContent);
 								sequencediagramStr = sequencediagramStr.replace(new RegExp(cmdConvertService.CMD_SEPARATOR, 'g'), '\n');
 								var diagram = Diagram.parse(sequencediagramStr);
-								$('#diagram').html('');
-								diagram.drawSVG("diagram", {
+								$('#diagram_run').html('');
+								diagram.drawSVG("diagram_run", {
 									theme: 'hand'
 								});
-								var a = $('#download');
+								var a = $('#runscdownload');
 								a
 									.click(function (ev) {
-										var diagram_div = $('#diagram');
+										var diagram_div = $('#diagram_run');
 										var svg = diagram_div.find('svg')[0];
 										var width = parseInt(svg.width.baseVal.value);
 										var height = parseInt(svg.height.baseVal.value);
@@ -1890,7 +1890,7 @@ define(['knockout', 'jquery', 'komapping',
 											+ ']]></source>'
 											+ svg.innerHTML + '</svg>';
 										var a = $(this);
-										a.attr("download", "diagram.svg");
+										a.attr("runscdownload", "diagram.svg");
 										a.attr("href", "data:image/svg+xml," + encodeURIComponent(xml));
 									});
 								self.blockyConvertedFlag = true;
@@ -1899,7 +1899,7 @@ define(['knockout', 'jquery', 'komapping',
 								notificationService.showError('交互图生成错误！');
 								console.log(e);
 							} finally {
-								$('#waitingModal').modal('hide');
+								$('#runscWaitingModal').modal('hide');
 							}
 						}
 					}, 1000);
@@ -2113,9 +2113,9 @@ define(['knockout', 'jquery', 'komapping',
 
 			this.initRequirementReference = function () {
 				self.disableScriptEdit();
-				$('#requirement_reference').html('');
+				$('#runscRequirement_reference').html('');
 				webix.ui({
-					container: "requirement_reference",
+					container: "runscRequirement_reference",
 					view: "list",
 					id: "req_reference",
 					tooltip: function (obj) {
@@ -2169,12 +2169,12 @@ define(['knockout', 'jquery', 'komapping',
 			};
 
 			this.cancelImportScript = function () {
-				$('#scriptImportModal').modal('hide');
+				$('#runscScriptImportModal').modal('hide');
 			};
 
 			this.enterImportScriptMode = function () {
 				self.selectedFile = null;
-				$('#scriptImportModal').modal('show');
+				$('#runscScriptImportModal').modal('show');
 			};
 
 			this.exportScript = function () {
@@ -2182,7 +2182,7 @@ define(['knockout', 'jquery', 'komapping',
 					var txt = cmdConvertService.scriptToTxt(self.currentScript.script());
 					var blob = new Blob([txt]);
 					var a = document.createElement("a");
-					a.download = self.currentScript.name() + ".txt";
+					a.runscdownload = self.currentScript.name() + ".txt";
 					a.href = URL.createObjectURL(blob);
 					$("body").append(a);
 					a.click();
@@ -2206,8 +2206,8 @@ define(['knockout', 'jquery', 'komapping',
 				var candidateScriptCustomizedFields = self.initScriptCustomizedField(scriptCustomizedFieldConfig, self.currentScript.customizedFields());
 				if (candidateScriptCustomizedFields.length > 0) {
 					self.customField(true);
-					//清空customizedFieldDiv里面的内容
-					$('#customizedFieldDiv').html('');
+					//清空runscCustomizedFieldDiv里面的内容
+					$('#runscCustomizedFieldDiv').html('');
 					webix.protoUI({
 						name: "dataview_edit"
 					}, webix.EditAbility, webix.ui.dataview);
@@ -2215,7 +2215,7 @@ define(['knockout', 'jquery', 'komapping',
 					webix.ui({
 						view: "dataview_edit",
 						id: "script_customizedField",
-						container: "customizedFieldDiv",
+						container: "runscCustomizedFieldDiv",
 						template: " <div class='webix_strong' style='width: 100%'>#name#: <input type='text' style='width: 80%;height: 80%;' value='#value#'></div>",
 						data: candidateScriptCustomizedFields,
 						editable: true,
@@ -2229,8 +2229,8 @@ define(['knockout', 'jquery', 'komapping',
 						height: 250
 					});
 					$$("script_customizedField").show();
-					//$$("customizedFieldDiv").clearAll();
-					// $$("customizedFieldDiv").parse(candidateScriptCustomizedFields);
+					//$$("runscCustomizedFieldDiv").clearAll();
+					// $$("runscCustomizedFieldDiv").parse(candidateScriptCustomizedFields);
 				} else {
 					self.customField(false);
 					//如果为空,则隐藏字段
@@ -2238,15 +2238,15 @@ define(['knockout', 'jquery', 'komapping',
 			};
 
 			this.initTrigger = function (currentstate) {
-				$('#scripEditingtModeInput').bootstrapSwitch("state", currentstate);
-				$('#scripEditingtModeInput').on('switchChange.bootstrapSwitch', function (event, state) {
+				$('#runableScripEditingtModeInput').bootstrapSwitch("state", currentstate);
+				$('#runableScripEditingtModeInput').on('switchChange.bootstrapSwitch', function (event, state) {
 					self.commandMode(state);
 					if (!state) {
 						self.enableBlockScriptEdit();
 						self.textEdit = false;
 					}
 					else {
-						self.overWriteText(); //$('#changeEditorModal').modal('show');
+						self.overWriteText(); //$('#runscChangeEditorModal').modal('show');
 						self.textEdit = true;
 					}
 					setTimeout(function () {
@@ -2266,9 +2266,9 @@ define(['knockout', 'jquery', 'komapping',
 				self.updated = false;
 				self.testcaseSavedFlag(true);
 				self.commandMode(false);
-				self.scriptInTestSteps([]);
-				self.isTestcase = selectionManager.selectedNodeType == 'testcase';
-				if (selectionManager.selectedNodeType == 'testcase')
+				self.scriptInrunscsteps([]);
+				self.isRunableScript = selectionManager.selectedNodeType == 'runablescript';
+				if (selectionManager.selectedNodeType == 'runablescript')
 					self.utpService.getFullScript(selectionManager.selectedProject().id, selectionManager.selectedNodeId(), self.getScriptSuccessFunction, self.getScriptErrorFunction);
 				else
 					self.utpService.getFullSubScript(selectionManager.selectedProject().id, selectionManager.selectedNodeId(), self.getScriptSuccessFunction, self.getScriptErrorFunction);
@@ -2308,30 +2308,30 @@ define(['knockout', 'jquery', 'komapping',
 				self.initTrigger(false);
 				self.start();
 				self.initTextEditor();
-				$('#insertCommandModal').on('shown.bs.modal', function () {
+				$('#runscInsertCommandModal').on('shown.bs.modal', function () {
 					self.showRecordListFromSelectedAgent();
 				});
-				$('#insertScriptModal').on('shown.bs.modal', function (e) {
+				$('#runscInsertScriptModal').on('shown.bs.modal', function (e) {
 					self.selectScriptFunType('0');
 					self.initSubScriptTree(e.relatedTarget.data);
 					//	self.getProjectSubScript();						
 				});
-				$('#antbotScriptModal').on('shown.bs.modal', function (e) {
+				$('#runscAntbotScriptModal').on('shown.bs.modal', function (e) {
 					self.selectScriptFunType('0');
 					self.initSubScriptTree(e.relatedTarget.data);
 				});
-				$('#insertCheckPointModal').on('shown.bs.modal', function (e) {
+				$('#runscInsertCheckPointModal').on('shown.bs.modal', function (e) {
 					self.initCheckPointTree(e.relatedTarget.data);
 				});
-				$('#genericProtocolFieldSettingModal').on('shown.bs.modal', function (e) {
+				$('#runscGenericProtocolFieldSettingModal').on('shown.bs.modal', function (e) {
 					self.initGenericProtocolTree(e.relatedTarget.data);
 				});
-				$('#scriptImportModal').on('shown.bs.modal', function () {
-					var file = document.getElementById("scriptInputFile");
+				$('#runscScriptImportModal').on('shown.bs.modal', function () {
+					var file = document.getElementById("runscScriptInputFile");
 					file.value = "";
-					$('#scriptImportForm').validator().off('submit');
-					$('#scriptImportForm').validator('destroy').validator();
-					$('#scriptImportForm').validator().on('submit', function (e) {
+					$('#runscScriptImportForm').validator().off('submit');
+					$('#runscScriptImportForm').validator('destroy').validator();
+					$('#runscScriptImportForm').validator().on('submit', function (e) {
 						if (e.isDefaultPrevented()) {
 							// handle the invalid form...
 						} else {
@@ -2347,5 +2347,5 @@ define(['knockout', 'jquery', 'komapping',
 				self.projectManager.previousEditedScript = komapping.toJS(self.currentScript);
 			}
 		}
-		return new PlaygroundViewModel();
+		return new RunPlaygroundViewModel();
 	});

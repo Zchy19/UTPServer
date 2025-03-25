@@ -1,8 +1,14 @@
-﻿define([ 'knockout', 'jquery', 'jquerycookie', 'durandal/plugins/http','komapping', 'services/ajaxService'],
-		function(ko, $, JCookie, $http, komapping, ajaxService) {
+﻿define([ 'knockout', 'jquery', 'jquerycookie', 'durandal/plugins/http','komapping', 'services/ajaxService', 'services/systemConfig'],
+		function(ko, $, JCookie, $http, komapping, ajaxService, systemConfig) {
 	
 	function utpService() {
 	    var self = this;
+		this.protocolType = 'testcase';
+		if(systemConfig.getEnableByFeatureName('utpclient.testcase_mgr')){ // 许可配置了用例库
+			self.protocolType = 'testcase';
+		}else if (systemConfig.getEnableByFeatureName('utpclient.testcase_mgr')){// 许可配置了脚本库
+			self.protocolType = 'runablescript';
+		}
 	    
 	    // Org	    
 	    this.getOrgProject = function(orgId, successFunction, errorFunction){
@@ -262,7 +268,7 @@
 	    	ajaxService.AjaxPost(null, cutScriptGroupApi, successFunction, errorFunction);
 	    };
 	    
-	    this.getScriptGroupByProject = function(projectId, successFunction, errorFunction){	    	
+	    this.getScriptGroupByProject = function(projectId,type, successFunction, errorFunction){	    	
 	    	var selectScriptGroupApi = "./api/scriptgroup/data/getByProjectId/" + projectId;	    	
 			ajaxService.AjaxGet(selectScriptGroupApi, successFunction, errorFunction);
 	    };
@@ -292,8 +298,8 @@
 			ajaxService.AjaxPost(configObj, api, successFunction, errorFunction);
 	    };
 	    
-	    this.getFlatScriptByProject = function(projectId, successFunction, errorFunction){	    	
-	    	var selectScriptApi = "./api/script/scriptFlatData/getByProjectId/" + projectId;	    	
+	    this.getFlatScriptByProject = function(projectId, successFunction, errorFunction){
+	    	var selectScriptApi = "./api/script/scriptFlatData/getByProjectId/" + projectId + "/" + "subscript";
 			ajaxService.AjaxGet(selectScriptApi, successFunction, errorFunction);
 	    };
 	    

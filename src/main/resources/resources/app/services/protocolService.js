@@ -854,7 +854,7 @@
 						obj[field.name] = '[' + field.minimum + ',' + field.maximum + ']';
 					}
 				}
-				if (field.type === "string" || field.type === "bool" || field.type === "vardata" || field.type === "varstring") {
+				if (field.type === "string" || field.type === "bool" || field.type === "vardata" || field.type === "varstring" || field.type === "fixstring") {
 					if (self.currentProtocolMode == self.protocolModeEnum.fieldSelection ||
 						self.currentProtocolMode == self.protocolModeEnum.valueSetting) {
 						obj[field.name] = value ? value : field.default;
@@ -912,7 +912,7 @@
 					// }
 					//如果field.type不等于上面的类型，那么就是普通的字段
 					if (field.type != "datablock" && field.type != "array" && field.type != "varray" && field.type != "bits" && field.type != "struct" &&
-						field.type != "string" && field.type != "bool" && field.type != "vardata" && field.type != "varstring" &&
+						field.type != "string" && field.type != "bool" && field.type != "vardata" && field.type != "varstring" && field.type != "fixstring" &&
 						field.type != "phyQuant" && field.type != "float" && field.type != "double" &&
 						field.type != "integer" && field.type != "uinteger" && field.type != "rawdata"
 					) {
@@ -1589,6 +1589,17 @@
 					field: 'elem',
 					value: {
 						"type": "varstring",
+						"name": "字段名",
+						"default": "00",
+					}
+				},
+				{
+					text: '定长字符串',
+					title: 'Insert a varstring',
+					className: 'jsoneditor-type-array',
+					field: 'elem',
+					value: {
+						"type": "fixstring",
 						"name": "字段名",
 						"default": "00",
 					}

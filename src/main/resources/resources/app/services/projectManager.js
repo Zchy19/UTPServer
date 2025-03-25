@@ -14,7 +14,9 @@
 
 		this.projects = ko.observableArray([]);
 		this.agentsConfigData = ko.observableArray([]); //antbotName
-		this.projectConfigData = null;		
+		this.projectConfigData = null;
+		this.testCaseGroupManager = null;
+		this.runableScriptGroupManager = null;		
 		this.scriptGroupManager = null;
 		
 		this.currentTestCaseOpenFolders = [];
@@ -28,8 +30,12 @@
 		this.loadProjectConfigCallback = null;
 		this.loadAgentConfigCallback = null;
 		
+		this.backupTestCase = null;
+		this.useBackupTestCase = false;
 		this.backupScripts = null;
 		this.useBackupScripts = false;
+		this.backupCommonScripts = null;
+		this.useBackupCommonScripts = false;
 		this.previousEditedScript = null;
 		
 		this.requirementManager = null;
@@ -46,8 +52,11 @@
 		this.getProjectSuccessFunction = function(projects){
 			self.projects([]);
 			if (projects != null) {
-				for (var i = 0; i < projects.length; i++)
-					self.projects.push(projects[i]);
+				for (var i = 0; i < projects.length; i++){
+					if(projects[i].id != 0){
+						self.projects.push(projects[i]);
+					}
+				}
 			}
 		}
 		
@@ -265,6 +274,44 @@
 			self.requirementScriptMapping.clear();
 			self.scriptRequirementMapping.clear();
 		};
+
+		this.getTestCaseGroups = function(){
+			var scriptGroups = [];
+			scriptGroups.push(self.testCaseGroupManager.data.pull[fileManagerUtility.root]);
+			var stack = [];
+			stack.push(self.testCaseGroupManager.data.pull[fileManagerUtility.root]);
+			while (stack.length > 0) {
+				var node = stack.pop();
+				if (node != null) {
+					node.data = [];
+					var branches = self.testCaseGroupManager.data.getBranch(node.id);
+					for (var i = 0; i < branches.length; i++) {
+						node.data.push(branches[i]);
+						stack.push(branches[i]);
+					}
+				}
+			}			
+			return scriptGroups;
+		};
+
+		this.getRunableScriptGroups = function(){
+			var scriptGroups = [];
+			scriptGroups.push(self.runableScriptGroupManager.data.pull[fileManagerUtility.root]);
+			var stack = [];
+			stack.push(self.runableScriptGroupManager.data.pull[fileManagerUtility.root]);
+			while (stack.length > 0) {
+				var node = stack.pop();
+				if (node != null) {
+					node.data = [];
+					var branches = self.runableScriptGroupManager.data.getBranch(node.id);
+					for (var i = 0; i < branches.length; i++) {
+						node.data.push(branches[i]);
+						stack.push(branches[i]);
+					}
+				}
+			}			
+			return scriptGroups;
+		};
 		
 		this.getScriptGroups = function(){
 			var scriptGroups = [];
@@ -302,6 +349,42 @@
 				}
 			}			
 			return requirements;
+		};
+
+		this.setTestCaseGroupManager = function(manager){
+			self.testCaseGroupManager = manager;
+		};
+		
+		this.getTestCasePath = function(scriptId){
+			if(self.testCaseGroupManager)
+				return self.testCaseGroupManager.getPathNames(scriptId);
+			else
+				return [];
+		};
+		
+		this.getTestCase = function(scriptId){
+			if(self.testCaseGroupManager)
+				return self.testCaseGroupManager.getItem(scriptId);
+			else
+				return null;
+		};
+
+		this.setRunableScriptGroupManager = function(manager){
+			self.runableScriptGroupManager = manager;
+		};
+		
+		this.getRunableScriptPath = function(scriptId){
+			if(self.runableScriptGroupManager)
+				return self.runableScriptGroupManager.getPathNames(scriptId);
+			else
+				return [];
+		};
+		
+		this.getRunableScript = function(scriptId){
+			if(self.runableScriptGroupManager)
+				return self.runablescriptGroupManager.getItem(scriptId);
+			else
+				return null;
 		};
 		
 		this.setScriptGroupManager = function(manager){
@@ -605,7 +688,7 @@
 				var dataType = script.type;
 				var scriptType = '';
 				
-				if(script.type === "testcase"){
+				if(script.type === "testcase" || script.type === "runablescript"){
 					scriptType = 'file';
 					if(script.type == undefined)
 						dataType = 'testcase';

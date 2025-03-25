@@ -117,7 +117,7 @@ define(
 		};
 
 		this.getFlatScriptByProject = function(){
-			utpService.getFlatScriptByProject(self.selectionManager.selectedProject().id, self.getFlatScriptByProjectSuccessFunction, self.getFlatScriptByProjectErrorFunction);
+			utpService.getFlatScriptByProject(0, self.getFlatScriptByProjectSuccessFunction, self.getFlatScriptByProjectErrorFunction);
 		};
 
 		this.submitMonitorTestSetConfig = function() {

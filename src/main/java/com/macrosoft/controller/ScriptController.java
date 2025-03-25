@@ -273,12 +273,12 @@ public class ScriptController {
 	 * @param projectId 项目ID
 	 * @return 包含脚本和脚本组数据的API响应
 	 */
-	@GetMapping("/scriptFlatData/getByProjectId/{projectId}")
-	public ApiResponse<ScriptGroupAndScriptFlatData> getScriptFlatData(@PathVariable("projectId") long projectId) {
+	@GetMapping("/scriptFlatData/getByProjectId/{projectId}/{type}")
+	public ApiResponse<ScriptGroupAndScriptFlatData> getScriptFlatData(@PathVariable("projectId") long projectId,@PathVariable("type") String type) {
 		// 方法实现保持不变
 		try {
 			ScriptGroupAndScriptFlatData result = new ScriptGroupAndScriptFlatData();
-			result.scripts = this.mScriptService.listScriptInfos(projectId, ScriptType.TestCaseType);
+			result.scripts = this.mScriptService.listScriptInfos(projectId, type);
 			result.scriptGroups = this.mScriptGroupService.listScriptGroups(projectId);
 			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {

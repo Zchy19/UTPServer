@@ -6,7 +6,11 @@
 		this.requirementActivePage = ko.observable('');
 		this.testenvironmentActivePage = ko.observable('');
 		this.antbotActivePage = ko.observable('');
+		this.runantbotActivePage = ko.observable('');
+		this.comantbotActivePage = ko.observable('');
 		this.testcaseActivePage = ko.observable('');
+		this.runablescriptActivePage = ko.observable(''); // 脚本库
+		this.commonscriptActivePage = ko.observable(''); // 公共逻辑库
 		this.testcaseActiveData = ko.observable('');
 		this.testrunActivePage = ko.observable('');
 		this.testreportActivePage = ko.observable('');
@@ -47,6 +51,9 @@
 		this.specialTestThreeControlActivePage=ko.observable('');
 		this.specialTestTwoControlActivePage=ko.observable('');
 		this.specialTestOneControlActivePage=ko.observable('');
+		this.specialTestTableActivePage=ko.observable('');
+		this.specialTestCustomizationControlActivePage=ko.observable('');
+		this.specialTestexActivePage=ko.observable('');
 		
 		this.monitorTestsetRunActivePage = ko.observable('');
 		this.selectedMonitorTestsetActiveData = null;
@@ -55,6 +62,8 @@
 		this.selectedMonitorExecution = ko.observable('');
 		this.requirementFeatureEnable = ko.observable(false);
 		this.testcaseFeatureEnable = ko.observable(false);
+		this.runablescriptFeatureEnable = ko.observable(false); // 脚本库
+		this.commonscriptFeatureEnable = ko.observable(false); // 公共逻辑库
 		this.testsetFeatureEnable = ko.observable(false);
 		this.autotestFeatureEnable = ko.observable(false);
 		this.testreportFeatureEnable = ko.observable(false);
@@ -74,6 +83,14 @@
 			}
 			if (self.systemConfig.getConfig('utpclient.testcase_mgr')){
 				self.testcaseFeatureEnable(true);
+				self.pageData.push('utpclient.testcase_mgr')
+			}
+			if (self.systemConfig.getConfig('utpclient.testcase_mgr')){
+				self.runablescriptFeatureEnable(true);
+				self.pageData.push('utpclient.testcase_mgr')
+			}
+			if (self.systemConfig.getConfig('utpclient.testcase_mgr')){
+				self.commonscriptFeatureEnable(true);
 				self.pageData.push('utpclient.testcase_mgr')
 			}
 			if (self.systemConfig.getConfig('utpclient.testset_exec')) {
@@ -108,6 +125,10 @@
 			if (self.requirementFeatureEnable())
 				activeFeatureCount++;
 			if (self.testcaseFeatureEnable())
+				activeFeatureCount++;
+			if (self.runablescriptFeatureEnable())
+				activeFeatureCount++;
+			if (self.commonscriptFeatureEnable())
 				activeFeatureCount++;
 			if (self.testsetFeatureEnable())
 				activeFeatureCount++;

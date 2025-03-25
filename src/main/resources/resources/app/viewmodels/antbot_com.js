@@ -8,7 +8,7 @@ define(
 		viewManager, ursService, systemConfig, loginManager, utpService, cmdConvertService, notificationService, komapping,
 		selectionManager, executionManager, protocolService, projectManager, ko, validator, knockstrap) {
 
-		function AntbotViewModel() {
+		function ComAntbotViewModel() {
 			var self = this;
 			this.selectionManager = selectionManager;
 			this.projectManager = projectManager;
@@ -32,7 +32,7 @@ define(
 			this.needBigData = ko.observable(false);
 			this.selectedBigData = ko.observable();
 			this.previousSelectedBigData = ko.observable();
-			this.antbotRefreshSubScription = null;
+			this.comAntbotRefreshSubScription = null;
 			this.protocols = ko.observableArray([]);
 			this.selectedProtocolType = ko.observable();
 			this.protocolTypes = ko.observableArray([]);
@@ -154,7 +154,7 @@ define(
 		
 				}
 				*/
-				$('#antbotForm').validator('update');
+				$('#comAntBotForm').validator('update');
 			};
 
 
@@ -196,7 +196,7 @@ define(
 		
 				}
 				*/
-				$('#antbotForm').validator('update');
+				$('#comAntBotForm').validator('update');
 			};
 
 			// TBD
@@ -247,7 +247,7 @@ define(
 				}
 				else
 					updateAgentConfig();
-				$('#AntBotEditModal').modal('hide');
+				$('#comAntBotEditModal').modal('hide');
 				self.addEdit(false);
 			};
 			this.permissionErrorFunction = function () {
@@ -280,7 +280,7 @@ define(
 			}
 
 			this.cancelAgentConfig = function () {
-				$('#AntBotEditModal').modal('hide');
+				$('#comAntBotEditModal').modal('hide');
 				self.addEdit(false);
 			};
 
@@ -309,7 +309,7 @@ define(
 					self.signalNeedBigData(false);
 					self.selectedAntbotTypeClassification("")
 				}
-				$('#AntBotEditModal').modal('show');
+				$('#comAntBotEditModal').modal('show');
 			};
 
 			this.enterEditItemMode = function (item) {
@@ -338,9 +338,9 @@ define(
 				self.selectedBigData(item)
 				//等待100ms后再打开模态框，防止模态框打开时，表单验证未加载完成
 				setTimeout(function () {
-					$('#AntBotEditModal').modal('show');
+					$('#comAntBotEditModal').modal('show');
 				}, 100)
-				// $('#AntBotEditModal').modal('show');
+				// $('#comAntBotEditModal').modal('show');
 			};
 			//获取record
 			this.getRecordList = function () {
@@ -420,7 +420,6 @@ define(
 						}
 						self.projectManager.agentsConfigData.unshift(configInfo);
 						notificationService.showSuccess('创建测试机器人成功');
-						
 					}
 					else if (configInfo.result == 'FailedByExistsSameAntbotName')
 						notificationService.showWarn('测试机器人名称已经存在.');
@@ -527,19 +526,19 @@ define(
 			}
 
 			this.remove = function (item) {
-				$('#deleteAntbotModal').modal('show');
+				$('#comDeleteAntbotModal').modal('show');
 				self.currentAntbot(item);
 			};
 
 			this.refreshAntbot = function () {
-				app.trigger('antbotRefresh:event');
+				app.trigger('comAntbotRefresh:event');
 			};
 
 			this.addEdit = ko.observable(false)
 			this.addAntbot = function () {
 				self.isAmend(false);
 				self.allProtocolType([]);
-				app.trigger('antbotAdd:event');
+				app.trigger('comAntbotAdd:event');
 			};
 
 			
@@ -642,14 +641,14 @@ define(
 			};
 
 			this.detached = function (view, parent) {
-				self.antbotRefreshSubScription.off();
-				self.antbotAddSubScription.off();
+				self.comAntbotRefreshSubScription.off();
+				self.comAntbotAddSubScription.off();
 			};
 
 			this.activate = function () {
 				self.prepareAntbotTypes();
-				self.antbotRefreshSubScription = app.on('antbotRefresh:event').then(function () { self.getAgentConfig(); }, this);
-				self.antbotAddSubScription = app.on('antbotAdd:event').then(function () { self.enterAddItemMode(); }, this);
+				self.comAntbotRefreshSubScription = app.on('comAntbotRefresh:event').then(function () { self.getAgentConfig(); }, this);
+				self.comAntbotAddSubScription = app.on('comAntbotAdd:event').then(function () { self.enterAddItemMode(); }, this);
 				ursService.getAllAgentType(loginManager.getOrganization(), loginManager.getAuthorizationKey(), self.loadAllAgentTypeSuccessFunction, self.loadAllAgentTypeErrorFunction);
 
 			};
@@ -671,10 +670,10 @@ define(
 
 
 			this.attached = function (view, parent) {
-				$('#AntBotEditModal').on('shown.bs.modal', function () {
-					$('#antbotForm').validator().off('submit');
-					$('#antbotForm').validator('destroy').validator();
-					$('#antbotForm').validator().on('submit', function (e) {
+				$('#comAntBotEditModal').on('shown.bs.modal', function () {
+					$('#comAntBotForm').validator().off('submit');
+					$('#comAntBotForm').validator('destroy').validator();
+					$('#comAntBotForm').validator().on('submit', function (e) {
 						if (e.isDefaultPrevented()) {
 							// handle the invalid form...
 						} else {
@@ -685,5 +684,5 @@ define(
 				});
 			};
 		}
-		return new AntbotViewModel();
+		return new ComAntbotViewModel();
 	});

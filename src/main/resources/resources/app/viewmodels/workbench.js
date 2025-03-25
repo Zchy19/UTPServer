@@ -19,6 +19,8 @@ define(
 		
 		this.requirementNumber = ko.observable(0);
 		this.testcaseNumber = ko.observable(0);
+		this.runablescriptNumber = ko.observable(0);
+		this.commonscriptNumber = ko.observable(0);
 		this.testsetNumber = ko.observable(0);
 		this.autotestNumber = ko.observable(0);
 		this.testreportNumber = ko.observable(0);
@@ -35,6 +37,8 @@ define(
 			self.viewManager.testenvironmentActivePage('app/viewmodels/testenvironment');
 		//	self.viewManager.testcaseActiveData({reload:true});
 			self.viewManager.testcaseActivePage('app/viewmodels/testcase');
+			self.viewManager.runablescriptActivePage('app/viewmodels/runablescript');
+			self.viewManager.commonscriptActivePage('app/viewmodels/commonscript');
 			self.viewManager.exceptionrecoverActivePage('app/viewmodels/exceptionrecover');
 			self.viewManager.specialTestActivePage('app/viewmodels/specialTest');
 			// self.viewManager.operationActivePage('app/viewmodels/operation');
@@ -71,6 +75,32 @@ define(
 			self.viewManager.operationActivePage('');
 			self.viewManager.statisticalStateActivePage('');
 			app.trigger('enableTestcase:event');
+		};
+
+		this.enableRunableScript = function(){
+			var enable = self.systemConfig.getEnableByFeatureName('utpclient.testcase_mgr')
+			if (!enable) {
+				self.isButtonTestcaseFeatureDisabled(true);
+				self.permissionErrorFunction();
+				return;
+			}
+			self.isButtonTestcaseFeatureDisabled(false);
+			self.viewManager.operationActivePage('');
+			self.viewManager.statisticalStateActivePage('');
+			app.trigger('enableRunableScript:event');
+		};
+
+		this.enableCommonscript = function(){
+			var enable = self.systemConfig.getEnableByFeatureName('utpclient.testcase_mgr')
+			if (!enable) {
+				self.isButtonTestcaseFeatureDisabled(true);
+				self.permissionErrorFunction();
+				return;
+			}
+			self.isButtonTestcaseFeatureDisabled(false);
+			self.viewManager.operationActivePage('');
+			self.viewManager.statisticalStateActivePage('');
+			app.trigger('enableCommonscript:event');
 		};
 		this.isButtonTestcaseFeatureDisabled=ko.observable(false);
 		this.isButtonTestsetFeatureDisabled = ko.observable(false);
@@ -181,6 +211,8 @@ define(
 			self.viewManager.requirementActivePage('');
 			self.viewManager.testenvironmentActivePage('');
 			self.viewManager.testcaseActivePage('');
+			self.viewManager.runablescriptActivePage('');
+			self.viewManager.commonscriptActivePage('');
 			self.viewManager.autotestActivePage('');
 			self.viewManager.specialTestActivePage('');
 			self.viewManager.operationActivePage('');
@@ -214,6 +246,7 @@ define(
 				'utpclient.requirement_mgr': 'requirementinfo',
 				'utpclient.testcase_mgr': 'testcaseinfo',
 				'utpclient.testset_exec': 'testEnvironmentinfo',
+				// 'utpclient.runablescript_mgr': 'runablescriptinfo', // 添加此行
 				'utpclient.monitor_exec': 'autotestinfo',
 				'utpclient.report_mgr': 'testreportinfo',
 				'utpclient.special_mgr': 'specialTestInfo',
@@ -265,6 +298,12 @@ define(
 			}
 			if(viewManager.testcaseFeatureEnable()){
 				self.testcaseNumber(++currentNumber);
+			}
+			if(true){
+				self.runablescriptNumber(++currentNumber);
+			}
+			if(true){
+				self.commonscriptNumber(++currentNumber);
 			}
 			if(viewManager.testsetFeatureEnable()){
 				self.testsetNumber(++currentNumber);
