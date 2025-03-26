@@ -272,6 +272,17 @@ public class ScriptGroupDAOImpl implements ScriptGroupDAO {
 				.list();
 	}
 
+	@Override
+	public ScriptGroup getScriptGroupByName(String scriptGroupName, Long parentScriptGroupId) {
+		Session session = this.sessionFactory.getCurrentSession();
+		List<ScriptGroup> scriptGroups = session.createQuery(
+						"FROM ScriptGroup WHERE name = :name AND parentScriptGroupId = :parentScriptGroupId")
+				.setParameter("name", scriptGroupName)
+				.setParameter("parentScriptGroupId", parentScriptGroupId)
+				.list();
+		return scriptGroups.isEmpty() ? null : scriptGroups.get(0);
+	}
+
 	/**
 	 * 配置SQL查询以返回ScriptInfo对象
 	 * @param query 要配置的SQL查询对象

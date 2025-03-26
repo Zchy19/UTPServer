@@ -17,4 +17,6 @@ public interface ScriptGroupDAO {
 	public List<ScriptInfo> findAllReferenceOfSubScriptByScript(long projectId, long scriptGroupId);
 	public List<ScriptInfo> findAllScriptReferencedByTestset(long projectId, long scriptGroupId);
 	public List<ScriptGroup> listScriptGroupsByType(long projectId, String type);
+
+	public ScriptGroup getScriptGroupByName(String scriptGroupName, Long parentScriptGroupId);
 }
