@@ -8,6 +8,7 @@ import com.macrosoft.logging.LoggerFactory;
 import com.macrosoft.logging.TrailUtility;
 import com.macrosoft.model.Script;
 import com.macrosoft.model.ScriptGroup;
+import com.macrosoft.model.ScriptType;
 import com.macrosoft.model.TestSet;
 import com.macrosoft.model.composition.ScriptInfo;
 import com.macrosoft.service.ScriptGroupService;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 脚本组管理控制器
@@ -59,6 +61,11 @@ public class ScriptGroupController {
 		try {
 			ScriptGroupAndScriptFlatData projectFlatData = new ScriptGroupAndScriptFlatData();
 			projectFlatData.scriptGroups = this.scriptGroupService.listScriptGroupsByType(projectId, type);
+			if(Objects.equals(type, "logicblock")) {
+				projectFlatData.scripts = this.scriptService.listScriptInfos(projectId, ScriptType.SysLogicBlock);
+				projectFlatData.scripts.addAll(this.scriptService.listScriptInfos(projectId, ScriptType.UsrLogicBlock));
+				return new ApiResponse<>(ApiResponse.Success, projectFlatData);
+			}
 			projectFlatData.scripts = this.scriptService.listScriptInfos(projectId, type);
 			return new ApiResponse<>(ApiResponse.Success, projectFlatData);
 		} catch (Exception ex) {
