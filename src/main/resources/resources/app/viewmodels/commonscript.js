@@ -815,8 +815,7 @@ define(
             };
 
             this.deleteScript = function (id) {
-                self.utpService.deleteScript(self.selectionManager
-                        .selectedProject().id, id,
+                self.utpService.deleteScript(0, id,
                     self.deleteScriptSuccessFunction,
                     self.deleteScriptErrorFunction);
             };
@@ -841,8 +840,7 @@ define(
             };
 
             this.forceDeleteScript = function (id) {
-                self.utpService.forceDeleteScript(self.selectionManager
-                        .selectedProject().id, id,
+                self.utpService.forceDeleteScript(0, id,
                     self.forceDeleteScriptSuccessFunction,
                     self.forceDeleteScriptErrorFunction);
             };
@@ -891,8 +889,7 @@ define(
             };
 
             this.deleteSubScript = function (id) {
-                self.utpService.deleteSubScript(self.selectionManager
-                        .selectedProject().id, id,
+                self.utpService.deleteSubScript(0, id,
                     self.deleteSubScriptSuccessFunction,
                     self.deleteSubScriptErrorFunction);
             };

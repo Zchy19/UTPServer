@@ -469,7 +469,7 @@
 					description : parent.description,
 					type:"folder",
 					date: new Date(2014,2,10,16,10),
-					dataType: "scriptGroup", // later remove				
+					dataType: "scriptGroup", // later remove
 					open : false,
 					data : []
 				};
