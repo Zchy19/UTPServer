@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ScriptGroupServiceImpl implements ScriptGroupService {
@@ -100,5 +102,28 @@ public class ScriptGroupServiceImpl implements ScriptGroupService {
 		this.scriptGroupDAO.removeScriptGroup(projectId, id);
 		
 		this.requirementDAO.cleanScriptRequirementMapping(projectId);
+	}
+
+	/*
+	通过脚本组名称添加脚本组
+	 */
+	@Override
+	@Transactional
+	public long addScriptGroupByPath(String path, long projectId, String type) {
+		List<String> pathList = Arrays.stream(path.split("/"))
+				.filter(s -> !s.isEmpty())
+				.collect(Collectors.toList());
+		Long parentScriptGroupId = 0L;
+		for (String scriptGroupName : pathList) {
+			ScriptGroup scriptGroup = ScriptGroup.builder()
+					.projectId(projectId)
+					.name(scriptGroupName)
+					.type(type)
+					.parentScriptGroupId(parentScriptGroupId)
+					.build();
+			ScriptGroup scriptGroupAdded = addScriptGroup(projectId, scriptGroup);
+			parentScriptGroupId = scriptGroupAdded.getId();
+		}
+		return parentScriptGroupId;
 	}
 }

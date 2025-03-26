@@ -8,6 +8,7 @@ import com.macrosoft.logging.LoggerFactory;
 import com.macrosoft.logging.TrailUtility;
 import com.macrosoft.model.*;
 import com.macrosoft.model.composition.ScriptInfo;
+import com.macrosoft.model.enums.ScriptGroupType;
 import com.macrosoft.service.*;
 import com.macrosoft.urs.UrsServiceApis;
 import com.macrosoft.utilities.ExportTestCaseUtility;
@@ -33,9 +34,9 @@ import java.util.List;
 public class ScriptController {
 	private static final ILogger logger = LoggerFactory.Create(ScriptController.class.getName());
 
-	private ProjectService mProjectService;
-	private ScriptService mScriptService;
-	private ScriptGroupService mScriptGroupService;
+	private ProjectService projectService;
+	private ScriptService scriptService;
+	private ScriptGroupService scriptGroupService;
 	private UrsConfigurationImpl ursConfig;
 	private AgentConfigService mAgentConfigService;
 	private RequirementService mRequirementService;
@@ -55,19 +56,19 @@ public class ScriptController {
 	@Autowired(required = true)
 
 	public void setScriptGroupService(ScriptGroupService scriptGroupService) {
-		this.mScriptGroupService = scriptGroupService;
+		this.scriptGroupService = scriptGroupService;
 	}
 
 	@Autowired(required = true)
 
 	public void setScriptService(ScriptService scriptService) {
-		this.mScriptService = scriptService;
+		this.scriptService = scriptService;
 	}
 
 	@Autowired(required = true)
 
 	public void setProjectService(ProjectService ps) {
-		this.mProjectService = ps;
+		this.projectService = ps;
 	}
 
 	@Autowired(required = true)
@@ -90,7 +91,7 @@ public class ScriptController {
 												 @PathVariable("scriptId") long scriptId) {
 		// 方法实现保持不变
 		try {
-			ScriptInfo result = this.mScriptService.getScriptInfoById(projectId, scriptId);
+			ScriptInfo result = this.scriptService.getScriptInfoById(projectId, scriptId);
 			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error(String.format("getScriptInfoById has exception - :%s", ex.toString()));
@@ -107,13 +108,13 @@ public class ScriptController {
 	public ApiResponse<ScriptMessageInfo> createScriptInfo(@RequestBody Script script) {
 		// 方法实现保持不变
 		try {
-			boolean isMaxScriptNum = this.mScriptService.isOverMaxScriptNum(script.getProjectId(), "utpserver", "utpserver.script.count");
+			boolean isMaxScriptNum = this.scriptService.isOverMaxScriptNum(script.getProjectId(), "utpserver", "utpserver.script.count");
 			if (isMaxScriptNum) {
 				ScriptMessageInfo scriptInfo = new ScriptMessageInfo();
 				scriptInfo.setErrorMessages("OVER_MAX_SCRIPT_NUM");
 				return new ApiResponse<>(ApiResponse.UnHandleException, scriptInfo);
 			}
-			Script result = this.mScriptService.addScript(script.getProjectId(), script);
+			Script result = this.scriptService.addScript(script.getProjectId(), script);
 			ScriptMessageInfo scriptMessageInfo = new ScriptMessageInfo(result);
 			return new ApiResponse<>(ApiResponse.Success, scriptMessageInfo);
 		} catch (Exception ex) {
@@ -134,7 +135,7 @@ public class ScriptController {
 		// 方法实现保持不变
 		try {
 			TrailUtility.Trail(logger, TrailUtility.Trail_Deletion, "deleteScript");
-			DeleteScriptResponse result = this.mScriptService.deleteScript(projectId, scriptId);
+			DeleteScriptResponse result = this.scriptService.deleteScript(projectId, scriptId);
 			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("deleteScript", ex);
@@ -154,7 +155,7 @@ public class ScriptController {
 		// 方法实现保持不变
 		try {
 			TrailUtility.Trail(logger, TrailUtility.Trail_Deletion, "forceDeleteScript()->projectId:" + projectId + " scriptId:" + scriptId);
-			this.mScriptService.forceDeleteScript(projectId, scriptId);
+			this.scriptService.forceDeleteScript(projectId, scriptId);
 			return new ApiResponse<>(ApiResponse.Success, true);
 		} catch (Exception ex) {
 			logger.error("forceDeleteScriptGroup", ex);
@@ -173,7 +174,7 @@ public class ScriptController {
 																		  @PathVariable("scriptId") long scriptId) {
 		// 方法实现保持不变
 		try {
-			CheckScriptReferenceResponse result = this.mScriptService.checkScriptReference(projectId, scriptId);
+			CheckScriptReferenceResponse result = this.scriptService.checkScriptReference(projectId, scriptId);
 			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("checkScriptReference", ex);
@@ -191,7 +192,7 @@ public class ScriptController {
 		// 方法实现保持不变
 		try {
 			TrailUtility.Trail(logger, TrailUtility.Trail_Update, "editScriptInfo");
-			ScriptInfo result = this.mScriptService.updateScriptInfo(scriptInfo.getProjectId(), scriptInfo);
+			ScriptInfo result = this.scriptService.updateScriptInfo(scriptInfo.getProjectId(), scriptInfo);
 			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("editScriptInfo", ex);
@@ -208,8 +209,8 @@ public class ScriptController {
 	public ApiResponse<ScriptInfo> renameScriptInfo(@RequestBody ScriptInfo scriptInfo) {
 		// 方法实现保持不变
 		try {
-			this.mScriptService.renameScript(scriptInfo.getProjectId(), scriptInfo.getId(), scriptInfo.getName());
-			ScriptInfo result = this.mScriptService.getScriptInfoById(scriptInfo.getProjectId(), scriptInfo.getId());
+			this.scriptService.renameScript(scriptInfo.getProjectId(), scriptInfo.getId(), scriptInfo.getName());
+			ScriptInfo result = this.scriptService.getScriptInfoById(scriptInfo.getProjectId(), scriptInfo.getId());
 			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("renameScriptInfo", ex);
@@ -226,7 +227,7 @@ public class ScriptController {
 	public ApiResponse<TransitToSubScriptResponse> transitToSubscript(@RequestBody ScriptIdentifier scriptIdentifier) {
 		// 方法实现保持不变
 		try {
-			TransitToSubScriptResponse result = this.mScriptService.transitToSubscript(scriptIdentifier.getProjectId(), scriptIdentifier.getScriptId());
+			TransitToSubScriptResponse result = this.scriptService.transitToSubscript(scriptIdentifier.getProjectId(), scriptIdentifier.getScriptId());
 			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("transitToSubscript", ex);
@@ -243,7 +244,7 @@ public class ScriptController {
 	public ApiResponse<TransitToScriptResponse> transitToScript(@RequestBody SubScriptIdentifier scriptIdentifier) {
 		// 方法实现保持不变
 		try {
-			TransitToScriptResponse result = this.mScriptService.transitToScript(scriptIdentifier.getProjectId(), scriptIdentifier.getSubscriptId());
+			TransitToScriptResponse result = this.scriptService.transitToScript(scriptIdentifier.getProjectId(), scriptIdentifier.getSubscriptId());
 			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("transitToScript", ex);
@@ -260,7 +261,7 @@ public class ScriptController {
 	public ApiResponse<List<ScriptInfo>> getScriptInfosByProjectId(@PathVariable("projectId") long projectId) {
 		// 方法实现保持不变
 		try {
-			List<ScriptInfo> result = this.mScriptService.listScriptInfos(projectId, ScriptType.TestCaseType);
+			List<ScriptInfo> result = this.scriptService.listScriptInfos(projectId, ScriptType.TestCaseType);
 			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("getScriptInfosByProjectId", ex);
@@ -278,8 +279,8 @@ public class ScriptController {
 		// 方法实现保持不变
 		try {
 			ScriptGroupAndScriptFlatData result = new ScriptGroupAndScriptFlatData();
-			result.scripts = this.mScriptService.listScriptInfos(projectId, type);
-			result.scriptGroups = this.mScriptGroupService.listScriptGroups(projectId);
+			result.scripts = this.scriptService.listScriptInfos(projectId, type);
+			result.scriptGroups = this.scriptGroupService.listScriptGroups(projectId);
 			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("getScriptFlatData", ex);
@@ -300,14 +301,14 @@ public class ScriptController {
 											  @PathVariable("targetParentScriptGroupId") long targetParentScriptGroupId) {
 		// 方法实现保持不变
 		try {
-			boolean isMaxScriptNum = this.mScriptService.isOverMaxScriptNum(projectId, "utpserver", "utpserver.script.count");
+			boolean isMaxScriptNum = this.scriptService.isOverMaxScriptNum(projectId, "utpserver", "utpserver.script.count");
 			if (isMaxScriptNum) {
 				ScriptInfo scriptInfo = new ScriptInfo();
 				scriptInfo.setErrorMessages("OVER_MAX_SCRIPT_NUM");
 				return new ApiResponse<>(ApiResponse.UnHandleException, scriptInfo);
 			}
-			Script script = this.mScriptService.copyPasteScript(projectId, sourceScriptId, targetParentScriptGroupId);
-			ScriptInfo result = this.mScriptService.getScriptInfoById(projectId, script.getId());
+			Script script = this.scriptService.copyPasteScript(projectId, sourceScriptId, targetParentScriptGroupId);
+			ScriptInfo result = this.scriptService.getScriptInfoById(projectId, script.getId());
 			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("copyScript", ex);
@@ -328,7 +329,7 @@ public class ScriptController {
 											 @PathVariable("targetParentScriptGroupId") long targetParentScriptGroupId) {
 		// 方法实现保持不变
 		try {
-			ScriptInfo result = this.mScriptService.cutPasteScript(projectId, sourceScriptId, targetParentScriptGroupId);
+			ScriptInfo result = this.scriptService.cutPasteScript(projectId, sourceScriptId, targetParentScriptGroupId);
 			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("cutScript", ex);
@@ -347,7 +348,7 @@ public class ScriptController {
 											 @PathVariable("scriptId") long scriptId) {
 		// 方法实现保持不变
 		try {
-			Script result = this.mScriptService.getScriptById(projectId, scriptId);
+			Script result = this.scriptService.getScriptById(projectId, scriptId);
 			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("getScriptData", ex);
@@ -367,7 +368,7 @@ public class ScriptController {
 		// 方法实现保持不变
 		try {
 			String sIds = String.join(",", Arrays.stream(scriptIds).map(String::valueOf).toArray(String[]::new));
-			List<Script> scripts = this.mScriptService.getScriptsByScriptIds(projectId, sIds, ScriptType.TestCaseType);
+			List<Script> scripts = this.scriptService.getScriptsByScriptIds(projectId, sIds, ScriptType.TestCaseType);
 			return new ApiResponse<>(ApiResponse.Success, scripts);
 		} catch (Exception ex) {
 			logger.error("getScriptsByScriptIds", ex);
@@ -386,7 +387,7 @@ public class ScriptController {
 		try {
 			TrailUtility.Trail(logger, TrailUtility.Trail_Update, "editScriptData");
 			script.setType(ScriptType.TestCaseType);
-			this.mScriptService.updateScript(script.getProjectId(), script);
+			this.scriptService.updateScript(script.getProjectId(), script);
 			return new ApiResponse<>(ApiResponse.Success, script);
 		} catch (Exception ex) {
 			logger.error("editScriptData", ex);
@@ -407,14 +408,14 @@ public class ScriptController {
 		try {
 			String unitName = "";
 			if (scriptGroupId != 0) {
-				ScriptGroup scriptGroup = this.mScriptGroupService.getScriptGroupById(projectId, scriptGroupId);
+				ScriptGroup scriptGroup = this.scriptGroupService.getScriptGroupById(projectId, scriptGroupId);
 				if (scriptGroup == null) {
 					logger.info(String.format("scriptGroup:%s, projectId: %s, can not find scriptGroup to export.", scriptGroup, projectId));
 					return new ApiResponse<>(ApiResponse.UnHandleException, null);
 				}
 				unitName = scriptGroup.getName();
 			} else {
-				Project project = this.mProjectService.getProjectById(projectId);
+				Project project = this.projectService.getProjectById(projectId);
 				if (project != null) {
 					unitName = project.getName();
 				}
@@ -424,7 +425,7 @@ public class ScriptController {
 			collectScriptsByScriptGroupId(projectId, scriptGroupId, collectedScripts);
 			List<ExportScriptData> exportScriptDatas = new ArrayList<>();
 			for (ScriptInfo scriptInfo : collectedScripts) {
-				Script script = this.mScriptService.getScriptById(projectId, scriptInfo.getId());
+				Script script = this.scriptService.getScriptById(projectId, scriptInfo.getId());
 				if (script == null) continue;
 				ExportScriptData exportScriptData = getExportScriptData(projectId, script);
 				if (exportScriptData == null) continue;
@@ -459,7 +460,7 @@ public class ScriptController {
 														   @PathVariable("scriptId") long scriptId) {
 		// 方法实现保持不变
 		try {
-			Script script = this.mScriptService.getScriptById(projectId, scriptId);
+			Script script = this.scriptService.getScriptById(projectId, scriptId);
 			if (script == null) {
 				logger.info(String.format("scriptId:%s, projectId: %s, can not find script to export.", scriptId, projectId));
 				return new ApiResponse<>(ApiResponse.UnHandleException, null);
@@ -492,9 +493,9 @@ public class ScriptController {
 	public ApiResponse<Boolean> updateSubScript() {
 		// 方法实现保持不变
 		try {
-			boolean b = this.mScriptService.updateSubScript();
+			boolean b = this.scriptService.updateSubScript();
 			logger.info("updateSubScript - " + b);
-			this.mScriptService.updateScript();
+			this.scriptService.updateScript();
 			return new ApiResponse<>(ApiResponse.Success, b);
 		} catch (Exception ex) {
 			logger.error(String.format("updateSubScript - :%s", ex.toString()));
@@ -510,14 +511,14 @@ public class ScriptController {
 	 */
 	private void collectScriptsByScriptGroupId(long projectId, long scriptGroupId, List<ScriptInfo> collectedScripts) {
 		// 方法实现保持不变
-		List<ScriptInfo> scriptInfos = this.mScriptService.listScriptInfosByParentScriptGroupId(projectId, scriptGroupId);
+		List<ScriptInfo> scriptInfos = this.scriptService.listScriptInfosByParentScriptGroupId(projectId, scriptGroupId);
 		collectedScripts.addAll(scriptInfos);
 		for (ScriptInfo scriptInfo : scriptInfos) {
 			logger.info(String.format("collectScriptsByScriptGroupId()->script - id:%s, name:%s.", scriptInfo.getId(), scriptInfo.getName()));
 		}
 		List<ScriptGroup> scriptGroups = (scriptGroupId == 0)
-				? this.mScriptGroupService.listScriptGroupsInTopLevel(projectId)
-				: this.mScriptGroupService.listScriptGroupsByParentScriptGroupId(projectId, scriptGroupId);
+				? this.scriptGroupService.listScriptGroupsInTopLevel(projectId)
+				: this.scriptGroupService.listScriptGroupsByParentScriptGroupId(projectId, scriptGroupId);
 
 		for (ScriptGroup scriptGroup : scriptGroups) {
 			logger.info(String.format("collectScriptsByScriptGroupId()-> group - id:%s, name:%s.", scriptGroup.getId(), scriptGroup.getName()));
@@ -559,5 +560,34 @@ public class ScriptController {
 		scriptData.setScript(script);
 		scriptData.setRefRequirements(requirements);
 		return scriptData;
+	}
+
+	/*
+	导入公共逻辑脚本
+	 */
+	@PostMapping("/importgloballogicblock")
+	private ApiResponse<Boolean> importGlobalLogicBlock(@RequestBody LogicBlockInfo logicBlockInfo) {
+		try {
+			LogicBlockContent content = logicBlockInfo.getContent();
+			// 0为公共逻辑项目的项目id
+			long scriptGroupId = scriptGroupService.addScriptGroupByPath(logicBlockInfo.getPath(), 0L, ScriptGroupType.LogicBlock.getType());
+			Script script = Script.builder()
+					.id(0L)
+					.projectId(0L)
+					.name(logicBlockInfo.getName())
+					.type(ScriptType.SysLogicBlock)
+					.parameter(content.getParameter())
+					.description(logicBlockInfo.getDescription())
+					.script(content.getScript())
+					.blockyXml(content.getBlockyXml())
+					.parentScriptGroupId(scriptGroupId)
+					.declaredAntbots(content.getDeclaredAntbots())
+					.rwattribute(content.getRwattribute())
+					.build();
+			Script scriptAdded = scriptService.addScript(0L, script);
+			return new ApiResponse<>(ApiResponse.Success, true);
+		} catch (Exception e) {
+			return new ApiResponse<>(ApiResponse.UnHandleException, false);
+		}
 	}
 }

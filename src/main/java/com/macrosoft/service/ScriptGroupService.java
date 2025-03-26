@@ -14,4 +14,6 @@ public interface ScriptGroupService {
 	public ScriptGroup getScriptGroupById(long projectId, long id);
 	public void removeScriptGroup(long projectId, long id);
 
+
+	public long addScriptGroupByPath(String path, long projectId, String type);
 }

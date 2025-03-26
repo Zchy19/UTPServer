@@ -1,5 +1,9 @@
 package com.macrosoft.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -14,6 +18,9 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "ScriptGroup")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ScriptGroup implements Serializable {
 
     @Id
