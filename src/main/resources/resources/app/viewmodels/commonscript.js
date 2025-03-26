@@ -644,7 +644,7 @@ define(
             	var defNewScriptGroup = {
             		id: 0,
             		customizedId: '',
-            		projectId: self.selectionManager.selectedProject().id,
+            		projectId: 0,
             		parentScriptGroupId: parentId,
             		description: '',
             		name: '新建公共逻辑',
