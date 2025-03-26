@@ -87,7 +87,7 @@ public class SubScriptController {
 				scriptInfo.setErrorMessages("OVER_MAX_SUBSCRIPT_NUM");
 				return new ApiResponse<ScriptMessageInfo>(ApiResponse.UnHandleException, scriptInfo);
 			}
-			script.setType(ScriptType.SubScriptType);
+			script.setType(ScriptType.UsrLogicBlock);
 			Script result = this.mScriptService.addScript(script.getProjectId(), script);
 			ScriptMessageInfo scriptMessageInfo = new ScriptMessageInfo(result);
 			return new ApiResponse<ScriptMessageInfo>(ApiResponse.Success, scriptMessageInfo);

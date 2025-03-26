@@ -22,7 +22,6 @@ define(
             self.reload = true;
             self.maxNameLength = 200;
             this.protocolService = protocolService;
-            this.scriptType = 'subscript'
 
             this.gotoPlayground = function () {
                 self.viewManager.commonscriptActivePage('app/viewmodels/playground_comsc');
@@ -64,7 +63,7 @@ define(
             this.getScriptGroupByProject = function () {
                 self.utpService.getFlatScriptGroupByProject(
                     0,
-                    self.scriptType,
+                    'logicblock',
                     self.getScriptGroupByProjectSuccessFunction,
                     self.getScriptGroupByProjectErrorFunction);
             }
@@ -103,7 +102,7 @@ define(
                     parentScriptGroupId: parentId,
                     description: '',
                     name: '新建公共逻辑组',
-                    type: self.scriptType
+                    type:  'logicblock'
                 };
                 self.utpService.createScriptGroup(defNewScriptGroup,
                     self.createScriptGroupSuccessFunction,
@@ -569,7 +568,7 @@ define(
                             value: retNewScript.name,
                             date: new Date(),
                             type: "file",
-                            dataType: "subscript"
+                            dataType: "usrlogicblock"
                         }, 0, retNewScript.parentScriptGroupId);
                         self.treeAdjust();
                         $$("cfm").refreshCursor();
@@ -600,7 +599,7 @@ define(
                     parentScriptGroupId: parentId,
                     description: '',
                     name: '新建公共逻辑',
-                    type: self.scriptType
+                    type:  'usrlogicblock'
                 };
                 self.utpService.createScript(defNewscript,
                     self.createScriptSuccessFunction,
@@ -617,11 +616,11 @@ define(
             				value: retNewSubScript.name,
             				date: new Date(),
             				type: "text",
-            				dataType: "subscript"
+            				dataType: "usrlogicblock"
             			}, 0, retNewSubScript.parentScriptGroupId);
             			self.treeAdjust();
             			$$("cfm").refreshCursor();
-            			notificationService.showSuccess('创建子脚本成功');
+            			notificationService.showSuccess('创建公共逻辑成功');
             			self.getScriptGroupByProject();
             		} else
             			self.createSubScriptErrorFunction();
@@ -963,7 +962,7 @@ define(
                                     value: script.name,
                                     date: new Date(),
                                     type: self.sourceType,
-                                    dataType: "subscript",
+                                    dataType: "usrlogicblock",
                                     description: script.description,
                                     customizedId: script.customizedId
                                 }, 0, script.parentScriptGroupId);
@@ -1057,7 +1056,7 @@ define(
                 if (data && data.status === 1 && data.result) {
                     if (data.result.state == "Success") {
                         self.selectedItem.type = "text";
-                        self.selectedItem.dataType = "subscript";
+                        self.selectedItem.dataType = "usrlogicblock";
                         self.selectedItem.parameter = null;
                         notificationService.showSuccess('测试用例转换子脚成功!');
                         $$("cfm").refreshCursor();
@@ -1124,7 +1123,7 @@ define(
             };
 
             this.convertToTestCase = function (item) {
-                if (item.dataType != "subscript")
+                if (item.dataType != "usrlogicblock")
                     notificationService.showWarn('类型不匹配，无法转换！');
                 var parameter = item.parameter;
                 if (parameter) {
@@ -1156,7 +1155,7 @@ define(
                 for (var i = 0; i < checkedIds.length; i++) {
                     var nodeId = checkedIds[i];
                     var item = self.subScriptTree.getItem(nodeId);
-                    if (item.dataType == 'subscript' || item.dataType == 'testcase') {
+                    if (item.dataType == 'usrlogicblock' || item.dataType == 'testcase') {
                         scriptIds.push(nodeId);
                         if (item.$parent && item.$parent != undefined)
                             scriptGroupIds.push(item.$parent);
@@ -1294,7 +1293,7 @@ define(
                                                 var scriptContent = cmdConvertService.generatecmdStepList(node.script, true);
                                                 currentNode.script = scriptContent.replace(
                                                     new RegExp(cmdConvertService.CMD_SEPARATOR, 'g'), '\n');
-                                                currentNode.parameter = node.type == "subscript" ? (node.parameter != null && node.parameter.length > 2 ? node.parameter
+                                                currentNode.parameter = node.type == "usrlogicblock" ? (node.parameter != null && node.parameter.length > 2 ? node.parameter
                                                         : "")
                                                     : "";
                                                 currentNode.customizedId = node.customizedId;
@@ -1388,7 +1387,7 @@ define(
                     return;
                 self.utpService.getFlatScriptGroupByProject(
                     self.selectedTargetProject.id,
-                    self.scriptType,
+                    'logicblock',
                     function (data) {
                         if (data != null && data.status === 1
                             && data.result != null) {
@@ -1398,10 +1397,10 @@ define(
                             root.push(scriptGroups);
                             self.initScriptTree(root);
                         } else
-                            notificationService.showError('获取项目测试用例信息失败');
+                            notificationService.showError('获取项目公共逻辑信息失败');
                     },
                     function () {
-                        notificationService.showError('获取项目测试用例信息失败');
+                        notificationService.showError('获取项目公共逻辑信息失败');
                     });
             };
 
@@ -1691,7 +1690,7 @@ define(
                                                 description: '',
                                                 projectId: 0,
                                                 parentScriptGroupId: parentId,
-                                                type: self.scriptType
+                                                type: 'logicblock'
                                             };
                                             self.updateScriptGroup(selectedScriptGroup);
                                         } else if (item.type === "file" || item.type === "text") {

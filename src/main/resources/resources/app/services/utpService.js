@@ -299,7 +299,7 @@
 	    };
 	    
 	    this.getFlatScriptByProject = function(projectId, successFunction, errorFunction){
-	    	var selectScriptApi = "./api/script/scriptFlatData/getByProjectId/" + projectId + "/" + "subscript";
+	    	var selectScriptApi = "./api/script/scriptFlatData/getByProjectId/" + projectId + "/" + "usrlogicblock";
 			ajaxService.AjaxGet(selectScriptApi, successFunction, errorFunction);
 	    };
 	    
