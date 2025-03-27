@@ -1,17 +1,6 @@
 package com.macrosoft.controller;
 
-import java.util.List;
-
 import com.macrosoft.controller.dto.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.macrosoft.controller.response.ApiResponse;
 import com.macrosoft.logging.ILogger;
 import com.macrosoft.logging.LoggerFactory;
@@ -21,6 +10,11 @@ import com.macrosoft.model.ScriptType;
 import com.macrosoft.model.composition.ScriptInfo;
 import com.macrosoft.service.ScriptGroupService;
 import com.macrosoft.service.ScriptService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 public class SubScriptController {
@@ -70,7 +64,8 @@ public class SubScriptController {
 				}
 			}
 
-			List<Script> scripts = this.mScriptService.getScriptsByScriptIds(projectId, sIds, ScriptType.SubScriptType);
+			List<Script> scripts = this.mScriptService.getScriptsByScriptIds(projectId, sIds, ScriptType.SysLogicBlock);
+			scripts.addAll(this.mScriptService.getScriptsByScriptIds(projectId, sIds, ScriptType.UsrLogicBlock));
 			return new ApiResponse<List<Script>>(ApiResponse.Success, scripts);
 		} catch (Exception ex) {
 			logger.error("getScriptsByScriptIds", ex);
@@ -154,7 +149,8 @@ public class SubScriptController {
 	@RequestMapping(value = "/api/subscript/getByProjectId/{projectId}", method = RequestMethod.GET)
 	public @ResponseBody ApiResponse<List<ScriptInfo>> getSubScriptInfosByProjectId(@PathVariable("projectId") long projectId) {
 		try {
-			List<ScriptInfo> result = this.mScriptService.listScriptInfos(projectId, ScriptType.SubScriptType);
+			List<ScriptInfo> result = this.mScriptService.listScriptInfos(projectId, ScriptType.UsrLogicBlock);
+			result.addAll(this.mScriptService.listScriptInfos(projectId, ScriptType.SysLogicBlock));
 			return new ApiResponse<List<ScriptInfo>>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("getSubScriptInfosByProjectId", ex);
@@ -178,7 +174,8 @@ public class SubScriptController {
 			@PathVariable("projectId") long projectId) {
 		try {
 			ScriptGroupAndScriptFlatData result = new ScriptGroupAndScriptFlatData(); 
-			result.scripts = this.mScriptService.listScriptInfos(projectId, ScriptType.SubScriptType);
+			result.scripts = this.mScriptService.listScriptInfos(projectId, ScriptType.UsrLogicBlock);
+			result.scripts.addAll(this.mScriptService.listScriptInfos(projectId, ScriptType.SysLogicBlock));
 			result.scriptGroups = this.mScriptGroupService.listScriptGroups(projectId);
 			return new ApiResponse<ScriptGroupAndScriptFlatData>(ApiResponse.Success, result);
 		} catch (Exception ex) {
@@ -219,7 +216,7 @@ public class SubScriptController {
 	public @ResponseBody ApiResponse<Script> editSubScriptData(@RequestBody Script subscript) {
 		try {
 			TrailUtility.Trail(logger, TrailUtility.Trail_Update, "editSubScriptData");
-			subscript.setType(ScriptType.SubScriptType);
+			subscript.setType(ScriptType.UsrLogicBlock);
 			Script result =  this.mScriptService.updateScript(subscript.getProjectId(), subscript);
 			return new ApiResponse<Script>(ApiResponse.Success, result);
 		} catch (Exception ex) {

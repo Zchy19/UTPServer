@@ -285,7 +285,7 @@ public class ScriptController {
 				result.scriptGroups = this.scriptGroupService.listScriptGroups(projectId);
 			} else {
 				result.scripts = this.scriptService.listScriptInfos(projectId, ScriptType.TestCaseType);
-				result.scripts.addAll(this.scriptService.listScriptInfos(projectId, ScriptType.SubScriptType));
+				result.scripts.addAll(this.scriptService.listScriptInfos(projectId, ScriptType.RunnableScript));
 				result.scriptGroups = this.scriptGroupService.listScriptGroups(projectId);
 			}
 			return new ApiResponse<>(ApiResponse.Success, result);
