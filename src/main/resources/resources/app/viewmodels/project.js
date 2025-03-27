@@ -794,32 +794,34 @@ define([ 'knockout', 'jquery', 'bootstrap', 'komapping', 'services/viewManager',
 				};
 				
 				// export				
-				this.exportProjectSuccessFunction = function(data){
-					if(data != null){
-						try {
-							var filename = self.currentProject().name + ".zip";
-							var blob = new Blob([data], { type: 'application/zip' });
-				
-							if (navigator.msSaveBlob) { // IE 10+
-								navigator.msSaveBlob(blob, filename);
-							} else {
-								var link = document.createElement('a');
-								var url = window.URL.createObjectURL(blob);
-								link.href = url;
-								link.download = filename;
-								document.body.appendChild(link);
-								link.click();
-								document.body.removeChild(link);
-								window.URL.revokeObjectURL(url); // 释放 URL 对象
-							}
-							notificationService.showSuccess('项目导出成功，正在下载...');
-						} catch (error) {
-							notificationService.showError('导出项目失败：处理下载数据时出错');
-							console.error("Error during download processing:", error);
+				this.exportProjectSuccessFunction = function(blob) {
+					if (blob instanceof Blob && blob.size > 0) {
+						var filename = self.currentProject().name + ".zip";
+						if (window.navigator.msSaveOrOpenBlob) {
+							// IE 专用方法
+							window.navigator.msSaveOrOpenBlob(blob, filename);
+						} else {
+							var a = document.createElement('a');
+							a.style.display = 'none';
+							document.body.appendChild(a);
+
+							var url = window.URL.createObjectURL(blob);
+							a.href = url;
+							a.download = filename; // 指定下载文件名
+
+							// 触发点击事件
+							a.click();
+
+							// 延迟清理资源
+							setTimeout(function() {
+								window.URL.revokeObjectURL(url);
+								document.body.removeChild(a);
+							}, 5000); // 5秒后清理，确保下载完成
 						}
+						notificationService.showSuccess('下载开始，请查看浏览器下载列表');
+					} else {
+						notificationService.showError('下载错误');
 					}
-					else
-						notificationService.showError('导出项目失败');
 					$.unblockUI();
 				};
 				

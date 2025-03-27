@@ -59,7 +59,7 @@ define(['knockout', 'jquery', 'komapping',
 			this.gotoVerification = function () {
 				selectionManager.selectedNodeId(self.currentScript.id());
 				selectionManager.selectedNodeType = self.currentScript.type();
-				selectionManager.verificationSource = 'playground';
+				selectionManager.verificationSource = 'playground_runsc';
 				executionManager.newExecutionFlag(true);
 				self.viewManager.runablescriptActivePage('app/viewmodels/verification');
 			};
@@ -175,7 +175,7 @@ define(['knockout', 'jquery', 'komapping',
 				var rtl = 'ltr';
 				var toolbox = this.getToolboxElement();
 				//暂时关闭
-				if (selectionManager.selectedNodeType != 'testcase') {
+				if (selectionManager.selectedNodeType != 'runablescript') {
 					toolbox = this.getToolboxElementBySubScript();
 				}
 				var match = location.search.match(/side=([^&]+)/);
@@ -1508,7 +1508,7 @@ define(['knockout', 'jquery', 'komapping',
 					if (typeof selectionManager.refreshTreeNodeCallback === "function") {
 						selectionManager.refreshTreeNodeCallback(self.currentScript.name());
 					}
-					if (selectionManager.selectedNodeType == 'testcase')
+					if (selectionManager.selectedNodeType == 'runablescript')
 						notificationService.showSuccess('更新测试用例成功');
 					else
 						notificationService.showSuccess('更新子脚本成功');
@@ -1519,7 +1519,7 @@ define(['knockout', 'jquery', 'komapping',
 			};
 
 			this.updateScriptErrorFunction = function () {
-				if (selectionManager.selectedNodeType == 'testcase')
+				if (selectionManager.selectedNodeType == 'runablescript')
 					notificationService.showError('更新测试用例失败');
 				else
 					notificationService.showError('更新子脚本失败');
@@ -1650,7 +1650,7 @@ define(['knockout', 'jquery', 'komapping',
 					scriptContent = subScriptBegCmd + scriptContent + subScriptEndCmd;
 				}
 
-				if (selectionManager.selectedNodeType === 'testcase') {
+				if (selectionManager.selectedNodeType === 'runablescript') {
 					//	var testcaseBegCmd = "TESTCASE_BEGIN" + cmdConvertService.PARA_SEPARATOR + selectionManager.selectedNodeId() + cmdConvertService.CMD_SEPARATOR;
 					var testcaseBegCmd = "TESTCASE_BEGIN" + cmdConvertService.CMD_SEPARATOR;
 					var testcaseEndCmd = "TESTCASE_END";
@@ -1662,7 +1662,7 @@ define(['knockout', 'jquery', 'komapping',
 				//var xml = Blockly.Xml.domToPrettyText(xmlDom);
 				var xml = Blockly.Xml.domToText(xmlDom);
 				self.currentScript.blockyXml(xml);
-				if (selectionManager.selectedNodeType === 'testcase')
+				if (selectionManager.selectedNodeType === 'runablescript')
 					self.utpService.updateFullScript(komapping.toJS(self.currentScript), self.updateScriptSuccessFunction, self.updateScriptErrorFunction);
 				else if (selectionManager.selectedNodeType === 'subscript') {
 					var selectedScript = {
@@ -1686,7 +1686,7 @@ define(['knockout', 'jquery', 'komapping',
 			this.saveTextScript = function () {
 				var scriptContent = self.scriptEditor.getValue().trim();
 				scriptContent = cmdConvertService.txtToScript(scriptContent);
-				if (selectionManager.selectedNodeType === 'testcase') {
+				if (selectionManager.selectedNodeType === 'runablescript') {
 					var testcaseBegCmd = cmdConvertService.TESTCASE_BEGIN + cmdConvertService.CMD_SEPARATOR;
 					var testcaseEndCmd = cmdConvertService.TESTCASE_END;
 					scriptContent = testcaseBegCmd + scriptContent + testcaseEndCmd;
@@ -1722,7 +1722,7 @@ define(['knockout', 'jquery', 'komapping',
 				var xmlDom = Blockly.Xml.workspaceToDom(self.workspace);
 				var xml = Blockly.Xml.domToText(xmlDom);
 				self.currentScript.blockyXml(xml);
-				if (selectionManager.selectedNodeType === 'testcase')
+				if (selectionManager.selectedNodeType === 'runablescript')
 					self.utpService.updateFullScript(komapping.toJS(self.currentScript), self.updateScriptSuccessFunction, self.updateScriptErrorFunction);
 				else if (selectionManager.selectedNodeType === 'subscript') {
 					var selectedScript = {
@@ -2017,7 +2017,7 @@ define(['knockout', 'jquery', 'komapping',
 					else
 						scriptContent = scriptDef + cmdConvertService.CMD_SEPARATOR;
 				}
-				else if (selectionManager.selectedNodeType === 'testcase' && scriptContent != null) {
+				else if (selectionManager.selectedNodeType === 'runablescript' && scriptContent != null) {
 					scriptContent = scriptContent.replace(new RegExp(cmdConvertService.TESTCASE_BEGIN + cmdConvertService.CMD_SEPARATOR, 'g'), "");
 					scriptContent = scriptContent.replace(new RegExp(cmdConvertService.TESTCASE_END, 'g'), "");
 				}
@@ -2105,7 +2105,7 @@ define(['knockout', 'jquery', 'komapping',
 			};
 
 			this.getScriptErrorFunction = function () {
-				if (selectionManager.selectedNodeType == 'testcase')
+				if (selectionManager.selectedNodeType == 'runablescript')
 					notificationService.showError('获取测试用例信息失败');
 				else
 					notificationService.showError('获取子脚本信息失败');

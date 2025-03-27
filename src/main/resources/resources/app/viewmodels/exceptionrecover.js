@@ -137,7 +137,7 @@ define(
         
         this.submit = function () {        	
         	var selectedScript = self.subScriptTree.getSelectedItem();
-        	if(selectedScript == undefined || selectedScript == null || selectedScript.dataType != 'subscript')
+        	if(selectedScript == undefined || selectedScript == null || selectedScript.dataType != 'usrlogicblock' || selectedScript.dataType != 'syslogicblock')
         		self.showEmptyExceptionRecover(true);
         	else{
             	self.showEmptyExceptionRecover(false);

@@ -56,8 +56,16 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 					self.projectManager.useBackupScripts = true;
 					self.viewManager.testcaseActivePage('app/viewmodels/testcase');
 				}
+				if (self.selectionManager.verificationSource === 'runablescript') {
+					self.projectManager.useBackupScripts = true;
+					self.viewManager.runablescriptActivePage('app/viewmodels/runablescript');
+				}
 				if (self.selectionManager.verificationSource === 'playground')
 					self.viewManager.testcaseActivePage('app/viewmodels/playground');
+				if (self.selectionManager.verificationSource === 'playground_comsc')
+					self.viewManager.commonscriptActivePage('app/viewmodels/playground_comsc');
+				if (self.selectionManager.verificationSource === 'playground_runsc')
+					self.viewManager.runablescriptActivePage('app/viewmodels/playground_runsc');
 			}
 
 			// agent selection

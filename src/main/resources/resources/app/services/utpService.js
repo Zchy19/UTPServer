@@ -84,7 +84,7 @@
 		this.copyProjectWithInfo = function(projectInfo, successFunction, errorFunction){
 			ajaxService.AjaxPost(projectInfo, "./api/project/copyProjectWithInfo", successFunction, errorFunction);
 		};
-		
+	
 		// this.exportProject = function(projectId, successFunction, errorFunction){
 		// 	var exportProjectApi = "./api/project/export/" + projectId;
 	    // 	ajaxService.AjaxGetNoBlock(exportProjectApi, successFunction, errorFunction);
@@ -94,7 +94,7 @@
 			var exportProjectApi = "./api/project/export/" + projectId;
 	    	ajaxService.NativeAjaxGetBlob(exportProjectApi, successFunction, errorFunction);
 		};
-		
+
 		
 		this.importProject = function(file, successFunction, errorFunction){
 			var api = "./api/project/import";

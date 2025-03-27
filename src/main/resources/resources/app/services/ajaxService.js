@@ -154,6 +154,41 @@
                 });
             }, 500);
         };
+
+		this.NativeAjaxGetBlob = function(route, successFunction, errorFunction) {
+			return new Promise(function(resolve, reject) {
+				var xhr = new XMLHttpRequest();
+				xhr.open('GET', route, true);
+				xhr.responseType = 'blob'; // 强制指定响应类型
+		
+				// 添加请求头（从原有逻辑复制）
+				var headers = self.getHeader(route);
+				for (var key in headers) {
+					if (headers.hasOwnProperty(key)) {
+						xhr.setRequestHeader(key, headers[key]);
+					}
+				}
+		
+				xhr.onload = function() {
+					if (xhr.status === 200) {
+						// 直接返回 Blob 对象
+						var blob = xhr.response;
+						successFunction(blob, xhr.status);
+						resolve(blob);
+					} else {
+						errorFunction(xhr);
+						reject(new Error('请求失败，状态码: ' + xhr.status));
+					}
+				};
+		
+				xhr.onerror = function() {
+					errorFunction(xhr);
+					reject(new Error('网络错误'));
+				};
+		
+				xhr.send();
+			});
+		};
         
         this.AjaxGetWithData = function (data, route, successFunction, errorFunction) {
         	$.blockUI(utilityService.template);

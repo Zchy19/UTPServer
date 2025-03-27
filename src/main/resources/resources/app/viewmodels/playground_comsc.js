@@ -1,12 +1,12 @@
 define(['knockout', 'jquery', 'komapping',
-		'services/cmdConvertService',
-		'services/loginManager', 'services/viewManager', 'services/systemConfig', 'services/executionManager',
-		'services/selectionManager', 'services/projectManager', 'services/protocolService', 'services/utpService',
-		'sequencediagram', 'services/notificationService', 'services/fileManagerUtility', 'jsoneditor', 'lodash',
-		'bootstrapSwitch', 'ace/ace', 'ace/ext/language_tools'],
+	'services/cmdConvertService',
+	'services/loginManager', 'services/viewManager', 'services/systemConfig', 'services/executionManager',
+	'services/selectionManager', 'services/projectManager', 'services/protocolService', 'services/utpService',
+	'sequencediagram', 'services/notificationService', 'services/fileManagerUtility', 'jsoneditor', 'lodash',
+	'bootstrapSwitch', 'ace/ace', 'ace/ext/language_tools'],
 	function (ko, $, komapping,
-			  cmdConvertService, loginManager, viewManager, systemConfig, executionManager, selectionManager,
-			  projectManager, protocolService, utpService, sequencediagram, notificationService, fileManagerUtility, JSONEditor, _, bootstrapSwitch, ace) {
+		cmdConvertService, loginManager, viewManager, systemConfig, executionManager, selectionManager,
+		projectManager, protocolService, utpService, sequencediagram, notificationService, fileManagerUtility, JSONEditor, _, bootstrapSwitch, ace) {
 
 		function ComPlaygroundViewModel() {
 			var self = this;
@@ -59,7 +59,7 @@ define(['knockout', 'jquery', 'komapping',
 			this.gotoVerification = function () {
 				selectionManager.selectedNodeId(self.currentScript.id());
 				selectionManager.selectedNodeType = self.currentScript.type();
-				selectionManager.verificationSource = 'playground';
+				selectionManager.verificationSource = 'playground_comsc';
 				executionManager.newExecutionFlag(true);
 				self.viewManager.commonscriptActivePage('app/viewmodels/verification');
 			};
@@ -101,7 +101,7 @@ define(['knockout', 'jquery', 'komapping',
 						var script = cmdConvertService.txtToScript(scriptStr);
 						self.lastscriptStr = script;
 						var dom = null;
-						if (selectionManager.selectedNodeType === 'subscript')
+						if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock')
 							dom = Blockly.Xml.subScriptToDom(script, self.workspace);
 						else
 							dom = Blockly.Xml.scriptToDom(script, self.workspace);
@@ -207,7 +207,7 @@ define(['knockout', 'jquery', 'komapping',
 						scrollbars: true,
 						toolbox: toolbox,
 						toolboxPosition: side == 'top'
-						|| side == 'start' ? 'start'
+							|| side == 'start' ? 'start'
 							: 'end',
 						zoom: {
 							controls: true,
@@ -568,7 +568,7 @@ define(['knockout', 'jquery', 'komapping',
 					if ('Disable' in cmdList[i] && cmdList[i].Disable === true) {
 						continue;
 					}
-
+			
 					var id = parentId + "-" + i.toString();
 					if ("CommandList" in cmdList[i] && "GroupName" in cmdList[i]) {
 						// 计算当前节点的禁用状态：继承父级禁用 或 当前节点权限不足
@@ -576,7 +576,7 @@ define(['knockout', 'jquery', 'komapping',
 						var data = [];
 						// 递归处理子节点，传递累积的禁用状态
 						self.recurPrepareCmdTreeData(cmdList[i].CommandList, id, data, currentDisable);
-
+			
 						// 根据当前禁用状态设置节点属性
 						var nodeValue, nodeDisabled;
 						if (currentDisable) {
@@ -586,7 +586,7 @@ define(['knockout', 'jquery', 'komapping',
 							nodeValue = cmdList[i].GroupName;
 							nodeDisabled = false;
 						}
-
+			
 						parentData.push({
 							id: id,
 							data: data,
@@ -598,16 +598,16 @@ define(['knockout', 'jquery', 'komapping',
 						var cmdName = cmdList[i].CmdName;
 						var parameters = cmdList[i].Params;
 						var cmdType = cmdList[i].Type;
-						var formattedCommandString = self.needRecordSetConfigAndSelectAllCmd()
+						var formattedCommandString = self.needRecordSetConfigAndSelectAllCmd() 
 							? cmdConvertService.convertRecordAllCmdToUserLanguage(self.selectedAgent.antbotType, cmdName)
 							: cmdConvertService.convertCmdToUserLanguange(self.selectedAgent.antbotType, cmdType, cmdName, parameters);
-
+			
 						var commandObj = { commandName: cmdName, commandParameters: parameters };
 						self.commandMapping.push(commandObj);
-
+			
 						// 叶子节点的禁用状态：父级禁用 或 自身权限不足
 						var leafDisabled = parentDisable || ('EnableLevel' in cmdList[i] && cmdList[i].EnableLevel > self.auth);
-
+			
 						if (leafDisabled) {
 							parentData.push({
 								id: id,
@@ -739,31 +739,31 @@ define(['knockout', 'jquery', 'komapping',
 				var checkedNodes = self.checkedCommandNodes;
 				var commandsByType = {}; // 类型分组容器
 				let antbots = self.projectManager.agentsConfigData(); // 获取所有机器人配置
-
+			
 				// 第一阶段：命令分组
 				for (var x = 0; x < checkedNodes.length; x++) {
 					var node = checkedNodes[x];
-
+					
 					// 根据antbotName查找对应机器人类型
 					var targetAntbot = antbots.find(a => a.antbotName === node.antbotName);
 					if (!targetAntbot) {
 						console.warn(`未找到机器人 ${node.antbotName} 的配置，跳过命令`);
 						continue;
 					}
-
+					
 					var cmdsString = cmdConvertService.generateCmd(
 						node.antbotName,
 						node.commandName,
 						node.commandParameters
 					);
-
+					
 					if (cmdsString) {
 						var agentType = targetAntbot.antbotType;
 						commandsByType[agentType] = commandsByType[agentType] || [];
 						commandsByType[agentType].push(cmdsString);
 					}
 				}
-
+			
 				// 第二阶段：块数量预检
 				try {
 					let totalBlocks = 0;
@@ -772,18 +772,18 @@ define(['knockout', 'jquery', 'komapping',
 						const dom = Blockly.Xml.agentCMDToDom(agentType, cmds.join('\n'), self.workspace);
 						totalBlocks += dom.getElementsByTagName('block').length;
 					});
-
+			
 					if (!self.blockNumberUpdate(totalBlocks)) return;
-
+			
 					// 第三阶段：分类型插入
 					Object.keys(commandsByType).forEach(agentType => {
 						self.insertCommandsAsBlock(agentType, commandsByType[agentType]);
 					});
-
+			
 					// 文本插入保持原有逻辑
 					const allCmds = Object.values(commandsByType).flat();
 					self.insertCommandsAsText(allCmds);
-
+					
 					self.testcaseSavedFlag(false);
 				} catch (err) {
 					notificationService.showError(`命令插入失败: ${err.message}`);
@@ -1532,7 +1532,7 @@ define(['knockout', 'jquery', 'komapping',
 					self.currentScript.customizedId(data.result.customizedId);
 					self.currentScript.customizedFields(data.result.customizedFields);
 					var topBlocks = self.getTopBlocks();
-					if (selectionManager.selectedNodeType === 'subscript' && topBlocks[0].type === "procedures_defscript")
+					if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock' && topBlocks[0].type === "procedures_defscript")
 						topBlocks[0].setFieldValue(self.currentScript.name(), 'SCRIPTNAME');
 					notificationService.showSuccess('基本信息更新成功');
 				}
@@ -1587,7 +1587,7 @@ define(['knockout', 'jquery', 'komapping',
 					parentScriptGroupId: self.currentScript.parentScriptGroupId(),
 					customizedFields: JSON.stringify(customizedFields)
 				}
-				if (selectionManager.selectedNodeType === 'subscript')
+				if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock')
 					self.utpService.updateSubScript(selectedScript, self.updateBasicSuccessFunction, self.updateBasicErrorFunction);
 				else
 					self.utpService.updateScript(selectedScript, self.updateBasicSuccessFunction, self.updateBasicErrorFunction);
@@ -1600,7 +1600,7 @@ define(['knockout', 'jquery', 'komapping',
 					return false;
 				}
 				var macro = [];
-				if (selectionManager.selectedNodeType === 'subscript') {
+				if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					if (topBlocks.length == 0 || topBlocks[0].type != "procedures_defscript") {
 						notificationService.showError('子脚本定义不存在！');
 						return false;
@@ -1621,7 +1621,7 @@ define(['knockout', 'jquery', 'komapping',
 				//添加换行符
 				// scriptContent = scriptContent.replace(new RegExp(cmdSeparator, 'g'), cmdSeparator + '\n');
 
-				if (selectionManager.selectedNodeType === 'subscript') {
+				if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					/*scriptContent = scriptContent.substring(scriptContent.indexOf(cmdConvertService.CMD_SEPARATOR));
 					for(var i=0; i < macro.length; i++){
 						if(scriptContent.indexOf("%" + macro[i] + "%") >= 0){
@@ -1664,7 +1664,7 @@ define(['knockout', 'jquery', 'komapping',
 				self.currentScript.blockyXml(xml);
 				if (selectionManager.selectedNodeType === 'testcase')
 					self.utpService.updateFullScript(komapping.toJS(self.currentScript), self.updateScriptSuccessFunction, self.updateScriptErrorFunction);
-				else if (selectionManager.selectedNodeType === 'subscript') {
+				else if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					var selectedScript = {
 						id: self.currentScript.id(),
 						customizedId: self.currentScript.customizedId(),
@@ -1692,7 +1692,7 @@ define(['knockout', 'jquery', 'komapping',
 					scriptContent = testcaseBegCmd + scriptContent + testcaseEndCmd;
 				}
 				var macro = [];
-				if (selectionManager.selectedNodeType === 'subscript') {
+				if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					if (!scriptContent.startsWith(self.currentScript.name())) {
 						notificationService.showError('子脚本定义不存在！');
 						return false;
@@ -1724,7 +1724,7 @@ define(['knockout', 'jquery', 'komapping',
 				self.currentScript.blockyXml(xml);
 				if (selectionManager.selectedNodeType === 'testcase')
 					self.utpService.updateFullScript(komapping.toJS(self.currentScript), self.updateScriptSuccessFunction, self.updateScriptErrorFunction);
-				else if (selectionManager.selectedNodeType === 'subscript') {
+				else if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					var selectedScript = {
 						id: self.currentScript.id(),
 						customizedId: self.currentScript.customizedId(),
@@ -1797,7 +1797,7 @@ define(['knockout', 'jquery', 'komapping',
 					scriptContent = scriptContent.substring(0, scriptContent.length - cmdSeparatorLength);
 				}
 				var steps = "\n";
-				if (selectionManager.selectedNodeType === 'subscript') {
+				if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					var topBlocks = self.getTopBlocks();
 					if (topBlocks.length > 0 && topBlocks[0].type == "procedures_defscript") {
 						steps += "子脚本:" + self.currentScript.name();
@@ -1846,7 +1846,7 @@ define(['knockout', 'jquery', 'komapping',
 						if (self.commandMode()) {
 							scriptContent = self.scriptEditor.getValue().trim();
 							scriptContent = cmdConvertService.txtToScript(scriptContent);
-							if (selectionManager.selectedNodeType === 'subscript') {
+							if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 								if (scriptContent.startsWith(self.currentScript.name()))
 									scriptContent = scriptContent.substring(scriptContent.indexOf(cmdConvertService.CMD_SEPARATOR) + 2);
 							}
@@ -1864,7 +1864,7 @@ define(['knockout', 'jquery', 'komapping',
 							}
 							//添加换行符
 							scriptContent = scriptContent.replace(new RegExp(cmdSeparator, 'g'), cmdSeparator + '\n');
-							if (selectionManager.selectedNodeType === 'subscript')
+							if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock')
 								scriptContent = scriptContent.substring(scriptContent.indexOf(cmdConvertService.CMD_SEPARATOR));
 							try {
 								var sequencediagramStr = self.UtpCmdsToSeqDiagramString(scriptContent);
@@ -1956,14 +1956,14 @@ define(['knockout', 'jquery', 'komapping',
 			};
 
 			this.initBlockScript = function (script) {
-				if ((script.blockyXml === null || script.blockyXml === '') && script.type != "subscript") {
+				if ((script.blockyXml === null || script.blockyXml === '') && script.type != "usrlogicblock" && script.type != "syslogicblock") {
 					var dom = null;
 					if (script.script == null) {
 						self.showScriptInStepsView();
 						return;
 					}
 					var scriptContent = self.initTextScript(script.name, script.script, script.parameter);
-					if (selectionManager.selectedNodeType === 'subscript')
+					if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock')
 						dom = Blockly.Xml.subScriptToDom(scriptContent, self.workspace);
 					else
 						dom = Blockly.Xml.scriptToDom(scriptContent, self.workspace);
@@ -1971,7 +1971,7 @@ define(['knockout', 'jquery', 'komapping',
 					script.blockyXml = xml;
 				}
 				if (script.blockyXml != null && script.blockyXml != '') {
-					if (selectionManager.selectedNodeType === 'subscript') {
+					if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 						var re = new RegExp(cmdConvertService.SUB_SCRIPT_NAME_REGEX);
 						script.blockyXml = script.blockyXml.replace(re, '<field name="SCRIPTNAME">' + self.currentScript.name() + '</field>');
 					}
@@ -1979,7 +1979,7 @@ define(['knockout', 'jquery', 'komapping',
 					var dom2 = Blockly.Xml.textToDom(script.blockyXml);
 					Blockly.Xml.domToWorkspace(dom2, self.workspace);
 				}
-				else if (selectionManager.selectedNodeType === 'subscript') {
+				else if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					var initScriptXml = cmdConvertService.STARTER_SUB_BLOCK_XML_TEXT.replace(/XXXX/, self.currentScript.name());
 					var xml = Blockly.Xml.textToDom(initScriptXml);
 					Blockly.Xml.domToWorkspace(xml, self.workspace);
@@ -1988,7 +1988,7 @@ define(['knockout', 'jquery', 'komapping',
 			};
 
 			this.initTextScript = function (scriptName, scriptContent, paraStr) {
-				if (selectionManager.selectedNodeType === 'subscript') {
+				if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					scriptContent = scriptContent.replace(new RegExp(cmdConvertService.SUBSCRIPT_BEGIN + cmdConvertService.PARA_SEPARATOR, 'g'), "");
 					scriptContent = scriptContent.replace(new RegExp(cmdConvertService.SUBSCRIPT_END, 'g'), "");
 					var scriptDef = scriptName;

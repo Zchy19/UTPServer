@@ -43,7 +43,9 @@ define(
 			this.selectedCrcAlgorithm = ko.observable(self.crcAlgorithm[0]);
 			this.isDataBlock = ko.observable(false);
 			this.setInfo = ko.observableArray([]); // 存放表格设置信息
-			this.selectedMessageDirection = ko.observable();// 存放消息方向
+			this.pattern = ko.observable('simpleAndAdvanced'); // 协议编辑模式
+			this.popOrAdd = true; // 判断是编辑协议还是新增协议
+			this.firstCreateTable = false;
 
 
 			this.onProjectSelected = function (obj, event) {
@@ -91,6 +93,7 @@ define(
 			};
 
 			this.submitProtocol = function () {
+				self.firstCreateTable = true;
 				self.addProtocol();
 			};
 
@@ -127,12 +130,13 @@ define(
 			};
 
 			this.enterAddItemMode = function () {
+				self.popOrAdd = false;
 				JSON.message = [];
 				//self.pageNumbers();//更新页面数量
 				self.currentPageIndex = 0;
 				self.allPagesData = [];
 				self.currentPageData = [];
-				if (self.systemConfig.getConfig('utpclient.proto_mgr.disable_easy_edit')) { // 许可禁用简单模式
+				if (self.pattern() == 'advanced') { // 许可只有高级模式
 					self.protocolPattern(false);
 				} else {
 					self.protocolPattern(true);
@@ -147,6 +151,10 @@ define(
 				self.currentPage(1);
 				self.protocolTypeName('');
 				self.setInfo([]); // 清除之前的设置信息
+				self.selectedMessageDirection('sendAndReceive')
+				self.selectedMessageIdExistence('no')
+				self.setMessageId('')
+				self.uniqueMessageID('false')
 				$('#protocolEditModal').modal('show');
 			};
 
@@ -268,10 +276,10 @@ define(
 					notificationService.showError('请输入协议名称！');
 					return;
 				}
-				// if (self.protocolTypeName() === undefined) {
-				// 	notificationService.showError('请选择协议类型！');
-				// 	return;
-				// }
+				if (self.protocolTypeName() === undefined) {
+					notificationService.showError('请选择协议类型！');
+					return;
+				}
 				if (self.validatorErrors.length > 0) {
 					notificationService.showError('请输入合法数据');
 					return;
@@ -323,6 +331,7 @@ define(
 				for (var i = 0; i < self.currentProtocolContent.messages.length; i++) {
 					var message = self.currentProtocolContent.messages[i];
 					var direction = self.currentProtocolContent.messageAttributeTable?.[i];
+					self.allPagesDirection.push(direction);
 					//遍历message.fields数组
 					for (var j = 0; j < message.fields.length; j++) {
 						var field = message.fields[j];
@@ -332,15 +341,36 @@ define(
 							break;
 						}
 					}
+					if (direction != null && direction != undefined) {
+						for (let k = 0; k < direction.attributes.length; k++) {
+							let directionName = direction.attributes[k];
+							if (!(directionName.name === 'receiveFlag' || directionName.name === 'sendFlag' || directionName.name === 'messageID')) {
+								flag = false;
+								break;
+							}
+						}
+					}
 					if (flag) {
 						var messageData = {
 							name: message.messageName,
 							fields: message.fields,
 						}
 						self.allPagesData.push(messageData);
-						self.allPagesDirection.push(direction);
+						// 根据属性名查找对应的值（注意大小写匹配）
+						// const receiveFlag = direction?.attributes?.find(attr => attr.name === 'receiveFlag')?.value ?? '1';
+						// const sendFlag = direction?.attributes?.find(attr => attr.name === 'sendFlag')?.value ?? '1';
+
+						// // 简化判断条件（建议显式转换为数字）
+						// if (+receiveFlag === 1 && +sendFlag === 1) {
+						// 	self.allPagesDirection.push('sendAndReceive');
+						// } else if (+receiveFlag === 0 && +sendFlag === 1) {
+						// 	self.allPagesDirection.push('send');
+						// } else if (+receiveFlag === 1 && +sendFlag === 0) {
+						// 	self.allPagesDirection.push('receive');
+						// }
+
 						self.isComplexProtocol(false);
-						if (self.systemConfig.getConfig('utpclient.proto_mgr.disable_easy_edit')) { // 许可禁用简单模式
+						if (self.pattern() == 'advanced') { // 许可只有高级模式
 							self.protocolPattern(false);
 						} else {
 							self.protocolPattern(true);
@@ -369,7 +399,6 @@ define(
 					if (parsedData.protocol) {
 						targetContent = parsedData.protocol; // 当存在protocol字段时使用嵌套内容
 					}
-
 					// 模式分支处理
 					if (self.viewProtocolMode === 'editProtocol') {
 						self.currentProtocolContent = targetContent;
@@ -523,7 +552,7 @@ define(
 			};
 
 			this.updateProtocol = function () {
-
+				self.firstCreateTable = true;
 				if (self.selectedProtocolName() === '') {
 					notificationService.showError('请输入协议名称！');
 					return;
@@ -1210,7 +1239,7 @@ define(
 				return _.concat(result, parentKey || []);
 			};
 			// 简易模式
-			this.protocolPattern = ko.observable(false);
+			this.protocolPattern = ko.observable(false); // 是否为简易编辑模式
 			this.initProtocolConfig = function () {
 
 				$('#protocolPatternConfig').bootstrapSwitch('state', self.protocolPattern());
@@ -1219,24 +1248,24 @@ define(
 				});
 
 				// 根据许可设置开关的禁用状态
-				if (!self.systemConfig.getConfig('utpclient.proto_mgr.disable_easy_edit')) {
-					//禁用简易模式时，打开开关
-					$('#protocolPatternConfig').bootstrapSwitch('disabled', false);
-				} else {
+				if (self.pattern() != 'simpleAndAdvanced') {
 					$('#protocolPatternConfig').bootstrapSwitch('disabled', true);
+				} else {
+					$('#protocolPatternConfig').bootstrapSwitch('disabled', false);
 				}
 
-				if (self.protocolPattern() && !self.systemConfig.getConfig('utpclient.proto_mgr.disable_easy_edit')) {
+				if (self.protocolPattern() && self.pattern() != 'advanced') {
 					// 简单协议且未禁用简易模式
 					$('#protocolPatternConfig').bootstrapSwitch('state', true);
 				} else {
 					$('#protocolPatternConfig').bootstrapSwitch('state', false);
 					if (self.isComplexProtocol()) { // 复杂协议
 						//关闭此model
-						if (self.systemConfig.getConfig('utpclient.proto_mgr.pattern')) {
-							notificationService.showError('当前协议为复杂协议,暂不支持,请联系客服升级平台!');
+						if (self.pattern() == 'simple') {
+							notificationService.showError('当前协议为复杂协议,不支持简单模式编辑,请联系客服升级平台!');
 							self.cancelProtocol();
-						} else {
+						}
+						else {
 							$('#protocolPatternConfig').bootstrapSwitch('disabled', true);
 						}
 					} else {
@@ -1244,7 +1273,7 @@ define(
 					}
 				}
 				// 检查条件，如果满足，则自动切换到简易模式
-				// if (self.systemConfig.getConfig('utpclient.proto_mgr.pattern')) {
+				// if (self.systemConfig.getConfig('utpclient.proto_mgr.complex_protocol_edit')) {
 				// 	if (self.protocolPattern()) {
 				// 		self.protocolPattern(true);
 				// 		$('#protocolPatternConfig').bootstrapSwitch('state', true);
@@ -1409,7 +1438,6 @@ define(
 						}
 
 					}
-
 					// 显示配置模态框
 					$('#proConfigModal').modal('show');
 				}
@@ -1417,7 +1445,7 @@ define(
 				var deleteButton = document.createElement('button');
 				deleteButton.className = 'btn btn-sm btn-danger';
 				deleteButton.textContent = '删除';
-				deleteButton.onclick = function () { self.removeField(row.rowIndex); self.setInfo().splice(row.rowIndex, 1); console.log(self.setInfo()) };
+				deleteButton.onclick = function () { self.removeField(row.rowIndex); self.setInfo().splice(row.rowIndex, 1); };
 
 				// 创建按钮容器
 				var buttonContainer = document.createElement('div');
@@ -1480,15 +1508,28 @@ define(
 								crcAlgorithm: self.crcAlgorithm[0]
 							}
 						}
+					} else if (selectFieldType.value === '变长数据') {
+						configButton.style.display = 'none';
+						defaultInput.style.display = 'inline-block';
+						defaultInput.placeholder = '默认值';
+						self.algorithmChooose(false);
+						selectFieldSize.style.display = 'none';
+						self.isDataBlock(false);
 					} else {
 						configButton.style.display = 'none';
 						defaultInput.style.display = 'inline-block';
 						defaultInput.placeholder = '默认值';
-						self.algorithmChooose(fales);
+						self.algorithmChooose(false);
 						selectFieldSize.style.display = 'inline-block';
 						self.isDataBlock(false);
 					}
 				};
+
+				if (self.popOrAdd && !self.firstCreateTable) {
+					self.savePageData();
+					self.populateTable(self.allPagesData[self.currentPageIndex], self.allPagesDirection[self.currentPageIndex]);
+				}
+				self.firstCreateTable = false;
 			};
 
 			this.saveConfig = function () {
@@ -1563,13 +1604,14 @@ define(
 			};
 
 			this.printPageNumber = function (printPage) {
-				if (!self.savePageData()) {
+				if (!self.savePageData()) { // 保存跳转前的页面数据
 					return;
 				}
 				self.currentPage(printPage);
 				self.currentPageIndex = printPage - 1;
 				self.populateTable(self.allPagesData[self.currentPageIndex], self.allPagesDirection[self.currentPageIndex]);
-				self.savePageData();
+				self.selectedMessageDirection(self.allPagesDirection[self.currentPageIndex]);
+				// self.savePageData();
 			};
 			this.removeNewPage = function removeNewPage() {
 				if (self.allPagesData.length == 1) {
@@ -1593,6 +1635,7 @@ define(
 				if (!self.savePageData()) {
 					return;
 				}
+				self.firstCreateTable = true;
 				self.createTable(); // 创建新的空白页
 				self.currentPageIndex = self.allPagesData.length; // 更新当前页面索引为新创建的页面索引
 				self.allPagesData.push({ name: '', fields: [] }); // 添加一个空的页面数据
@@ -1602,6 +1645,7 @@ define(
 			};
 
 			this.savePageData = function savePageData() {
+				self.saveMessageConfig();
 				var simpleMessageName = document.getElementById('simpleMessageName').value.trim();
 				var messageDirection = self.selectedMessageDirection();
 				var fields = [];
@@ -1620,21 +1664,21 @@ define(
 					var defaultInput = inputs[1];
 					if (nameInput && typeSelect && sizeSelect) {
 						var fieldName = nameInput.value.trim();
-						if (fieldName === '') {
+						if (fieldName === '' && self.firstCreateTable) {
 							notificationService.showError('字段名称不能为空！');
 							return false;
 						}
-						if (fieldNames.has(fieldName)) {
+						if (fieldNames.has(fieldName) && self.firstCreateTable) {
 							notificationService.showError('字段名称不能重复，请修改编号为' + rowIndex + '的字段名称！');
 							return false;
 						}
 						//判断defalue是否为数字
-						if (defaultInput.value.trim() !== '' && isNaN(defaultInput.value.trim())) {
+						if (defaultInput.value.trim() !== '' && isNaN(defaultInput.value.trim()) && self.firstCreateTable) {
 							notificationService.showError('默认值必须为数字，请修改编号为' + rowIndex + '的默认值！');
 							return false;
 						}
 
-						if (selects[0].value.trim() === '数据块') {
+						if (selects[0].value.trim() === '数据块' && self.firstCreateTable) {
 							let dalen = parseInt(self.setInfo()[rowIndex].dataLen.bitLength, 10);
 							dalen = dalen * 8;
 							let dataLen = self.setInfo()[rowIndex].dataLen.default;
@@ -1749,36 +1793,43 @@ define(
 					fields: fields
 				};
 
-				let sendFlag = 0;
-				let receiveFlag = 0;
-				if (messageDirection === 'send') {
-					sendFlag = 1;
-					receiveFlag = 0;
-				} else if (messageDirection === 'receive') {
-					sendFlag = 0;
-					receiveFlag = 1;
-				} else if (messageDirection === 'sendAndReceive') {
-					sendFlag = 1;
-					receiveFlag = 1;
-				} else {
-					sendFlag = 0;
-					receiveFlag = 0;
-				}
-				self.currentPageDirection = {
-					messageName: simpleMessageName,
-					attributes: [
-						{
-							name: "receiveFlag",
-							value: receiveFlag
-						},
-						{
-							name: "sendFlag",
-							value: sendFlag
-						}
-					]
-				}
+				// let atteibutes = []
+				// if (self.selectedMessageDirection() === 'send') {
+				// 	atteibutes = [
+				// 		{ name: "receiveFlag", value: "0" },
+				// 		{ name: "sendFlag", value: "1" }
+				// 	]
+				// } else if (self.selectedMessageDirection() === 'receive') {
+				// 	atteibutes = [
+				// 		{ name: "receiveFlag", value: "1" },
+				// 		{ name: "sendFlag", value: "0" }
+				// 	]
+				// } else {
+				// 	atteibutes = [
+				// 		{ name: "receiveFlag", value: "1" },
+				// 		{ name: "sendFlag", value: "1" }
+				// 	]
+				// }
+
+				// if (self.selectedMessageIdExistence() == 'yes') {
+				// 	let a = {
+				// 		name: 'messageID',
+				// 		value: self.setMessageId(),
+				// 		unique: self.uniqueMessageID()
+				// 	}
+				// 	atteibutes.unshift(a);
+				// }
+				// self.currentPageDirection = {
+				// 	messageName: simpleMessageName,
+				// 	attributes: atteibutes
+				// }
 				self.allPagesData[self.currentPageIndex] = self.currentPageData;
-				// self.allPagesDirection[self.currentPageIndex] = self.currentPageDirection;
+				self.allPagesDirection[self.currentPageIndex].messageName = self.currentPageData.name;
+
+				self.selectedMessageDirection('sendAndReceive')
+				self.selectedMessageIdExistence('no')
+				self.setMessageId('')
+				self.uniqueMessageID('false')
 				return true;
 			};
 
@@ -1788,20 +1839,37 @@ define(
 			// }
 			this.fieldTypes = protocolService.fieldTypes;
 			this.populateTable = function populateTable(pageData, direction) {
+				self.popOrAdd = true;
 				document.getElementById('simpleMessageName').value = pageData.name;
-				// 安全获取属性值，不存在时默认为'1'
-				const attr0 = direction?.attributes?.[0]?.value ?? '1';
-				const attr1 = direction?.attributes?.[1]?.value ?? '1';
 
-				// 简化判断条件
-				if (attr0 == 1 && attr1 == 1) { // 使用松散相等匹配数字和字符串
+				if (direction) { // 使用松散相等匹配数字和字符串
+					// 根据属性名查找对应的值（注意大小写匹配）
+					const receiveFlag = direction.attributes?.find(attr => attr.name === 'receiveFlag')?.value ?? '1';
+					const sendFlag = direction.attributes?.find(attr => attr.name === 'sendFlag')?.value ?? '1';
+
+					// 简化判断条件（建议显式转换为数字）
+					if (+receiveFlag === 1 && +sendFlag === 1) {
+						self.selectedMessageDirection('sendAndReceive');
+					} else if (+receiveFlag === 0 && +sendFlag === 1) {
+						self.selectedMessageDirection('send');
+					} else if (+receiveFlag === 1 && +sendFlag === 0) {
+						self.selectedMessageDirection('receive');
+					}
+
+					if (direction.attributes.find(attr => attr.name === 'messageID')) {
+						let a = direction.attributes.find(attr => attr.name === 'messageID')
+						self.selectedMessageIdExistence('yes')
+						self.setMessageId(a.value)
+						self.uniqueMessageID(a.unique)
+					} else {
+						self.selectedMessageIdExistence('no')
+						self.setMessageId('')
+						self.uniqueMessageID('false')
+					}
+				} else {
 					self.selectedMessageDirection('sendAndReceive');
-				} else if (attr0 == 1 && attr1 == 0) {
-					self.selectedMessageDirection('send');
-				} else if (attr0 == 0 && attr1 == 1) {
-					self.selectedMessageDirection('receive');
+					self.selectedMessageIdExistence('no')
 				}
-
 				var fieldsTable = document.getElementById('fieldsTable');
 				fieldsTable.innerHTML = ''; // 清空现有字段行
 
@@ -1989,11 +2057,18 @@ define(
 									crcAlgorithm: self.crcAlgorithm[0]
 								}
 							}
+						} else if (selectFieldType.value === '变长数据') {
+							configButton.style.display = 'none';
+							defaultInput.style.display = 'inline-block';
+							defaultInput.placeholder = '默认值';
+							self.algorithmChooose(false);
+							selectFieldSize.style.display = 'none';
+							self.isDataBlock(false);
 						} else {
 							configButton.style.display = 'none';
 							defaultInput.style.display = 'inline-block';
 							defaultInput.placeholder = '请输入默认值';
-							self.algorithmChooose(fales);
+							self.algorithmChooose(false);
 							selectFieldSize.style.display = 'inline-block';
 							self.isDataBlock(false);
 						}
@@ -2042,7 +2117,57 @@ define(
 					deleteButton.textContent = '删除';
 					deleteButton.type = 'button'; // 明确设置按钮类型为 button
 					deleteButton.onclick = function (event) {
-						event.preventDefault(); // 阻止任何默认行为
+						event.preventDefault();
+
+						// 同步当前表格的修改到pageData.fields
+						var rows = document.querySelectorAll('#fieldsTable tr');
+						rows.forEach(function (row, rowIndex) {
+							var cells = row.cells;
+							var fieldInput = cells[1].querySelector('input');
+							var typeSelect = cells[2].querySelector('select');
+							var sizeSelect = cells[3].querySelector('select');
+							var defaultInput = cells[4].querySelector('input');
+
+							var currentField = pageData.fields[rowIndex];
+							if (currentField) {
+								currentField.name = fieldInput.value.trim();
+
+								// 转换类型名称（例如将中文转换为英文标识）
+								let typeValue = typeSelect.value;
+								let typeName = '';
+								switch (typeValue) {
+									case '数据块': typeName = 'datablock'; break;
+									case '长度字段': typeName = 'dataLength'; break;
+									case 'CRC校验': typeName = 'crc'; break;
+									case 'Checksum校验': typeName = 'checksum'; break;
+									case 'LRC校验': typeName = 'lrc'; break;
+									case '无符号整数': typeName = 'uinteger'; break;
+									case '有符号整数': typeName = 'integer'; break;
+									case '变长数据': typeName = 'vardata'; break;
+									default: typeName = typeValue.toLowerCase();
+								}
+								currentField.type = typeName;
+
+								// 更新字段大小/长度
+								if (typeName === 'datablock') {
+									// 数据块的长度在配置中处理，此处无需更新
+								} else if (typeName === 'vardata') {
+									// 变长数据无固定大小
+									delete currentField.size;
+								} else {
+									currentField.size = parseInt(sizeSelect.value) || 0;
+								}
+
+								// 更新默认值
+								if (['crc', 'checksum', 'lrc', 'dataLength'].includes(typeName)) {
+									currentField.value = defaultInput.value; // 校验字段可能用value
+								} else {
+									currentField.default = defaultInput.value;
+								}
+							}
+						});
+
+						// 执行删除操作
 						self.removeField(index);
 						pageData.fields.splice(index, 1);
 						self.setInfo().splice(index, 1);
@@ -2280,19 +2405,133 @@ define(
 						}
 					}
 					simpleProtocol.messages.push(message);
-					let direction = {
-						messageName: currentData.name,
-						attributes: self.allPagesDirection?.[i]?.attributes ?? [ // 安全访问 + 默认值
-							{ name: "receiveFlag", value: "1" },  // 接收标志默认开启
-							{ name: "sendFlag", value: "1" }      // 发送标志默认开启
-						]
-					};
-					simpleProtocol.messageAttributeTable.push(direction);
+
+					let directionValue = self.allPagesDirection?.[i]; // 获取数组中第i个元素的值
+					// let attributes = [];
+
+					// // 根据directionValue的值设置不同的标志位
+					// if (directionValue === 'receive') {
+					// 	attributes = [
+					// 		{ name: "receiveFlag", value: "1" },
+					// 		{ name: "sendFlag", value: "0" }
+					// 	];
+					// } else if (directionValue === 'send') {
+					// 	attributes = [
+					// 		{ name: "receiveFlag", value: "0" },
+					// 		{ name: "sendFlag", value: "1" }
+					// 	];
+					// } else {
+					// 	// 如果是sendAndReceive或者没有值，则两个标志位都为1
+					// 	attributes = [
+					// 		{ name: "receiveFlag", value: "1" },
+					// 		{ name: "sendFlag", value: "1" }
+					// 	];
+					// }
+
+					// let direction = {
+					// 	messageName: currentData.name,
+					// 	attributes: directionValue
+					// };
+					if (directionValue != null && directionValue != undefined) {
+						simpleProtocol.messageAttributeTable.push(directionValue);
+					}
 				}
 				return simpleProtocol;
 			}
 
+			this.selectedMessageDirection = ko.observable();
+			this.selectedMessageIdExistence = ko.observable('no');
+			this.setMessageId = ko.observable(); // 消息ID
+			this.uniqueMessageID = ko.observable('false');// 消息是否唯一
+			this.isDataBlock = ko.observable(false);
+
+			this.messageAttributeSet = function () {
+				let messageName = document.getElementById('simpleMessageName').value.trim();
+				if(messageName == "" || messageName == null || messageName == undefined){
+					notificationService.showError("请先定义消息名称,再设置消息属性");
+				}
+				$('#messageAttributeModal').modal('show');
+			};
+
+			this.closeMessageConfig = function () {
+				let direction = self.allPagesDirection[self.currentPageIndex]
+				if (direction) { // 使用松散相等匹配数字和字符串
+					// 根据属性名查找对应的值（注意大小写匹配）
+					const receiveFlag = direction?.attributes?.find(attr => attr.name === 'receiveFlag')?.value ?? '1';
+					const sendFlag = direction?.attributes?.find(attr => attr.name === 'sendFlag')?.value ?? '1';
+
+					// 简化判断条件（建议显式转换为数字）
+					if (+receiveFlag === 1 && +sendFlag === 1) {
+						self.selectedMessageDirection('sendAndReceive');
+					} else if (+receiveFlag === 0 && +sendFlag === 1) {
+						self.selectedMessageDirection('send');
+					} else if (+receiveFlag === 1 && +sendFlag === 0) {
+						self.selectedMessageDirection('receive');
+					}
+
+					if (direction.attributes.find(attr => attr.name === 'messageID')) {
+						let a = direction.attributes.find(attr => attr.name === 'messageID')
+						self.selectedMessageIdExistence('yes')
+						self.setMessageId(a.value)
+						self.uniqueMessageID(a.unique)
+					} else {
+						self.selectedMessageIdExistence('no')
+						self.setMessageId('')
+						self.uniqueMessageID('false')
+					}
+				} else {
+					self.selectedMessageDirection('sendAndReceive')
+					self.selectedMessageIdExistence('no')
+					self.setMessageId('')
+					self.uniqueMessageID('false')
+				}
+				$('#messageAttributeModal').modal('hide');
+			};
+
+			this.saveMessageConfig = function () {
+				let atteibutes = []
+				if (self.selectedMessageDirection() === 'send') {
+					atteibutes = [
+						{ name: "receiveFlag", value: "0" },
+						{ name: "sendFlag", value: "1" }
+					]
+				} else if (self.selectedMessageDirection() === 'receive') {
+					atteibutes = [
+						{ name: "receiveFlag", value: "1" },
+						{ name: "sendFlag", value: "0" }
+					]
+				} else {
+					atteibutes = [
+						{ name: "receiveFlag", value: "1" },
+						{ name: "sendFlag", value: "1" }
+					]
+				}
+
+				if (self.selectedMessageIdExistence() == 'yes') {
+					let a = {
+						name: 'messageID',
+						value: self.setMessageId(),
+						unique: self.uniqueMessageID()
+					}
+					atteibutes.unshift(a);
+				}
+				self.currentPageDirection = {
+					messageName: document.getElementById('simpleMessageName').value.trim(),
+					attributes: atteibutes
+				}
+				self.allPagesDirection[self.currentPageIndex] = self.currentPageDirection;
+				$('#messageAttributeModal').modal('hide');
+			};
+
 			this.attached = function (view, parent) {
+				// 根据许可获取协议编辑模式;若未设置则默认两种模式都开启
+				var patternConfig = self.systemConfig.getValueByFeatureName('utpclient.proto_mgr.pattern');
+				if (patternConfig && patternConfig.value && patternConfig.value.trim() !== "") {
+					self.pattern(patternConfig.value);
+				} else {
+					self.pattern("simpleAndAdvanced");
+				}
+
 				$('#protocolImportModal').on('shown.bs.modal', function () {
 					var file = document.getElementById("icdInputFile");
 					file.value = "";
@@ -2310,6 +2549,7 @@ define(
 
 				$('#protocolEditModal').on('shown.bs.modal', function () {
 					self.initProtocolConfig(self.protocolPattern());
+					self.firstCreateTable = true;
 					self.createTable();
 					self.loadExistingData();
 					$('#protocolEditor').html('');

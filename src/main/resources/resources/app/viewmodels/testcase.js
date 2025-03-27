@@ -32,8 +32,7 @@ define(
 			this.gotoExecution = function () {
 				self.executionManager.newExecutionFlag(true);
 				self.selectionManager.verificationSource = 'testcase';
-				self.viewManager
-					.testcaseActivePage('app/viewmodels/verification');
+				self.viewManager.testcaseActivePage('app/viewmodels/verification');
 			};
 
 			this.refreshFileManager = function (data) {

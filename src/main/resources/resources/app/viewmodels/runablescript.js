@@ -30,7 +30,7 @@ define(
 
 			this.gotoExecution = function () {
 				self.executionManager.newExecutionFlag(true);
-				self.selectionManager.verificationSource = 'testcase';
+				self.selectionManager.verificationSource = 'runablescript';
 				self.viewManager.runablescriptActivePage('app/viewmodels/verification');
 			};
 

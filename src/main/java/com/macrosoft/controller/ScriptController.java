@@ -386,7 +386,8 @@ public class ScriptController {
 		// 方法实现保持不变
 		try {
 			TrailUtility.Trail(logger, TrailUtility.Trail_Update, "editScriptData");
-			script.setType(ScriptType.TestCaseType);
+			String type = script.getType();
+			script.setType(type);
 			this.scriptService.updateScript(script.getProjectId(), script);
 			return new ApiResponse<>(ApiResponse.Success, script);
 		} catch (Exception ex) {

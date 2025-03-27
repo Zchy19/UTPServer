@@ -29,7 +29,7 @@ define(
 
             this.gotoExecution = function () {
                 self.executionManager.newExecutionFlag(true);
-                self.selectionManager.verificationSource = 'testcase';
+                self.selectionManager.verificationSource = 'logicblock';
                 self.viewManager.commonscriptActivePage('app/viewmodels/verification');
             };
 
