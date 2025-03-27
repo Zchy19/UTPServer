@@ -1,15 +1,15 @@
 package com.macrosoft.service;
 
-import java.util.List;
-
 import com.macrosoft.controller.dto.ProjectFullData;
 import com.macrosoft.controller.dto.ProjectScriptGroupsData;
 import com.macrosoft.model.Project;
 import com.macrosoft.model.ProjectPackage;
 import com.macrosoft.model.TestSet;
 
+import java.util.List;
+
 public interface ProjectService {
-	public void addProject(Project p);
+	public Project addProject(Project p);
 	public void updateProject(Project p);
 	public List<Project> listProjects(String orgId);
 	public Project getProjectById(long id);
@@ -25,7 +25,7 @@ public interface ProjectService {
 	public Project copyProjectCrossOrg(long sourceProjectId, long sourceOrgId, long targetOrgId);
 	
 	public ProjectPackage CollectProjectPackage(long sourceProjectId, long sourceOrgId);
-	public void ImportProjectObject(ProjectPackage projectPackage, long targetOrgId);
+	public Project ImportProjectObject(ProjectPackage projectPackage, long targetOrgId);
 	public void ImportProjectPackage(ProjectPackage projectPackage, long targetOrgId);
 	
 	public ProjectPackage CollectProjectPackageByScriptIds(long sourceProjectId, List<Long> scriptGroupIds, List<Long> scriptIds);

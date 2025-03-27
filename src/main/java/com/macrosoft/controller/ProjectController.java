@@ -489,6 +489,7 @@ public class ProjectController {
             } else {
                 // collect project package from source organization.
                 long sourceTenantId = MasterServiceHolder.getMasterService().resolveTenantId(sourceOrgId);
+                //设置上下文租户ID
                 TenantContext.setTenantId(Long.toString(sourceTenantId));
                 ProjectPackage projectPackage = this.mProjectService.CollectProjectPackage(sourceProjectId, sourceOrgId)
                         .Clone();
@@ -496,7 +497,8 @@ public class ProjectController {
                 // create project in target organization.
                 long targetTenantId = MasterServiceHolder.getMasterService().resolveTenantId(targetOrgId);
                 TenantContext.setTenantId(Long.toString(targetTenantId));
-                this.mProjectService.ImportProjectObject(projectPackage, targetOrgId);
+                Project projectAdded = this.mProjectService.ImportProjectObject(projectPackage, targetOrgId);
+                projectPackage.project.setId(projectAdded.getId());
 
                 // import project package into target organization.
                 this.mProjectService.ImportProjectPackage(projectPackage, targetOrgId);
@@ -507,6 +509,7 @@ public class ProjectController {
             }
         } catch (Exception ex) {
             logger.error("copyProject", ex);
+            ex.printStackTrace();
             return new ApiResponse<ProjectInfo>(ApiResponse.UnHandleException, null);
 
         } finally {

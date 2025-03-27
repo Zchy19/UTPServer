@@ -32,7 +32,7 @@ public class ProjectDAOImpl implements ProjectDAO {
 
 
 	@Override
-	public void addProject(Project project) {
+	public Project addProject(Project project) {
         try {
         	lock.lock();
     		Session session = this.sessionFactory.getCurrentSession();
@@ -43,7 +43,8 @@ public class ProjectDAOImpl implements ProjectDAO {
         }finally{
             lock.unlock();
         }
-	}
+        return project;
+    }
 
 	@Override
 	public void addProjectWithDefalutScriptGroup(Project project) {

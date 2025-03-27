@@ -1,11 +1,11 @@
 package com.macrosoft.dao;
 
-import java.util.List;
-
 import com.macrosoft.model.Project;
 
+import java.util.List;
+
 public interface ProjectDAO {
-	public void addProject(Project project);
+	public Project addProject(Project project);
 
 	public void addProjectWithDefalutScriptGroup(Project project);
 
