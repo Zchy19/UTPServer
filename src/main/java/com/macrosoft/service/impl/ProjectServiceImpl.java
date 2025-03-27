@@ -113,11 +113,12 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	@Transactional
-	public void addProject(Project p) {
+	public Project addProject(Project p) {
 		UUID uuid = UUID.randomUUID();
 		int newProjectId = Math.abs(uuid.hashCode());
 		p.setId(newProjectId);
 		this.ProjectDAO.addProjectWithDefalutScriptGroup(p);
+		return p;
 	}
 
 	@Override
@@ -508,11 +509,14 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	@Transactional
-	public void ImportProjectObject(ProjectPackage projectPackage, long targetOrgId)
+	public Project ImportProjectObject(ProjectPackage projectPackage, long targetOrgId)
 	{
 		projectPackage.project.setOrganizationId(targetOrgId);
 		projectPackage.project.setTemplateType(Project.TemplateType_Default);
-		this.ProjectDAO.addProject(projectPackage.project);
+		UUID uuid = UUID.randomUUID();
+		int newProjectId = Math.abs(uuid.hashCode());
+		projectPackage.project.setId(newProjectId);
+		return this.ProjectDAO.addProject(projectPackage.project);
 	}
 
 	@Override
@@ -762,12 +766,12 @@ public class ProjectServiceImpl implements ProjectService {
 		newProject.setOrganizationId(orgId);
 		newProject.setName(sourceProject.getName() + "_Copy");
 		newProject.setTemplateType(Project.TemplateType_Default);
-		this.ProjectDAO.addProject(newProject);
+		Project project = this.addProject(newProject);
 
 		// copy scriptgroup, script hierarchy, and script content.
-		this.ProjectDAO.copyProjectData(sourceProjectId, newProject.getId());
+		this.ProjectDAO.copyProjectData(sourceProjectId, project.getId());
 
-		return newProject;	
+		return project;
 	}
 	
 	private List<ScriptGroupInfo> buildScriptGroupHierarchy(long projectId, boolean includeScript, boolean includeSubScript, boolean excludeSubScriptHasParameter) {
