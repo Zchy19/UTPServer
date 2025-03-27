@@ -44,8 +44,7 @@ define(
 			};
 
 			this.getScriptGroupByProjectSuccessFunction = function (data) {
-				self.projectManager.subScriptMappingClear();
-				self.projectManager.testcaseMappingClear();
+				self.projectManager.runablescriptMappingClear();
 				if (data != null && data.status === 1
 					&& data.result != null) {
 					var scriptGroups = self.projectManager

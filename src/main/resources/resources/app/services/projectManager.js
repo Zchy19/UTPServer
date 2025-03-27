@@ -139,6 +139,12 @@
 	        return testcase;
 		}
 
+		this.getRunableScript= function(id){
+			var scriptId = parseInt(id);
+			var RunableScript = self.runablescripMapping.get(scriptId);	       
+	        return RunableScript;
+		}
+
 		this.recorverAgentName = function(agentName){
 			var regex = /\[{2}(.+)(\]{2})$/gm;
 			var matchList = regex.exec(agentName);
@@ -263,6 +269,10 @@
 		};
 		this.testcaseMappingClear = function(){
 			self.testcaseMapping = new Map();
+		};
+
+		this.runablescriptMappingClear = function(){
+			self.runablescripMapping = new Map();
 		};
 		
 		this.subScriptMappingClear = function(){
@@ -497,7 +507,12 @@
 						dataType: dataType
 				};				
 				folder.data.push(file);
-				self.testcaseMapping.set(file.id, file);
+				if(dataType == 'testcase'){
+					self.testcaseMapping.set(file.id, file);
+				}
+				if(dataType == 'runablescript'){
+					self.runablescripMapping.set(file.id, file);
+				}
 			}
 			
 			for(i = 0; i < parent.subscripts.length; i++){
@@ -628,6 +643,7 @@
 			return scriptGroups;
 		};
 		this.testcaseMapping = new Map();
+		this.runablescripMapping = new Map();
 
 		this.generateScriptGroupsFromFlatInfo = function(data){
 			var scriptGroupMapping = new Map();
@@ -710,13 +726,16 @@
 						dataType: dataType
 				};
 				
-				if(script.type === "syslogicblock" || script.type === "usrlogicblock"){
-						file.parameter = script.parameter;
-						self.subScriptMapping.set(file.id, file);
-					}
-					if(script.type === "testcase" || script.type === "runablescript"){
-						self.testcaseMapping.set(file.id, file);
-					}
+				if(script.type === "usrlogicblock" || script.type === "syslogicblock"){
+					file.parameter = script.parameter;
+					self.subScriptMapping.set(file.id, file);
+				}
+				if(script.type === "testcase"){
+					self.testcaseMapping.set(file.id, file);
+				}
+				if(script.type === "runablescript"){
+					self.runablescripMapping.set(file.id, file);
+				}
 				parent.data.push(file);
 			}			
 			return scriptGroups;

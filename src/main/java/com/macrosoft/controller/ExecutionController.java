@@ -182,7 +182,7 @@ public class ExecutionController {
 			//判断调用的脚本是否存在循环调用
 			//循环遍历playLoad.getScriptIds()中的所有脚本，判断是否存在循环调用
 			for(int i=0;i<payLoad.getScriptIds().length;i++){
-				ScriptCheckResult scriptCheckResult = mScriptService.isAllSubScriptExist(payLoad.getProjectId(), payLoad.getScriptIds()[i]);
+				ScriptCheckResult scriptCheckResult = mScriptService.isAllSubScriptExist(0, payLoad.getScriptIds()[i]);
 				if(scriptCheckResult.hasIssue()){
 					long scriptId = scriptCheckResult.getScriptId();
 					if (scriptId > 0){

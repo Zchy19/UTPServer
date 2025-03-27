@@ -6,5 +6,5 @@ public class ScriptType{
 	public final static String SubScriptType = "subscript";
 	public final static String SysLogicBlock = "syslogicblock";
 	public final static String UsrLogicBlock = "usrlogicblock";
-	public final static String RunnableScript = "runnablescript";
+	public final static String RunnableScript = "runablescript";
 }
