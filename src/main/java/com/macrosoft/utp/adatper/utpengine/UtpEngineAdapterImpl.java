@@ -1,12 +1,5 @@
 package com.macrosoft.utp.adatper.utpengine;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import com.macrosoft.caching.CachedDataManager;
 import com.macrosoft.controller.dto.SelectedAntbotMapping;
 import com.macrosoft.logging.ILogger;
 import com.macrosoft.logging.LoggerFactory;
@@ -14,23 +7,15 @@ import com.macrosoft.master.TenantContext;
 import com.macrosoft.model.*;
 import com.macrosoft.service.*;
 import com.macrosoft.utilities.ManualResetEvent;
-import com.macrosoft.utp.adatper.utpengine.dto.AgentInfo;
-import com.macrosoft.utp.adatper.utpengine.dto.ExecutionContext;
-import com.macrosoft.utp.adatper.utpengine.dto.NotifyHandlerInfo;
-import com.macrosoft.utp.adatper.utpengine.dto.ScriptInfo;
-import com.macrosoft.utp.adatper.utpengine.dto.TestsetInfo;
+import com.macrosoft.utp.adatper.utpengine.dto.*;
 import com.macrosoft.utp.adatper.utpengine.exception.*;
-import com.macrosoftsys.UtpCoreAccessLib.EngineConfiguration;
-import com.macrosoftsys.UtpCoreAccessLib.ExecProgTypeEnum;
-import com.macrosoftsys.UtpCoreAccessLib.ICommuExceptionListener;
-import com.macrosoftsys.UtpCoreAccessLib.IExecProgListener;
-import com.macrosoftsys.UtpCoreAccessLib.IExecStatusListener;
-import com.macrosoftsys.UtpCoreAccessLib.IMonitorDataListener;
-import com.macrosoftsys.UtpCoreAccessLib.ScriptCmd;
-import com.macrosoftsys.UtpCoreAccessLib.ScriptContent;
-import com.macrosoftsys.UtpCoreAccessLib.SelectedAgent;
-import com.macrosoftsys.UtpCoreAccessLib.SelectedAgentVector;
-import com.macrosoftsys.UtpCoreAccessLib.UtpEngine;
+import com.macrosoftsys.UtpCoreAccessLib.*;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class UtpEngineAdapterImpl implements IUtpEngineAdapter,Runnable
@@ -421,7 +406,7 @@ public class UtpEngineAdapterImpl implements IUtpEngineAdapter,Runnable
 			
 	  }
 
-	  //已不使用
+	  @Deprecated
 	  public boolean configEngineByTestsetId(long projectId, long testsetId, long recoverSubscriptReferenceId) throws UtpCoreNetworkException, ConfigEngineException, InterruptedException  {
 		  
 		  this.executionModel.setProjectId(projectId);
@@ -513,7 +498,7 @@ public class UtpEngineAdapterImpl implements IUtpEngineAdapter,Runnable
 				{
 					logger.info(String.format("%s recoverSubscript recoverSubscriptReferenceId: %s, subscriptId: %s", this.executionId, recoverSubscript.getId(), recoverSubscript.getSubscriptId()));
 					
-					ConfigureScript(config, projectId, recoverSubscript.getSubscriptId(), true);
+					ConfigureScript(config, 0L, recoverSubscript.getSubscriptId(), true);
 					config.addEngineConfigItem("recoverScript", Long.toString(recoverSubscript.getSubscriptId()));
 					logger.info(String.format("%s config recoverSubscript completed", this.executionId));
 				}
@@ -547,6 +532,7 @@ public class UtpEngineAdapterImpl implements IUtpEngineAdapter,Runnable
 			logger.info(String.format("%s config engine success. SessionId: %s", executionId, utpEngine.getEngineSessionId()));
 			return true;
 	  }
+
 	public boolean configEngineByScriptIds(long projectId, long[] scriptIds, long recoverSubscriptReferenceId) throws UtpCoreNetworkException, ConfigEngineException, InterruptedException  {
 
 		this.executionModel.setProjectId(projectId);
@@ -657,7 +643,7 @@ public class UtpEngineAdapterImpl implements IUtpEngineAdapter,Runnable
 			{
 				logger.info(String.format("%s recoverSubscript recoverSubscriptReferenceId: %s, subscriptId: %s", this.executionId, recoverSubscript.getId(), recoverSubscript.getSubscriptId()));
 
-				ConfigureScript(config, projectId, recoverSubscript.getSubscriptId(), true);
+				ConfigureScript(config, 0L, recoverSubscript.getSubscriptId(), true);
 				config.addEngineConfigItem("recoverScript", Long.toString(recoverSubscript.getSubscriptId()));
 				logger.info(String.format("%s config recoverSubscript completed", this.executionId));
 			}
@@ -746,7 +732,8 @@ public class UtpEngineAdapterImpl implements IUtpEngineAdapter,Runnable
 				  if (!configuredScriptIds.contains(referencedSubScriptId))
 				  {
 					  logger.info(String.format("%s childReference id: %s", this.executionId, childReference.getId()));
-					  ConfigureScript(config, projectId, childReference.getSubscriptId(), true);
+					  //0为公共逻辑项目的项目id
+					  ConfigureScript(config, 0L, childReference.getSubscriptId(), true);
 				  }
 			  }
 	  }
