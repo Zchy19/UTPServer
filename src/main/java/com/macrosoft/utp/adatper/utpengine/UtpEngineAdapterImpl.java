@@ -917,9 +917,9 @@ public class UtpEngineAdapterImpl implements IUtpEngineAdapter,Runnable
 			//logger.info("script content is : " + scriptContent);
 			//logger.info("script separator is : " + ScriptContentParser.ScriptLineSeparator);
 			logger.info("splicted commands count is : " + commands.length);
-			
-			
-			boolean isTestcase = ScriptType.TestCaseType.equals(script.getType());
+
+
+			boolean isTestcase = ScriptType.TestCaseType.equals(script.getType()) || ScriptType.RunnableScript.equals(script.getType());
 			
 			return new ScriptInfo(Long.toString(scriptId), commands, isTestcase);
 		}

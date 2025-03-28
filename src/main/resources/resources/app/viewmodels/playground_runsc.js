@@ -326,7 +326,7 @@ define(['knockout', 'jquery', 'komapping',
 			}
 
 			this.getProjectSubScript = function () {
-				self.utpService.getFlatSubScriptByProject(selectionManager.selectedProject().id, self.getSubScriptSuccessFunction, self.getSubScriptErrorFunction);
+				self.utpService.getFlatSubScriptByProject(0, self.getSubScriptSuccessFunction, self.getSubScriptErrorFunction);
 			}
 
 			this.initSubScriptTree = function (data) {
