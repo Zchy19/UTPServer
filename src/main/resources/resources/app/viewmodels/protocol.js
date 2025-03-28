@@ -123,6 +123,10 @@ define(
 				$('#protocolImportModal').modal('hide');
 			};
 
+			this.submitImportProtocol = function () {
+				self.importProtocolConfirm();
+				$('#protocolImportModal').modal('hide');
+			};
 			this.enterImportProtocolMode = function () {
 				self.selectedFile = null;
 				self.protocolTypeName('');

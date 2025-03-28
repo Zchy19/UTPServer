@@ -92,32 +92,42 @@ define(['knockout', 'jquery', 'services/ursService', 'services/loginManager'], f
                 return false;
             }
         };
-        //获取权限等级
-        this.getAuthByFeatureName = function (featureName) {
+        //获取有value的feature
+        this.getValueByFeatureName = function (featureName) {
             var configValues = self.getConfigValuesByFeatureName(featureName);
             if (configValues != null) {
                 // 将configValues的值转换为json对象
                 var configValuesObj = JSON.parse(configValues);
-                var auth = 0;
+                var value = 0;
                 var hideDisabledCmd = false;
-        
-                if (configValuesObj.value != null && configValuesObj.value != "") {
-                    auth = configValuesObj.value;
+
+                if (configValuesObj.value != null && configValuesObj.value !== "") {
+                    value = configValuesObj.value;
                 }
-        
+
                 if (configValuesObj.hide_disabled_cmd != null && configValuesObj.hide_disabled_cmd === true) {
                     hideDisabledCmd = true;
                 }
-        
                 return {
-                    auth: auth,
+                    value: value,
                     hideDisabledCmd: hideDisabledCmd
-                };
+                }
             } else {
-                return {
-                    auth: 0,
-                    hideDisabledCmd: false
-                };
+                if (featureName == 'utpclient.testcommand.max_enable_level') {
+                    return {
+                        value: 0,
+                        hideDisabledCmd: false
+                    };
+                } else if (featureName == 'utpclient.proto_mgr.pattern') {
+                    return {
+                        value: "simpleAndAdvanced"
+                    };
+                } else {
+                    return {
+                        value: 0
+                    };
+                }
+
             }
         };
     }

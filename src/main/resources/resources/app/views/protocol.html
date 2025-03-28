@@ -101,11 +101,10 @@
 				</div>
 				<div class="modal-footer">
 					<div class="form-group">
-						<button type="submit" class="btn btn-primary">
+						<button type="button" class="btn btn-primary" data-bind="click: submitImportProtocol">
 							<span lang="en">确定</span>
 						</button>
-						<button type="button" class="btn btn-default pull-left"
-							data-bind="click: cancelImportProtocol">取消</button>
+						<button type="button" class="btn btn-default pull-left" data-bind="click: cancelImportProtocol">取消</button>
 					</div>
 				</div>
 			</div>
@@ -185,19 +184,20 @@
 						<!-- <div class="container" style="width: 100%;height: 100%; margin-left: 0px; padding-left: 0px; margin-right: 0px; padding-right: 30px;"> -->
 
 						<!-- 消息名称输入框 -->
-						<div class="form-group col-md-6">
+						<div class="form-group col-md-12">
 							<label for="simpleMessageName">消息名称:</label>
-							<input type="text" class="form-control" id="simpleMessageName" placeholder="输入消息名称">
 						</div>
-						<div class="form-group col-md-6">
-							<label for="messageDirection">消息方向:</label>
-							<select class="form-control" id="messageDirection">
-								<option value="" disabled selected style="display:none;">请选择消息方向</option>
-								<option value="send">仅发送</option>
-								<option value="receive">仅接收</option>
-								<option value="sendAndReceive">发送和接收</option>
-							</select>
+						<div class="form-group col-md-12">
+							<!-- <label for="simpleMessageName">消息名称:</label> -->
+							<div class="col-md-10">
+								<input type="text" class="form-control" id="simpleMessageName" placeholder="输入消息名称">
+							</div>
+							
+							<div class="col-md-2">
+								<button class="btn btn-primary" data-bind="click:messageAttributeSet" id="messageAttribute">消息属性设置</button>
+							</div>
 						</div>
+						
 
 						<!-- 表格容器 -->
 						<div class="table-container" id="tableContainer">
@@ -367,7 +367,8 @@
 
 					<div class="form-group" data-bind="visible: algorithmChooose">
 						<label for="crcAlgorithm" class="control-label">CRC校验算法</label>
-						<select class="form-control" id="crcAlgorithm" data-bind="options: crcAlgorithm,value: selectedCrcAlgorithm">
+						<select class="form-control" id="crcAlgorithm"
+							data-bind="options: crcAlgorithm,value: selectedCrcAlgorithm">
 						</select>
 					</div>
 				</div>
@@ -404,6 +405,57 @@
 					<span lang="en">保存</span>
 				</button>
 				<button type="button" class="btn btn-default pull-left" data-bind="click: closeModal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="messageAttributeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">消息属性设置</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group" data-bind="visible: !isDataBlock()">
+					<div class="form-group">
+						<label for="fromField" class="control-label">消息方向</label>
+						<select id="messageDirection" class="form-control"
+							data-bind="value: selectedMessageDirection, optionsCaption: '请选择方向...'" required>
+							<option value="send">仅发送</option>
+							<option value="receive">仅接收</option>
+							<option value="sendAndReceive">发送和接收</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="toField" class="control-label">消息ID是否存在</label>
+						<select id="messageIdExistence" class="form-control"
+							data-bind="value: selectedMessageIdExistence, optionsCaption: '请选择是否存在消息ID'">
+							<option value="no">否</option>
+							<option value="yes">是</option>
+						</select>
+					</div>
+
+					<div class="form-group" data-bind="visible: selectedMessageIdExistence() == 'yes'">
+						<label for="toField" class="control-label">设置消息ID</label>
+						<input type="text" class="form-control" id="simpleMessageId" placeholder="输入十六进制消息ID" data-bind="value: setMessageId">
+					</div>
+					<div class="form-group" data-bind="visible: selectedMessageIdExistence() == 'yes'">
+						<label for="toField" class="control-label">消息ID是否唯一</label>
+						<select id="messageIdUnique" class="form-control"
+							data-bind="value: uniqueMessageID, optionsCaption: '请选择消息ID是否唯一'">
+							<option value = "false">否</option>
+							<option value = "true">是</option>
+						</select>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-bind="click: saveMessageConfig">保存</button>
+				<button type="button" class="btn btn-default pull-left" data-bind="click: closeMessageConfig">取消</button>
 			</div>
 		</div>
 	</div>
@@ -466,7 +518,7 @@
 		/* 固定头部和底部的高度 */
 	}
 
-	#proConfigModal .modal-body {
+	#proConfigModal .modal-body,#messageAttributeModal .modal-body{
 		display: flex;
 		flex-direction: column;
 		max-height: 80vh;
@@ -475,7 +527,7 @@
 		/* 内容超过最大高度时出现滚动条 */
 	}
 
-	#proConfigModal .modal-content {
+	#proConfigModal .modal-content,#messageAttributeModal .modal-content {
 		height: 58%;
 	}
 </style>

@@ -2157,24 +2157,24 @@ define(['knockout', 'jquery', 'komapping',
 				});
 			};
 
-			this.blocklyAuth = function () {
-				// 监听工具箱加载完成事件
-				self.workspace.registerToolboxCategoryCallback(function (workspace, category) {
-					// 遍历工具箱中的所有类别
-					const toolboxCategories = document.querySelectorAll('category');
-					toolboxCategories.forEach(categoryElement => {
-						const enablelevel = categoryElement.getAttribute('enablelevel');
-						if (enablelevel) {
-							console.log(`Category: ${categoryElement.getAttribute('name')}, EnableLevel: ${enablelevel}`);
-							// 根据 EnableLevel 的值进行逻辑处理
-							if (enablelevel === '11') {
-								// 执行特定逻辑，例如启用或禁用某些功能
-								console.log('EnableLevel is 11, performing specific actions...');
-							}
-						}
-					});
-				});
-			}
+			// this.blocklyAuth = function () {
+			// 	// 监听工具箱加载完成事件
+			// 	self.workspace.registerToolboxCategoryCallback(function (workspace, category) {
+			// 		// 遍历工具箱中的所有类别
+			// 		const toolboxCategories = document.querySelectorAll('category');
+			// 		toolboxCategories.forEach(categoryElement => {
+			// 			const enablelevel = categoryElement.getAttribute('enablelevel');
+			// 			if (enablelevel) {
+			// 				console.log(`Category: ${categoryElement.getAttribute('name')}, EnableLevel: ${enablelevel}`);
+			// 				// 根据 EnableLevel 的值进行逻辑处理
+			// 				if (enablelevel === '11') {
+			// 					// 执行特定逻辑，例如启用或禁用某些功能
+			// 					console.log('EnableLevel is 11, performing specific actions...');
+			// 				}
+			// 			}
+			// 		});
+			// 	});
+			// }
 
 			this.loadFromFile = function (file) {
 				self.selectedFile = file;
@@ -2328,8 +2328,12 @@ define(['knockout', 'jquery', 'komapping',
 			}
 
 			this.attached = function (view, parent) {
-				self.auth = self.systemConfig.getAuthByFeatureName('utpclient.testcommand.max_enable_level');
-				self.commandDisplay = self.systemConfig.getConfig('utpclient.testcommand.command_display');
+				var commandConfig = self.systemConfig.getValueByFeatureName('utpclient.testcommand.max_enable_level') || {};
+				var hideDisabledCmd = typeof commandConfig.hideDisabledCmd === 'boolean'
+					? commandConfig.hideDisabledCmd
+					: false; // 无配置时默认不隐藏
+				self.auth = typeof commandConfig.value === 'number' ? commandConfig.value : 0; // 类型检查+默认值
+				self.commandDisplay = !hideDisabledCmd; // 反转布尔值
 				// 关闭工具箱中不符合权限的块
 				self.closeBlock('toolbox-categories'); //用例
 				self.closeBlock('toolbox-categories-subscript'); //子脚本
