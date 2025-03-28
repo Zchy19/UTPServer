@@ -661,42 +661,63 @@ define(['knockout', 'jquery', 'komapping',
 				webix.ready(function () {
 					self.tree = webix.ui({
 						container: "runscCommandSelectionView",
-						view: "tree",
-						template: function (obj, com) {
-							var icon = "";
-							if (obj.$count && obj.disabled) // 无权目录
-								icon = '';
-							else if (obj.$count && !obj.disabled) // 有权目录
-								icon = '';
-							else if (!obj.$count && obj.disabled) // 无权命令
-								icon = '<span class="pull-left-container bg-gray"> 禁用: </span>';
-							else // 有权命令
-								icon = '<span class="pull-left-container bg-blue"> 命令: </span>';
-							// 只在叶子节点显示复选框
-							var checkbox = obj.$count === 0 ? com.checkbox(obj, com) : '';
-							return com.icon(obj, com) + checkbox + icon + obj.value;
-						},
-						threeState: false, // 修改为 false，因为我们只希望叶子节点有复选框
-						data: filteredData,
-						ready: function () {
-							this.closeAll();
-							this.open(self.fileManagerUtility.root);
-							selectedPaths.forEach(path => {
-								this.checkItem(path);
-							});
+						rows: [
+							{
+								view: "text",
+								id: "runscCommandTreeSearch", // 搜索框唯一ID
+								placeholder: "搜索...",
+								on: {
+									onTimedKeyPress: function () {
+										const value = this.getValue().toLowerCase();
+										const tree = $$("runscCommandTree"); // 对应树的ID
+										if (tree) {
+											tree.filter(obj =>
+												obj.value.toLowerCase().includes(value) ||
+												String(obj.id).toLowerCase().includes(value)
+											);
+										}
+									}
+								}
+							},
+							{
+								view: "tree",
+								id: "runscCommandTree", // 树形结构唯一ID
+								template: function (obj, com) {
+									var icon = "";
+									if (obj.$count && obj.disabled) // 无权目录
+										icon = '';
+									else if (obj.$count && !obj.disabled) // 有权目录
+										icon = '';
+									else if (!obj.$count && obj.disabled) // 无权命令
+										icon = '<span class="pull-left-container bg-gray"> 禁用: </span>';
+									else // 有权命令
+										icon = '<span class="pull-left-container bg-blue"> 命令: </span>';
+									// 只在叶子节点显示复选框
+									var checkbox = obj.$count === 0 ? com.checkbox(obj, com) : '';
+									return com.icon(obj, com) + checkbox + icon + obj.value;
+								},
+								threeState: false, // 修改为 false，因为我们只希望叶子节点有复选框
+								data: filteredData,
+								ready: function () {
+									this.closeAll();
+									this.open(self.fileManagerUtility.root);
+									selectedPaths.forEach(path => {
+										this.checkItem(path);
+									});
 
-							this.refresh();
-						},
-						tooltip: function (obj) {
-							if (obj && obj.cmd && obj.cmd.commandName) {
-								return obj.cmd.commandName;
+									this.refresh();
+								},
+								tooltip: function (obj) {
+									if (obj && obj.cmd && obj.cmd.commandName) {
+										return obj.cmd.commandName;
+									}
+									return '';
+								}
 							}
-							return '';
-						},
+						]
 					});
 				});
 			};
-
 
 			this.initCommandHierarchy = function (rootId, recordId) {
 				self.utpService.getBigdata(rootId, recordId, self.getBigdataSuccessFunction, self.getBigdataErrorFunction);
@@ -704,7 +725,8 @@ define(['knockout', 'jquery', 'komapping',
 
 			this.checkedCmdNodeIds = function (checkedIds, checkedNodes, antbotName) {
 				for (var i = 0; i < checkedIds.length; i++) {
-					var node = self.tree.getItem(checkedIds[i]);
+					const commandTree = webix.$$("runscCommandTree"); // 使用 Webix API 根据ID获取树实例
+					var node = commandTree.getItem(checkedIds[i]);
 					if (!node || !node.cmd) {
 						continue; // 如果节点无效或没有 cmd 属性，跳过当前循环
 					}
@@ -791,13 +813,17 @@ define(['knockout', 'jquery', 'komapping',
 			};
 
 			this.insertCommands = function () {
-				// var checkedNodes = [];
-				// if (checkedNodes.length == 0)
-				// 	return;
-				if (self.selectedAgent == null)
-					return;
-				// self.checkedCommandNodes = checkedNodes;
-				var checkedIds = self.tree.getChecked();
+				if (self.selectedAgent == null) return;
+				
+				// 通过树ID直接获取树对象
+				const commandTree = webix.$$("runscCommandTree"); // 使用 Webix API 根据ID获取树实例
+				if (!commandTree) {
+				  notificationService.showError('命令树未初始化');
+				  return;
+				}
+			  
+				// 从正确的树对象中获取选中项
+				var checkedIds = commandTree.getChecked(); 
 				self.checkedCmdNodeIds(checkedIds, self.checkedCommandNodes, null);
 
 				if (self.checkedCommandNodes.length == 0) {
@@ -840,7 +866,9 @@ define(['knockout', 'jquery', 'komapping',
 
 			this.lastAntbotName = null;
 			this.agentChangedOnInsertCommands = function (obj, event) {
-				var checkedIds = self.tree.getChecked();
+				const commandTree = webix.$$("runscCommandTree"); // 使用 Webix API 根据ID获取树实例
+				// 从正确的树对象中获取选中项
+				var checkedIds = commandTree.getChecked(); 
 				if (self.projectManager.agentsConfigData().length > 0 && self.lastAntbotName == null) {
 					self.lastAntbotName = self.projectManager.agentsConfigData()[0].antbotName;
 				};
@@ -999,16 +1027,16 @@ define(['knockout', 'jquery', 'komapping',
 						value: protocol.protocolName,
 						data: []
 					};
-					if (protocol.messages == undefined || protocol.messages == null || protocol.messages.length == 0) {
+					if (protocol.protocol.messages == undefined || protocol.protocol.messages == null || protocol.protocol.messages.length == 0) {
 						notificationService.showWarn('协议文件中不存在消息定义，请确认协议文件是否正确!');
 						return;
 					}
-					for (var i = 0; i < protocol.messages.length; i++) {
-						var id = protocol.messages[i].messageName;
-						protocol.messages[i].id = id ? id : i;
+					for (var i = 0; i < protocol.protocol.messages.length; i++) {
+						var id = protocol.protocol.messages[i].messageName;
+						protocol.protocol.messages[i].id = id ? id : i;
 						var equiNode = {
 							id: id ? id : i,
-							value: protocol.messages[i].messageName,
+							value: protocol.protocol.messages[i].messageName,
 							data: []
 						}
 						root.data.push(equiNode);
@@ -1424,9 +1452,9 @@ define(['knockout', 'jquery', 'komapping',
 							self.exceptionCheck(false);
 							self.protocolFieldsconfig.removeAll();
 							self.currentGenericFrameMessageName = "";
-							for (var i = 0; i < self.protocol.messages.length; i++) {
-								if (self.protocol.messages[i].id === id) {
-									self.selectedMessage = JSON.parse(JSON.stringify(self.protocol.messages[i]));
+							for (var i = 0; i < self.protocol.protocol.messages.length; i++) {
+								if (self.protocol.protocol.messages[i].id === id) {
+									self.selectedMessage = JSON.parse(JSON.stringify(self.protocol.protocol.messages[i]));
 									self.currentGenericFrameMessageName = self.selectedMessage.messageName;
 									self.genericFrameInfo.id = self.selectedMessage.id;
 									self.selectedMessage.fieldValues = null;

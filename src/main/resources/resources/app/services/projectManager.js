@@ -139,7 +139,7 @@
 	        return testcase;
 		}
 
-		this.getRunableScript= function(id){
+		this.getRunableScriptData= function(id){
 			var scriptId = parseInt(id);
 			var RunableScript = self.runablescripMapping.get(scriptId);	       
 	        return RunableScript;

@@ -1034,7 +1034,10 @@
 					if (subScript == undefined || subScript == null) {
 						subScript = projectManager.getTestcase(subScriptId);
 						if (subScript == undefined || subScript == null) {
-							return "未知脚本";
+							subScript = projectManager.getRunableScriptData(subScriptId);
+							if (subScript == undefined || subScript == null) {
+								return "未知脚本";
+							}
 						}
 					}
 
@@ -1177,7 +1180,7 @@
 		this.blocklyScriptToXml = function (type, result) {
 			let begin = null;
 			let end = null;
-			if (type == "testcase") {
+			if (type == "testcase" || type == "runablescript") {
 				begin = self.TESTCASE_BEGIN + self.CMD_SEPARATOR;
 				end = self.TESTCASE_END;
 			} else if (type == "subscript") {
