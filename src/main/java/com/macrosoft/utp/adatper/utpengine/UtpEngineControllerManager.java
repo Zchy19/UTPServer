@@ -1,27 +1,28 @@
 package com.macrosoft.utp.adatper.utpengine;
 
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import com.macrosoft.configuration.UrsConfigurationImpl;
+import com.macrosoft.logging.ILogger;
+import com.macrosoft.logging.LoggerFactory;
 import com.macrosoft.service.*;
 import com.macrosoft.urs.IpAddress;
 import com.macrosoft.urs.UrsServiceApis;
+import com.macrosoft.utp.adapter.UtpAdapterFactoryManager;
+import com.macrosoft.utp.adatper.utpengine.exception.InitEngineException;
+import com.macrosoft.utp.adatper.utpengine.exception.UtpCoreNetworkException;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-
-import com.macrosoft.logging.ILogger;
-import com.macrosoft.logging.LoggerFactory;
-import com.macrosoft.utp.adapter.UtpAdapterFactoryManager;
-import com.macrosoft.utp.adatper.utpengine.exception.InitEngineException;
-import com.macrosoft.utp.adatper.utpengine.exception.UtpCoreNetworkException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 @Component
@@ -110,31 +111,35 @@ public class UtpEngineControllerManager implements ApplicationListener<ContextRe
 	}
 
 	//从urs获取所有执行器
-	public List<IpAddress> getUrsEngineStatuses(String UrsIpaddress, Long orgId, String userAccount)
-	{
+	public List<IpAddress> getUrsEngineStatuses(String UrsIpaddress, Long orgId, String userAccount) {
 		List<IpAddress> IpAddressList = new ArrayList<>();
-		String url = String.format(UrsServiceApis.GetUTPEngine, UrsIpaddress, orgId,userAccount) ;
+		String url = String.format(UrsServiceApis.GetUTPEngine, UrsIpaddress, orgId, userAccount);
 		logger.info(String.format("Urs request url: %s", url));
 		RestTemplate restTemplate = new RestTemplate();
-		String utpResponse = restTemplate
-				.getForObject(url, String.class,3);
-		//解析返回的json
-		JSONObject utpCoreAddressResponse = new JSONObject(utpResponse);
-		logger.info(String.format("Urs request utpCoreAddressResponse: %s", utpCoreAddressResponse));
-		//取出值
-		JSONArray engineStatuses = utpCoreAddressResponse.getJSONArray("engineStatuses");
-		logger.info(String.format("Urs request engineStatuses: %s", engineStatuses));
-		for (int i = 0; i < engineStatuses.length(); i++) {
-			//获取数组中的第i个json对象
-			JSONObject engine = engineStatuses.getJSONObject(i);
-			//获取json对象中的engineName值
-			String ipAddress = (String) engine.get("utpIpAddress");
-			Long port = engine.getLong("utpPort");
-			String engineName = engine.getString("engineName");
-			//存入ArrayList
-			IpAddress tempIpAddress = new IpAddress(ipAddress,port,engineName);
-			IpAddressList.add(tempIpAddress);
+		String utpResponse = restTemplate.getForObject(url, String.class, 3);
+
+		try {
+			// 解析返回的json
+			JSONObject utpCoreAddressResponse = new JSONObject(utpResponse);
+			logger.info(String.format("Urs request utpCoreAddressResponse: %s", utpCoreAddressResponse));
+			// 取出值
+			JSONArray engineStatuses = utpCoreAddressResponse.getJSONArray("engineStatuses");
+			logger.info(String.format("Urs request engineStatuses: %s", engineStatuses));
+			for (int i = 0; i < engineStatuses.length(); i++) {
+				// 获取数组中的第i个json对象
+				JSONObject engine = engineStatuses.getJSONObject(i);
+				// 获取json对象中的engineName值
+				String ipAddress = engine.getString("utpIpAddress");
+				Long port = engine.getLong("utpPort");
+				String engineName = engine.getString("engineName");
+				// 存入ArrayList
+				IpAddress tempIpAddress = new IpAddress(ipAddress, port, engineName);
+				IpAddressList.add(tempIpAddress);
+			}
+		} catch (JSONException e) {
+			logger.error("Error parsing JSON response", e);
 		}
+
 		return IpAddressList;
 	}
 

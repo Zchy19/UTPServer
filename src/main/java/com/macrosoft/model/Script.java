@@ -24,6 +24,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Script implements Serializable{
+
+	private static final long serialVersionUID = -8718663577011025074L;
 	
 	@Id
 	@Column(name="id")

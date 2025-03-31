@@ -23,6 +23,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class ScriptGroup implements Serializable {
 
+    private static final long serialVersionUID = 2660853814391255351L;
+
     @Id
     @Column(name = "id")
     private long id;

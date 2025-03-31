@@ -1,11 +1,16 @@
 package com.macrosoft.model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class ProjectPackage implements java.io.Serializable
 {
+	private static final long serialVersionUID = -4188139671606316334L; // 确保这个值在所有版本中一致
+
 	public Project project;
 	public List<Requirement> requirements;
 	public List<TestCaseRequirementMapping> testCaseRequirementMapping;
@@ -22,7 +27,32 @@ public class ProjectPackage implements java.io.Serializable
 	public List<MessageTemplate> messageTemplates;
 	public List<MonitoringTestSet> monitortingTestsets;
 	public List<SpecialTest> specialTests;
-	
+
+	// 自定义序列化
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject(); // 默认序列化当前字段
+	}
+
+	// 自定义反序列化
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject(); // 默认反序列化当前字段
+		// 如果 testCaseRequirementMapping 为空，尝试从旧字段名 scriptRequirementMapping 读取
+		if (testCaseRequirementMapping == null) {
+			try {
+				ObjectInputStream.GetField fields = in.readFields();
+				@SuppressWarnings("unchecked")
+				List<TestCaseRequirementMapping> oldMapping =
+						(List<TestCaseRequirementMapping>) fields.get("scriptRequirementMapping", null);
+				if (oldMapping != null) {
+					testCaseRequirementMapping = oldMapping; // 直接赋值给新字段
+				}
+			} catch (Exception e) {
+				// 忽略异常，保持默认行为
+				testCaseRequirementMapping = new ArrayList<>(); // 如果出错，初始化为空列表
+			}
+		}
+	}
+
 	public ProjectPackage Clone()
 	{
 		ProjectPackage projectPackage = new ProjectPackage();
