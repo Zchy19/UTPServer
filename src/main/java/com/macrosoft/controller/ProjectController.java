@@ -28,6 +28,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -590,18 +591,25 @@ public class ProjectController {
             }
             projectDescript.setTestSetNames(testsetName);
 
-            // 序列化项目文件和描述文件
-            ObjectMapper objectMapper = new ObjectMapper();
-            String projectJson = objectMapper.writeValueAsString(projectPackage);
-            String descriptJson = objectMapper.writeValueAsString(projectDescript);
-
             // 直接写入响应流
             try (ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream())) {
-                // 添加项目文件到zip
+                // 添加项目文件到 ZIP（使用 Java 序列化）
                 ZipEntry projectEntry = new ZipEntry(projectPackage.project.getName() + ".uProject");
                 zipOut.putNextEntry(projectEntry);
-                zipOut.write(projectJson.getBytes());
+                try (ObjectOutputStream objectOut = new ObjectOutputStream(zipOut)) {
+                    objectOut.writeObject(projectPackage); // 序列化 ProjectPackage 对象
+                }
                 zipOut.closeEntry();
+
+                // 添加描述文件到 ZIP（使用 Java 序列化）
+                ZipEntry descriptEntry = new ZipEntry("descript.ser");
+                zipOut.putNextEntry(descriptEntry);
+                try (ObjectOutputStream objectOut = new ObjectOutputStream(zipOut)) {
+                    objectOut.writeObject(projectDescript); // 序列化 Descript 对象
+                }
+                zipOut.closeEntry();
+
+                zipOut.finish(); // 确保所有数据写入
             }
 
         } catch (Exception ex) {
