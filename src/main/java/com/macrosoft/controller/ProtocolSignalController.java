@@ -2,22 +2,17 @@ package com.macrosoft.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.macrosoft.controller.dto.BigdataStorageInfo;
 import com.macrosoft.controller.dto.ProtocolSignalInfo;
 import com.macrosoft.controller.response.ApiResponse;
 import com.macrosoft.logging.ILogger;
 import com.macrosoft.logging.LoggerFactory;
 import com.macrosoft.logging.TrailUtility;
 import com.macrosoft.master.TenantContext;
-import com.macrosoft.model.BigdataStorage;
 import com.macrosoft.model.ProtocolSignal;
 import com.macrosoft.service.ProtocolSignalService;
 import com.macrosoft.utilities.FileUtility;
 import com.macrosoft.utilities.StringUtility;
-import com.macrosoft.utilities.SystemUtil;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -41,13 +36,20 @@ public class ProtocolSignalController {
 
     @RequestMapping(value = "/api/protocol/get/{ProtocolSignalId}", method = RequestMethod.GET)
     public @ResponseBody
-    ApiResponse<ProtocolSignal> getProtocol(@PathVariable("ProtocolSignalId") String protocolSignalId) {
+    ApiResponse<String> getProtocol(@PathVariable("ProtocolSignalId") String protocolSignalId) {
         try {
             ProtocolSignal result = this.protocolSignalService.getProtocol(protocolSignalId);
-            return new ApiResponse<ProtocolSignal>(ApiResponse.Success, result);
+            String bigdata = result.getBigdata();
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(bigdata);
+            JsonNode protocolNode = jsonNode.get("protocol");
+            if (protocolNode == null) {
+                return new ApiResponse<String>(ApiResponse.UnHandleException, null);
+            }
+            return new ApiResponse<String>(ApiResponse.Success, objectMapper.writeValueAsString(protocolNode));
         } catch (Exception ex) {
             logger.error("getProtocolSignal", ex);
-            return new ApiResponse<ProtocolSignal>(ApiResponse.UnHandleException, null);
+            return new ApiResponse<String>(ApiResponse.UnHandleException, null);
         }
     }
 
