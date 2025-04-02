@@ -1,6 +1,8 @@
 package com.macrosoft.service;
 
+import com.macrosoft.controller.dto.TestCaseMessageInfo;
 import com.macrosoft.model.TestCase;
+import com.macrosoft.model.composition.TestCaseAggregate;
 import com.macrosoft.model.composition.TestCaseInfo;
 
 public interface TestCaseService{
@@ -14,4 +16,5 @@ public interface TestCaseService{
 
     public TestCase getTestCaseById(long projectId, long id);
 
+    public TestCaseMessageInfo createTestCase(TestCaseAggregate testCaseAggregate);
 }

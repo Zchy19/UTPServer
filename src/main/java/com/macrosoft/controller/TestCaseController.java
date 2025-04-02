@@ -78,24 +78,7 @@ public class TestCaseController {
     @PostMapping("/create")
     public ApiResponse<TestCaseMessageInfo> createTestCase(@RequestBody TestCaseAggregate testCaseAggregate) {
         try {
-            long projectId = testCaseAggregate.getScript().getProjectId();
-            boolean isMaxScriptNum = scriptService.isOverMaxScriptNum(projectId, "utpserver", "utpserver.script.count");
-            if (isMaxScriptNum) {
-                TestCaseMessageInfo testCaseMessageInfo = TestCaseMessageInfo.builder()
-                        .message("OVER_MAX_SCRIPT_NUM")
-                        .build();
-                return new ApiResponse<>(ApiResponse.UnHandleException, testCaseMessageInfo);
-            }
-            testCaseAggregate.getScript().setType(ScriptType.TestCaseType);
-            Script script = scriptService.addScript(projectId, testCaseAggregate.getScript());
-            TestCase testCase = testCaseService.addTestCase(testCaseAggregate.getTestCase());
-            TestCaseMessageInfo testCaseMessageInfo = TestCaseMessageInfo.builder()
-                    .message("CREATE_SUCCESS")
-                    .testCaseAggregate(TestCaseAggregate.builder()
-                            .testCase(testCase)
-                            .script(script)
-                            .build())
-                    .build();
+            TestCaseMessageInfo testCaseMessageInfo = testCaseService.createTestCase(testCaseAggregate);
             return new ApiResponse<>(ApiResponse.Success, testCaseMessageInfo);
         } catch (Exception ex) {
             logger.error("createTestCase", ex);
