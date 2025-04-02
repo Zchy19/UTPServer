@@ -1,97 +1,119 @@
 package com.macrosoft.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.macrosoft.controller.response.ApiResponse;
 import com.macrosoft.logging.ILogger;
 import com.macrosoft.logging.LoggerFactory;
 import com.macrosoft.logging.TrailUtility;
 import com.macrosoft.model.MonitoringTestSet;
+import com.macrosoft.model.Script;
+import com.macrosoft.model.composition.MonitoringTestSetAggregate;
 import com.macrosoft.service.MonitoringTestSetService;
-import com.macrosoft.service.ScriptLinkService;
+import com.macrosoft.service.ScriptService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/monitoringTestSet")
 public class MonitoringTestSetController {
 	private static final ILogger logger = LoggerFactory.Create(MonitoringTestSetController.class.getName());
 
-	private MonitoringTestSetService mMonitoringTestSetService;
+	private MonitoringTestSetService monitoringTestSetService;
+	private ScriptService scriptService;
 
-
-	@Autowired(required = true)
-	
-	public void setMonitoringTestSetService(MonitoringTestSetService MonitoringTestSetService) {
-		this.mMonitoringTestSetService = MonitoringTestSetService;
+	@Autowired
+	public void setMonitoringTestSetService(MonitoringTestSetService monitoringTestSetService) {
+		this.monitoringTestSetService = monitoringTestSetService;
 	}
 
-	@RequestMapping(value = "/api/monitoringTestSet/getByProjectId/{projectId}", method = RequestMethod.GET)
-	public @ResponseBody ApiResponse<List<MonitoringTestSet>> getMonitoringTestSetsByProjectId(@PathVariable("projectId") long projectId) {
+	@Autowired
+	public void setScriptService(ScriptService scriptService) {
+		this.scriptService = scriptService;
+	}
+
+	@GetMapping("/getByProjectId/{projectId}")
+	public ApiResponse<List<MonitoringTestSet>> getMonitoringTestSetsByProjectId(@PathVariable long projectId) {
 		try {
-			List<MonitoringTestSet> result = this.mMonitoringTestSetService.listMonitoringTestSetsByProjectId(projectId);
-			return new ApiResponse<List<MonitoringTestSet>>(ApiResponse.Success, result);
+			List<MonitoringTestSet> result = monitoringTestSetService.listMonitoringTestSetsByProjectId(projectId);
+			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("getMonitoringTestSetsByProjectId", ex);
-			return new ApiResponse<List<MonitoringTestSet>>(ApiResponse.UnHandleException, null);
+			return new ApiResponse<>(ApiResponse.UnHandleException, null);
 		}
 	}
 
-	@RequestMapping(value = "/api/monitoringTestSet/{projectId}/{id}", method = RequestMethod.GET)
-	public @ResponseBody ApiResponse<MonitoringTestSet> getMonitoringTestSet(@PathVariable("projectId") long projectId,
-			@PathVariable("id") long id) {
+	@GetMapping("/{projectId}/{id}")
+	public ApiResponse<MonitoringTestSet> getMonitoringTestSet(@PathVariable long projectId, @PathVariable long id) {
 		try {
-			MonitoringTestSet result = this.mMonitoringTestSetService.getMonitoringTestSetById(projectId, id);
-			return new ApiResponse<MonitoringTestSet>(ApiResponse.Success, result);
+			MonitoringTestSet result = monitoringTestSetService.getMonitoringTestSetById(projectId, id);
+			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("getMonitoringTestSet", ex);
-			return new ApiResponse<MonitoringTestSet>(ApiResponse.UnHandleException, null);
+			return new ApiResponse<>(ApiResponse.UnHandleException, null);
 		}
 	}
 
-	@RequestMapping(value = "/api/monitoringTestSet/create", method = RequestMethod.POST)
-	public @ResponseBody ApiResponse<MonitoringTestSet> createMonitoringTestSetNew(@RequestBody MonitoringTestSet MonitoringTestSet) {
+	@PostMapping("/create")
+	public ApiResponse<MonitoringTestSet> createMonitoringTestSet(@RequestBody MonitoringTestSet monitoringTestSet) {
 		try {
-			this.mMonitoringTestSetService.addMonitoringTestSet(MonitoringTestSet.getProjectId(), MonitoringTestSet);
-			return new ApiResponse<MonitoringTestSet>(ApiResponse.Success, MonitoringTestSet);
+			monitoringTestSetService.addMonitoringTestSet(monitoringTestSet.getProjectId(), monitoringTestSet);
+			return new ApiResponse<>(ApiResponse.Success, monitoringTestSet);
 		} catch (Exception ex) {
-			logger.error("createMonitoringTestSetNew", ex);
-			return new ApiResponse<MonitoringTestSet>(ApiResponse.UnHandleException, null);
+			logger.error("createMonitoringTestSet", ex);
+			return new ApiResponse<>(ApiResponse.UnHandleException, null);
 		}
 	}
 
-
-	@RequestMapping(value = "/api/monitoringTestSet/update", method = RequestMethod.POST)
-	public @ResponseBody ApiResponse<MonitoringTestSet> editMonitoringTestSetNew(@RequestBody MonitoringTestSet MonitoringTestSet) {
+	@PostMapping("/update")
+	public ApiResponse<MonitoringTestSet> updateMonitoringTestSet(@RequestBody MonitoringTestSet monitoringTestSet) {
 		try {
-			TrailUtility.Trail(logger, TrailUtility.Trail_Update, "editMonitoringTestSetNew");
-			this.mMonitoringTestSetService.updateMonitoringTestSet(MonitoringTestSet.getProjectId(), MonitoringTestSet);
-			return new ApiResponse<MonitoringTestSet>(ApiResponse.Success, MonitoringTestSet);
+			TrailUtility.Trail(logger, TrailUtility.Trail_Update, "updateMonitoringTestSet");
+			monitoringTestSetService.updateMonitoringTestSet(monitoringTestSet.getProjectId(), monitoringTestSet);
+			return new ApiResponse<>(ApiResponse.Success, monitoringTestSet);
 		} catch (Exception ex) {
-			logger.error("editMonitoringTestSetNew", ex);
-			return new ApiResponse<MonitoringTestSet>(ApiResponse.UnHandleException, null);
+			logger.error("updateMonitoringTestSet", ex);
+			return new ApiResponse<>(ApiResponse.UnHandleException, null);
 		}
 	}
 
-	@RequestMapping(value = "/api/monitoringTestSet/delete/{projectId}/{id}", method = RequestMethod.POST)
-	public @ResponseBody ApiResponse<Boolean> deleteMonitoringTestSet(@PathVariable("projectId") long projectId,
-			@PathVariable("id") long id) {
-
+	@PostMapping("/delete/{projectId}/{id}")
+	public ApiResponse<Boolean> deleteMonitoringTestSet(@PathVariable long projectId, @PathVariable long id) {
 		try {
 			TrailUtility.Trail(logger, TrailUtility.Trail_Deletion, "deleteMonitoringTestSet");
-			this.mMonitoringTestSetService.removeMonitoringTestSet(projectId, id);
-
-			return new ApiResponse<Boolean>(ApiResponse.Success, true);
-
+			monitoringTestSetService.removeMonitoringTestSet(projectId, id);
+			return new ApiResponse<>(ApiResponse.Success, true);
 		} catch (Exception ex) {
 			logger.error("deleteMonitoringTestSet", ex);
-			return new ApiResponse<Boolean>(ApiResponse.UnHandleException, false);
+			return new ApiResponse<>(ApiResponse.UnHandleException, false);
+		}
+	}
+
+	@PostMapping("/create/1")
+	public ApiResponse<MonitoringTestSet> createMonitoringTestSet(@RequestBody MonitoringTestSetAggregate monitoringTestSetAggregate) {
+		try {
+			Script[] scripts = monitoringTestSetAggregate.getScripts();
+			for (int i = 0; i < 3; i++) {
+				if (scripts[i] != null) {
+					Script script = scriptService.addScript(scripts[i].getProjectId(), scripts[i]);
+					switch (i) {
+						case 0:
+							monitoringTestSetAggregate.getMonitoringTestSet().setStartScriptId(script.getId());
+							break;
+						case 1:
+							monitoringTestSetAggregate.getMonitoringTestSet().setSendCommandScriptId(script.getId());
+							break;
+						case 2:
+							monitoringTestSetAggregate.getMonitoringTestSet().setStopScriptId(script.getId());
+							break;
+					}
+				}
+			}
+			monitoringTestSetService.addMonitoringTestSet(monitoringTestSetAggregate.getMonitoringTestSet().getProjectId(), monitoringTestSetAggregate.getMonitoringTestSet());
+			return new ApiResponse<>(ApiResponse.Success, monitoringTestSetAggregate.getMonitoringTestSet());
+		} catch (Exception ex) {
+			logger.error("createMonitoringTestSet", ex);
+			return new ApiResponse<>(ApiResponse.UnHandleException, null);
 		}
 	}
 }
