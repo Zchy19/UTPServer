@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -29,7 +32,7 @@ public class ProtocolSignalController {
     private static final ILogger logger = LoggerFactory.Create(ProtocolSignalController.class.getName());
     private ProtocolSignalService protocolSignalService;
     @Autowired(required = true)
-    
+    // @Qualifier(value = "protocolSignalService")
     public void setProtocolSignalService(ProtocolSignalService protocolSignalService) {
         this.protocolSignalService = protocolSignalService;
     }
@@ -55,58 +58,106 @@ public class ProtocolSignalController {
 
 
     @RequestMapping(value = "/api/protocolSignal/upload", headers = ("content-type=multipart/*"), method = RequestMethod.POST)
-    public @ResponseBody ApiResponse<ProtocolSignalInfo> uploadProtocolSignal(@RequestParam("dataType") String dataType,@RequestParam("protocolType") String protocolType, @RequestParam("file") MultipartFile inputFile) {
+    public @ResponseBody ApiResponse<ProtocolSignalInfo> uploadProtocolSignal(
+            @RequestParam("dataType") String dataType,
+            @RequestParam(value = "protocolType", required = false) String protocolType,
+            @RequestParam("file") MultipartFile inputFile) {
+
         try {
-            boolean overMaxProtocolSignalNum = protocolSignalService.isOverMaxProtocolSignalNum(Long.parseLong(TenantContext.getOrgId()), dataType);
+            // 公共校验：文件大小和数量限制
+            boolean overMaxProtocolSignalNum = protocolSignalService.isOverMaxProtocolSignalNum(
+                    Long.parseLong(TenantContext.getOrgId()),
+                    dataType
+            );
             if (overMaxProtocolSignalNum) {
                 ProtocolSignalInfo protocolSignalInfo = new ProtocolSignalInfo();
                 protocolSignalInfo.setMessages("OVER_MAX_PROTOCOLSIGNAL_NUM");
-                return new ApiResponse<ProtocolSignalInfo>(ApiResponse.UnHandleException, protocolSignalInfo);
+                return new ApiResponse<>(ApiResponse.UnHandleException, protocolSignalInfo);
             }
             if (inputFile.isEmpty()) {
-                return new ApiResponse<ProtocolSignalInfo>(ApiResponse.UnHandleException, null);
-            }
-            HttpHeaders headers = new HttpHeaders();
-            // Step1: Save uploaded file to temporary folder.
-            String originalFilename = inputFile.getOriginalFilename();
-            String ProtocolSignalFolder = protocolSignalService.resolveProtocolSignalFolderPath();
-            String id =  UUID.randomUUID().toString();
-            String destinationFilePath = ProtocolSignalFolder + File.separator + id;
-            File destinationFile = new File(destinationFilePath);
-            if (!new File(destinationFilePath).exists()) {
-                new File(destinationFilePath).mkdir();
+                return new ApiResponse<>(ApiResponse.UnHandleException, null);
             }
 
-            inputFile.transferTo(destinationFile);
+            // 根据数据类型路由处理逻辑
+            if ("GenericBusFrame".equalsIgnoreCase(dataType)) {
+                return handleGenericBusFrameUpload(dataType, inputFile);
+            } else if ("SignalProtocol".equalsIgnoreCase(dataType)) {
+                return handleSignalProtocolUpload(dataType, protocolType, inputFile);
+            } else {
+                logger.error("未知数据类型: " + dataType);
+                return new ApiResponse<>(ApiResponse.UnHandleException, null);
+            }
 
-            headers.add("File Storage Uploaded Successfully - ", originalFilename);
-            logger.info(String.format("File Storage Uploaded Successfully - originalFilename: %s, destinationFilePath: %s ", originalFilename, destinationFilePath));
-
-            String content = FileUtility.readLineByLineJava8(destinationFilePath);
-
-            ProtocolSignal protocolSignal = new ProtocolSignal();
-
-            String orgId = TenantContext.getOrgId();
-
-            protocolSignal.setOrganizationId(StringUtility.parseLongSafely(orgId).getResult());
-
-            protocolSignal.setId(id);
-            protocolSignal.setFileName(originalFilename);
-            protocolSignal.setDataType(dataType);
-            protocolSignal.setProtocolType(protocolType);
-            protocolSignal.setBigdata(content);
-            protocolSignal.setCreatedAt(new Date(new Date().getTime()));
-
-
-            this.protocolSignalService.addProtocolSignal(protocolSignal);
-
-            ProtocolSignalInfo ProtocolSignalInfo = new ProtocolSignalInfo(protocolSignal);
-
-            return new ApiResponse<ProtocolSignalInfo>(ApiResponse.Success, ProtocolSignalInfo);
+        } catch (IOException e) {
+            logger.error("文件处理失败", e);
+            return new ApiResponse<>(ApiResponse.UnHandleException, null);
         } catch (Exception ex) {
-            logger.error("uploadProtocolSignal", ex);
-            return new ApiResponse<ProtocolSignalInfo>(ApiResponse.UnHandleException, null);
+            logger.error("上传协议信号失败", ex);
+            return new ApiResponse<>(ApiResponse.UnHandleException, null);
         }
+    }
+
+    // 处理 GenericBusFrame（新逻辑）
+    private ApiResponse<ProtocolSignalInfo> handleGenericBusFrameUpload(String dataType, MultipartFile file) throws IOException {
+        // 1. 保存文件到临时目录（按ID隔离）
+        String id = UUID.randomUUID().toString();
+        String protocolSignalFolder = protocolSignalService.resolveProtocolSignalFolderPath();
+        String destinationDirPath = protocolSignalFolder + File.separator + id;
+        Files.createDirectories(Paths.get(destinationDirPath));
+
+        String destinationFilePath = destinationDirPath + File.separator + file.getOriginalFilename();
+        file.transferTo(new File(destinationFilePath));
+
+        // 2. 解析并校验JSON结构
+        String content = FileUtility.readLineByLineJava8(destinationFilePath);
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(content);
+
+        if (!rootNode.has("protocolName") || !rootNode.has("protocolType") || !rootNode.has("protocol")) {
+            logger.error("GenericBusFrame文件缺少必要字段");
+            return new ApiResponse<>(ApiResponse.UnHandleException, null);
+        }
+
+        // 3. 构建ProtocolSignal对象
+        ProtocolSignal protocolSignal = new ProtocolSignal();
+        protocolSignal.setId(id);
+        protocolSignal.setFileName(rootNode.get("protocolName").asText()); // 使用JSON中的protocolName
+        protocolSignal.setDataType(dataType);
+        protocolSignal.setProtocolType(rootNode.get("protocolType").asText()); // 从JSON提取
+        protocolSignal.setBigdata(rootNode.get("protocol").toString()); // 仅存储protocol字段
+        protocolSignal.setCreatedAt(new Date());
+        protocolSignal.setOrganizationId(Long.parseLong(TenantContext.getOrgId()));
+
+        // 4. 存入数据库
+        protocolSignalService.addProtocolSignal(protocolSignal);
+        return new ApiResponse<>(ApiResponse.Success, new ProtocolSignalInfo(protocolSignal));
+    }
+
+    // 处理 SignalProtocol（旧逻辑）
+    private ApiResponse<ProtocolSignalInfo> handleSignalProtocolUpload(
+            String dataType,
+            String protocolType,
+            MultipartFile file) throws IOException {
+
+        // 1. 保存文件（旧版路径结构）
+        String id = UUID.randomUUID().toString();
+        String destinationFilePath = protocolSignalService.resolveProtocolSignalFolderPath()
+                + File.separator + id;
+        file.transferTo(new File(destinationFilePath));
+
+        // 2. 直接存储原始内容
+        ProtocolSignal protocolSignal = new ProtocolSignal();
+        protocolSignal.setId(id);
+        protocolSignal.setFileName(file.getOriginalFilename());
+        protocolSignal.setDataType(dataType);
+        protocolSignal.setProtocolType(protocolType); // 从参数获取
+        protocolSignal.setBigdata(FileUtility.readLineByLineJava8(destinationFilePath)); // 完整文件内容
+        protocolSignal.setCreatedAt(new Date());
+        protocolSignal.setOrganizationId(Long.parseLong(TenantContext.getOrgId()));
+
+        // 3. 存入数据库
+        protocolSignalService.addProtocolSignal(protocolSignal);
+        return new ApiResponse<>(ApiResponse.Success, new ProtocolSignalInfo(protocolSignal));
     }
 
 

@@ -32,15 +32,40 @@ public class ProtocolSignalDAOImpl implements ProtocolSignalDAO {
 
 
     @Override
-    public void addProtocolSignal(ProtocolSignal protocolSignal) {
-        logger.info(String.format("addProtocolSignal()->id:%s", protocolSignal.getId()));
+    public void addProtocolSignal(ProtocolSignal protocolSignalInfo) {
+//        logger.info(String.format("addProtocolSignal()->id:%s", protocolSignal.getId()));
+//
+//        Session session = this.sessionFactory.getCurrentSession();
+//        session.saveOrUpdate(protocolSignal);
+//
+//        TrailUtility.Trail(logger, TrailUtility.Trail_Creation, "addProtocolSignal", String.format("id: %s", protocolSignal.getId()));
+//        logger.info(String.format("addProtocolSignal()->id:%s", protocolSignal.getId()));
 
         Session session = this.sessionFactory.getCurrentSession();
-        session.saveOrUpdate(protocolSignal);
+        StringBuilder sqlBuilder = new StringBuilder();
 
-        TrailUtility.Trail(logger, TrailUtility.Trail_Creation, "addProtocolSignal", String.format("id: %s", protocolSignal.getId()));
-        logger.info(String.format("addProtocolSignal()->id:%s", protocolSignal.getId()));
+        // 构建 INSERT 语句
+        sqlBuilder.append("INSERT INTO protocol_signal_table (Id, dataType, fileName, bigdata, organizationId, createdAt, protocolType, projectId) ");
+        sqlBuilder.append("VALUES (:id, :dataType, :fileName, :bigdata, :organizationId, :createdAt, :protocolType, :projectId)");
+
+        // 创建 SQLQuery 对象
+        SQLQuery query = session.createSQLQuery(sqlBuilder.toString());
+
+        // 设置参数
+        query.setParameter("id", protocolSignalInfo.getId()); // 假设 Id 是手动设置的
+        query.setParameter("dataType", protocolSignalInfo.getDataType());
+        query.setParameter("fileName", protocolSignalInfo.getFileName());
+        query.setParameter("bigdata", protocolSignalInfo.getBigdata());
+        query.setParameter("organizationId", 0);
+        query.setParameter("createdAt", protocolSignalInfo.getCreatedAt()); // 当前时间
+        query.setParameter("protocolType", protocolSignalInfo.getProtocolType());
+        query.setParameter("projectId", protocolSignalInfo.getProjectId());
+
+        // 执行插入操作
+        int rowsAffected = query.executeUpdate();
+        System.out.println("Rows inserted: " + rowsAffected);
     }
+
 
 
     @Override
