@@ -1,12 +1,12 @@
 define(['knockout', 'jquery', 'komapping',
-	'services/cmdConvertService',
-	'services/loginManager', 'services/viewManager', 'services/systemConfig', 'services/executionManager',
-	'services/selectionManager', 'services/projectManager', 'services/protocolService', 'services/utpService',
-	'sequencediagram', 'services/notificationService', 'services/fileManagerUtility', 'jsoneditor', 'lodash',
-	'bootstrapSwitch', 'ace/ace', 'ace/ext/language_tools'],
+		'services/cmdConvertService',
+		'services/loginManager', 'services/viewManager', 'services/systemConfig', 'services/executionManager',
+		'services/selectionManager', 'services/projectManager', 'services/protocolService', 'services/utpService',
+		'sequencediagram', 'services/notificationService', 'services/fileManagerUtility', 'jsoneditor', 'lodash',
+		'bootstrapSwitch', 'ace/ace', 'ace/ext/language_tools'],
 	function (ko, $, komapping,
-		cmdConvertService, loginManager, viewManager, systemConfig, executionManager, selectionManager,
-		projectManager, protocolService, utpService, sequencediagram, notificationService, fileManagerUtility, JSONEditor, _, bootstrapSwitch, ace) {
+			  cmdConvertService, loginManager, viewManager, systemConfig, executionManager, selectionManager,
+			  projectManager, protocolService, utpService, sequencediagram, notificationService, fileManagerUtility, JSONEditor, _, bootstrapSwitch, ace) {
 
 		function PlaygroundViewModel() {
 			var self = this;
@@ -52,7 +52,7 @@ define(['knockout', 'jquery', 'komapping',
 
 			this.gotoTestcase = function () {
 				//	self.viewManager.testcaseActiveData({reload:self.updated});
-				self.projectManager.useBackupTestCase = true;
+				self.projectManager.useBackupScripts = true;
 				self.viewManager.testcaseActivePage('app/viewmodels/testcase');
 			};
 
@@ -154,7 +154,7 @@ define(['knockout', 'jquery', 'komapping',
 					}
 				};
 				var langTools = ace.require('ace/ext/language_tools');
-				langTools.addCompleter(staticWordCompleter); //self.scriptEditor.completers = [staticWordCompleter];								
+				langTools.addCompleter(staticWordCompleter); //self.scriptEditor.completers = [staticWordCompleter];
 				self.scriptEditor.session.on('change', function (delta) {
 					// delta.start, delta.end, delta.lines, delta.action
 					self.blockNumberUpdate(0);
@@ -207,7 +207,7 @@ define(['knockout', 'jquery', 'komapping',
 						scrollbars: true,
 						toolbox: toolbox,
 						toolboxPosition: side == 'top'
-							|| side == 'start' ? 'start'
+						|| side == 'start' ? 'start'
 							: 'end',
 						zoom: {
 							controls: true,
@@ -299,7 +299,7 @@ define(['knockout', 'jquery', 'komapping',
 				return topBlocks;
 			}
 
-			// insert sub script				
+			// insert sub script
 			this.getSubScriptSuccessFunction = function (data) {
 				if (data != null && data.status === 1) {
 					var scripts = self.projectManager.generateScriptGroupsFromFlatInfo(data.result);
@@ -568,7 +568,7 @@ define(['knockout', 'jquery', 'komapping',
 					if ('Disable' in cmdList[i] && cmdList[i].Disable === true) {
 						continue;
 					}
-			
+
 					var id = parentId + "-" + i.toString();
 					if ("CommandList" in cmdList[i] && "GroupName" in cmdList[i]) {
 						// 计算当前节点的禁用状态：继承父级禁用 或 当前节点权限不足
@@ -576,7 +576,7 @@ define(['knockout', 'jquery', 'komapping',
 						var data = [];
 						// 递归处理子节点，传递累积的禁用状态
 						self.recurPrepareCmdTreeData(cmdList[i].CommandList, id, data, currentDisable);
-			
+
 						// 根据当前禁用状态设置节点属性
 						var nodeValue, nodeDisabled;
 						if (currentDisable) {
@@ -586,7 +586,7 @@ define(['knockout', 'jquery', 'komapping',
 							nodeValue = cmdList[i].GroupName;
 							nodeDisabled = false;
 						}
-			
+
 						parentData.push({
 							id: id,
 							data: data,
@@ -598,16 +598,16 @@ define(['knockout', 'jquery', 'komapping',
 						var cmdName = cmdList[i].CmdName;
 						var parameters = cmdList[i].Params;
 						var cmdType = cmdList[i].Type;
-						var formattedCommandString = self.needRecordSetConfigAndSelectAllCmd() 
+						var formattedCommandString = self.needRecordSetConfigAndSelectAllCmd()
 							? cmdConvertService.convertRecordAllCmdToUserLanguage(self.selectedAgent.antbotType, cmdName)
 							: cmdConvertService.convertCmdToUserLanguange(self.selectedAgent.antbotType, cmdType, cmdName, parameters);
-			
+
 						var commandObj = { commandName: cmdName, commandParameters: parameters };
 						self.commandMapping.push(commandObj);
-			
+
 						// 叶子节点的禁用状态：父级禁用 或 自身权限不足
 						var leafDisabled = parentDisable || ('EnableLevel' in cmdList[i] && cmdList[i].EnableLevel > self.auth);
-			
+
 						if (leafDisabled) {
 							parentData.push({
 								id: id,
@@ -626,7 +626,6 @@ define(['knockout', 'jquery', 'komapping',
 					}
 				}
 			};
-
 
 			this.initCmdTree = function (data) {
 				$('#commandSelectionView').html(''); // 清空容器内容
@@ -713,8 +712,8 @@ define(['knockout', 'jquery', 'komapping',
 									}
 									return '';
 								}
-							}	
-						  ]
+							}
+						]
 					});
 				});
 			};
@@ -762,31 +761,31 @@ define(['knockout', 'jquery', 'komapping',
 				var checkedNodes = self.checkedCommandNodes;
 				var commandsByType = {}; // 类型分组容器
 				let antbots = self.projectManager.agentsConfigData(); // 获取所有机器人配置
-			
+
 				// 第一阶段：命令分组
 				for (var x = 0; x < checkedNodes.length; x++) {
 					var node = checkedNodes[x];
-					
+
 					// 根据antbotName查找对应机器人类型
 					var targetAntbot = antbots.find(a => a.antbotName === node.antbotName);
 					if (!targetAntbot) {
 						console.warn(`未找到机器人 ${node.antbotName} 的配置，跳过命令`);
 						continue;
 					}
-					
+
 					var cmdsString = cmdConvertService.generateCmd(
 						node.antbotName,
 						node.commandName,
 						node.commandParameters
 					);
-					
+
 					if (cmdsString) {
 						var agentType = targetAntbot.antbotType;
 						commandsByType[agentType] = commandsByType[agentType] || [];
 						commandsByType[agentType].push(cmdsString);
 					}
 				}
-			
+
 				// 第二阶段：块数量预检
 				try {
 					let totalBlocks = 0;
@@ -795,18 +794,18 @@ define(['knockout', 'jquery', 'komapping',
 						const dom = Blockly.Xml.agentCMDToDom(agentType, cmds.join('\n'), self.workspace);
 						totalBlocks += dom.getElementsByTagName('block').length;
 					});
-			
+
 					if (!self.blockNumberUpdate(totalBlocks)) return;
-			
+
 					// 第三阶段：分类型插入
 					Object.keys(commandsByType).forEach(agentType => {
 						self.insertCommandsAsBlock(agentType, commandsByType[agentType]);
 					});
-			
+
 					// 文本插入保持原有逻辑
 					const allCmds = Object.values(commandsByType).flat();
 					self.insertCommandsAsText(allCmds);
-					
+
 					self.testcaseSavedFlag(false);
 				} catch (err) {
 					notificationService.showError(`命令插入失败: ${err.message}`);
@@ -815,30 +814,29 @@ define(['knockout', 'jquery', 'komapping',
 
 			this.insertCommands = function () {
 				if (self.selectedAgent == null) return;
-				
+
 				// 通过树ID直接获取树对象
 				const commandTree = webix.$$("commandTree"); // 使用 Webix API 根据ID获取树实例
 				if (!commandTree) {
-				  notificationService.showError('命令树未初始化');
-				  return;
+					notificationService.showError('命令树未初始化');
+					return;
 				}
-			  
+
 				// 从正确的树对象中获取选中项
-				var checkedIds = commandTree.getChecked(); 
+				var checkedIds = commandTree.getChecked();
 				self.checkedCmdNodeIds(checkedIds, self.checkedCommandNodes, null);
-			  
+
 				if (self.checkedCommandNodes.length == 0) {
-				  notificationService.showWarn('请选择命令');
-				  return;
+					notificationService.showWarn('请选择命令');
+					return;
 				}
-				
 				$('#insertCommandModal').modal('hide');
 				if (self.needBigData()) {
-				  self.genericProtocolProcess();
-				  return;
+					self.genericProtocolProcess();
+					return;
 				}
 				self.prepareCommands();
-			  };
+			};
 
 			// need record and select all cmd
 			this.needRecordSetConfigAndSelectAllCmd = function () {
@@ -870,7 +868,7 @@ define(['knockout', 'jquery', 'komapping',
 			this.agentChangedOnInsertCommands = function (obj, event) {
 				const commandTree = webix.$$("commandTree"); // 使用 Webix API 根据ID获取树实例
 				// 从正确的树对象中获取选中项
-				var checkedIds = commandTree.getChecked(); 
+				var checkedIds = commandTree.getChecked();
 				if (self.projectManager.agentsConfigData().length > 0 && self.lastAntbotName == null) {
 					self.lastAntbotName = self.projectManager.agentsConfigData()[0].antbotName;
 				};
@@ -1029,16 +1027,16 @@ define(['knockout', 'jquery', 'komapping',
 						value: protocol.protocolName,
 						data: []
 					};
-					if (protocol.protocol.messages == undefined || protocol.protocol.messages == null || protocol.protocol.messages.length == 0) {
+					if (protocol.messages == undefined || protocol.messages == null || protocol.messages.length == 0) {
 						notificationService.showWarn('协议文件中不存在消息定义，请确认协议文件是否正确!');
 						return;
 					}
-					for (var i = 0; i < protocol.protocol.messages.length; i++) {
-						var id = protocol.protocol.messages[i].messageName;
-						protocol.protocol.messages[i].id = id ? id : i;
+					for (var i = 0; i < protocol.messages.length; i++) {
+						var id = protocol.messages[i].messageName;
+						protocol.messages[i].id = id ? id : i;
 						var equiNode = {
 							id: id ? id : i,
-							value: protocol.protocol.messages[i].messageName,
+							value: protocol.messages[i].messageName,
 							data: []
 						}
 						root.data.push(equiNode);
@@ -1282,7 +1280,7 @@ define(['knockout', 'jquery', 'komapping',
 					var currentSelectNodeValue = _.get(self.protocolService.editedProtocolConfig, self.protocolService.currentSelectNode.path);
 					if( currentSelectNodeValue == undefined || currentSelectNodeValue == null || typeof(currentSelectNodeValue) == 'object')
 						return;
-	
+
 					var path = JSON.parse(JSON.stringify(self.protocolService.currentSelectNode.path));
 					path.unshift(self.currentGenericFrameMessageName);
 					self.genericFrameInfo.conditions.push({
@@ -1454,9 +1452,9 @@ define(['knockout', 'jquery', 'komapping',
 							self.exceptionCheck(false);
 							self.protocolFieldsconfig.removeAll();
 							self.currentGenericFrameMessageName = "";
-							for (var i = 0; i < self.protocol.protocol.messages.length; i++) {
-								if (self.protocol.protocol.messages[i].id === id) {
-									self.selectedMessage = JSON.parse(JSON.stringify(self.protocol.protocol.messages[i]));
+							for (var i = 0; i < self.protocol.messages.length; i++) {
+								if (self.protocol.messages[i].id === id) {
+									self.selectedMessage = JSON.parse(JSON.stringify(self.protocol.messages[i]));
 									self.currentGenericFrameMessageName = self.selectedMessage.messageName;
 									self.genericFrameInfo.id = self.selectedMessage.id;
 									self.selectedMessage.fieldValues = null;

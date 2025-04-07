@@ -1030,16 +1030,16 @@ define(['knockout', 'jquery', 'komapping',
 						value: protocol.protocolName,
 						data: []
 					};
-					if (protocol.protocol.messages == undefined || protocol.protocol.messages == null || protocol.protocol.messages.length == 0) {
+					if (protocol.messages == undefined || protocol.messages == null || protocol.messages.length == 0) {
 						notificationService.showWarn('协议文件中不存在消息定义，请确认协议文件是否正确!');
 						return;
 					}
-					for (var i = 0; i < protocol.protocol.messages.length; i++) {
-						var id = protocol.protocol.messages[i].messageName;
-						protocol.protocol.messages[i].id = id ? id : i;
+					for (var i = 0; i < protocol.messages.length; i++) {
+						var id = protocol.messages[i].messageName;
+						protocol.messages[i].id = id ? id : i;
 						var equiNode = {
 							id: id ? id : i,
-							value: protocol.protocol.messages[i].messageName,
+							value: protocol.messages[i].messageName,
 							data: []
 						}
 						root.data.push(equiNode);
@@ -1455,9 +1455,9 @@ define(['knockout', 'jquery', 'komapping',
 							self.exceptionCheck(false);
 							self.protocolFieldsconfig.removeAll();
 							self.currentGenericFrameMessageName = "";
-							for (var i = 0; i < self.protocol.protocol.messages.length; i++) {
-								if (self.protocol.protocol.messages[i].id === id) {
-									self.selectedMessage = JSON.parse(JSON.stringify(self.protocol.protocol.messages[i]));
+							for (var i = 0; i < self.protocol.messages.length; i++) {
+								if (self.protocol.messages[i].id === id) {
+									self.selectedMessage = JSON.parse(JSON.stringify(self.protocol.messages[i]));
 									self.currentGenericFrameMessageName = self.selectedMessage.messageName;
 									self.genericFrameInfo.id = self.selectedMessage.id;
 									self.selectedMessage.fieldValues = null;
