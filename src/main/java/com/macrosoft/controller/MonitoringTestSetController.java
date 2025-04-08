@@ -89,7 +89,7 @@ public class MonitoringTestSetController {
 		}
 	}
 
-	@PostMapping("/create/1")
+	@PostMapping("/create/withScripts")
 	public ApiResponse<MonitoringTestSet> createMonitoringTestSet(@RequestBody MonitoringTestSetAggregate monitoringTestSetAggregate) {
 		try {
 			Script[] scripts = monitoringTestSetAggregate.getScripts();
