@@ -57,7 +57,7 @@ define(
 			};
 
 			this.getScriptGroupByProjectErrorFunction = function () {
-				notificationService.showError('获取项目业务脚本信息失败');
+				notificationService.showError('获取项目脚本信息失败');
 			};
 
 			this.getScriptGroupByProject = function () {
@@ -84,7 +84,7 @@ define(
 						}, 0, retNewScriptGroup.parentScriptGroupId);
 						$$("rfm").refreshCursor();
 						self.treeAdjust();
-						notificationService.showSuccess('创建业务脚本组成功');
+						notificationService.showSuccess('创建脚本组成功');
 					} else
 						self.createScriptGroupErrorFunction();
 				} else
@@ -92,7 +92,7 @@ define(
 			};
 
 			this.createScriptGroupErrorFunction = function () {
-				notificationService.showError('创建业务脚本组失败');
+				notificationService.showError('创建脚本组失败');
 			};
 
 			this.createScriptGroup = function (parentId) {
@@ -101,7 +101,7 @@ define(
 					projectId: self.selectionManager.selectedProject().id,
 					parentScriptGroupId: parentId,
 					description: '',
-					name: '新建业务脚本组',
+					name: '新建脚本组',
 					type: self.scriptType
 				};
 				self.utpService.createScriptGroup(defNewScriptGroup,
@@ -572,7 +572,7 @@ define(
 						}, 0, retNewScript.parentScriptGroupId);
 						self.treeAdjust();
 						$$("rfm").refreshCursor();
-						notificationService.showSuccess('创建业务脚本成功');
+						notificationService.showSuccess('创建脚本成功');
 						self.getScriptGroupByProject();
 					} else
 						self.createScriptErrorFunction();
@@ -585,9 +585,9 @@ define(
 
 			this.createScriptErrorFunction = function (errorMessages) {
 				if (errorMessages === 'OVER_MAX_SCRIPT_NUM') {
-					notificationService.showError('业务脚本数量已达上限,请安装对应的许可文件!');
+					notificationService.showError('脚本数量已达上限,请安装对应的许可文件!');
 				} else {
-					notificationService.showError('创建业务脚本失败');
+					notificationService.showError('创建脚本失败');
 				}
 			};
 
@@ -598,7 +598,7 @@ define(
 					projectId: self.selectionManager.selectedProject().id,
 					parentScriptGroupId: parentId,
 					description: '',
-					name: '新建业务脚本',
+					name: '新建脚本',
 					type: self.scriptType
 				};
 				self.utpService.createScript(defNewscript,
@@ -607,52 +607,52 @@ define(
 			};
 
 			// create sub script
-			// this.createSubScriptSuccessFunction = function (data) {
-			// 	if (data && data.status === 1) {
-			// 		var retNewSubScript = data.result;
-			// 		if (retNewSubScript != null) {
-			// 			$$("rfm").add({
-			// 				id: retNewSubScript.id,
-			// 				value: retNewSubScript.name,
-			// 				date: new Date(),
-			// 				type: "text",
-			// 				dataType: "subscript"
-			// 			}, 0, retNewSubScript.parentScriptGroupId);
-			// 			self.treeAdjust();
-			// 			$$("rfm").refreshCursor();
-			// 			notificationService.showSuccess('创建子脚本成功');
-			// 			self.getScriptGroupByProject();
-			// 		} else
-			// 			self.createSubScriptErrorFunction();
-			// 	} else if (data && data.status === 0 && data.result != null) {
-			// 		self.createSubScriptErrorFunction(data.result.errorMessages);
-			// 	} else {
-			// 		self.createSubScriptErrorFunction();
-			// 	}
-			// };
+			this.createSubScriptSuccessFunction = function (data) {
+				if (data && data.status === 1) {
+					var retNewSubScript = data.result;
+					if (retNewSubScript != null) {
+						$$("rfm").add({
+							id: retNewSubScript.id,
+							value: retNewSubScript.name,
+							date: new Date(),
+							type: "text",
+							dataType: "usrlogicblock"
+						}, 0, retNewSubScript.parentScriptGroupId);
+						self.treeAdjust();
+						$$("rfm").refreshCursor();
+						notificationService.showSuccess('创建逻辑块成功');
+						self.getScriptGroupByProject();
+					} else
+						self.createSubScriptErrorFunction();
+				} else if (data && data.status === 0 && data.result != null) {
+					self.createSubScriptErrorFunction(data.result.errorMessages);
+				} else {
+					self.createSubScriptErrorFunction();
+				}
+			};
 
-			// this.createSubScriptErrorFunction = function (errorMessages) {
-			// 	if (errorMessages === 'OVER_MAX_SUBSCRIPT_NUM') {
-			// 		notificationService.showError('子脚本数量已达上限,请安装对应的许可文件!');
-			// 	} else {
-			// 		notificationService.showError('创建子脚本失败');
-			// 	}
-			// };
+			this.createSubScriptErrorFunction = function (errorMessages) {
+				if (errorMessages === 'OVER_MAX_SUBSCRIPT_NUM') {
+					notificationService.showError('逻辑块数量已达上限,请安装对应的许可文件!');
+				} else {
+					notificationService.showError('创建逻辑块失败');
+				}
+			};
 
-			// this.createSubScript = function (parentId) {
-			// 	var defNewScriptGroup = {
-			// 		id: 0,
-			// 		customizedId: '',
-			// 		projectId: self.selectionManager.selectedProject().id,
-			// 		parentScriptGroupId: parentId,
-			// 		description: '',
-			// 		name: '新建子脚本',
-			// 		parameter: ""
-			// 	};
-			// 	self.utpService.createSubScript(defNewScriptGroup,
-			// 		self.createSubScriptSuccessFunction,
-			// 		self.createSubScriptErrorFunction);
-			// };
+			this.createSubScript = function (parentId) {
+				var defNewScriptGroup = {
+					id: 0,
+					customizedId: '',
+					projectId: self.selectionManager.selectedProject().id,
+					parentScriptGroupId: parentId,
+					description: '',
+					name: '新建逻辑块',
+					parameter: ""
+				};
+				self.utpService.createSubScript(defNewScriptGroup,
+					self.createSubScriptSuccessFunction,
+					self.createSubScriptErrorFunction);
+			};
 
 			// edit
 			this.editName = function (name) {
@@ -669,7 +669,7 @@ define(
 						self.updateScriptGroupErrorFunction();
 					else {
 						self.editName(scriptGroup.name);
-						notificationService.showSuccess('更新业务脚本组成功');
+						notificationService.showSuccess('更新脚本组成功');
 					}
 				} else
 					self.updateScriptGroupErrorFunction();
@@ -677,7 +677,7 @@ define(
 
 			this.updateScriptGroupErrorFunction = function () {
 				self.editName(self.selectedItem.value);
-				notificationService.showError('更新业务脚本组失败');
+				notificationService.showError('更新脚本组失败');
 			};
 
 			this.updateScriptGroup = function (selectedScriptGroup) {
@@ -694,7 +694,7 @@ define(
 						self.updateScriptErrorFunction();
 					else {
 						self.editName(script.name);
-						notificationService.showSuccess('更新业务脚本成功');
+						notificationService.showSuccess('更新脚本成功');
 					}
 				} else
 					self.updateScriptErrorFunction();
@@ -702,7 +702,7 @@ define(
 
 			this.renameScriptErrorFunction = function () {
 				self.editName(self.selectedItem.value);
-				notificationService.showError('更新业务脚本失败');
+				notificationService.showError('更新脚本失败');
 			};
 
 			this.renameScript = function (selectedScript) {
@@ -761,13 +761,13 @@ define(
 					$$("rfm").deleteFile(self.selectedItem.id);
 					$$("rfm").setPath(parentId);
 					self.treeAdjust();
-					notificationService.showSuccess('删除业务脚本组成功');
+					notificationService.showSuccess('删除脚本组成功');
 				} else
-					notificationService.showError('删除业务脚本组失败');
+					notificationService.showError('删除脚本组失败');
 			};
 
 			this.deleteScriptGroupErrorFunction = function () {
-				notificationService.showError('删除业务脚本组失败');
+				notificationService.showError('删除脚本组失败');
 			};
 
 			this.deleteScriptGroup = function (id) {
@@ -798,20 +798,20 @@ define(
 					if (data.result.state == State_Success) {
 						$$("rfm").deleteFile(self.selectedItem.id);
 						self.treeAdjust();
-						notificationService.showSuccess('删除业务脚本成功');
+						notificationService.showSuccess('删除脚本成功');
 					} else {
 						var message = self.getTestRunReference(data.result.referencesByTestSet);
 						if (message == "")
-							notificationService.showError("删除业务脚本失败！");
+							notificationService.showError("删除脚本失败！");
 						else
-							notificationService.showError("该业务脚本已被测试集引用：" + message);
+							notificationService.showError("该脚本已被测试集引用：" + message);
 					}
 				} else
 					self.deleteScriptErrorFunction();
 			};
 
 			this.deleteScriptErrorFunction = function () {
-				notificationService.showError('删除业务脚本失败！');
+				notificationService.showError('删除脚本失败！');
 			};
 
 			this.deleteScript = function (id) {
@@ -826,7 +826,7 @@ define(
 					$$("rfm").deleteFile(self.selectedItem.id);
 					self.treeAdjust();
 					if (self.selectedItem.type === "file")
-						notificationService.showSuccess('删除业务脚本成功');
+						notificationService.showSuccess('删除脚本成功');
 					else if (self.selectedItem.type === "text")
 						notificationService.showSuccess('删除子脚本成功');
 				} else
@@ -835,7 +835,7 @@ define(
 
 			this.forceDeleteScriptErrorFunction = function () {
 				if (self.selectedItem.type === "file")
-					notificationService.showError('删除业务脚本失败！');
+					notificationService.showError('删除脚本失败！');
 				else if (self.selectedItem.type === "text")
 					notificationService.showError('删除子脚本失败！');
 			};
@@ -876,11 +876,11 @@ define(
 						var recoverSubscriptReferenceMessage = self.getRecoverSubscriptReference(data.result.referencesByRecoverSubscript);
 						var subscriptReferenceMessage = self.getSubscriptReference(data.result.referencesByScript);
 						if (recoverSubscriptReferenceMessage == "" && subscriptReferenceMessage == "")
-							notificationService.showError("删除业务脚本失败！");
+							notificationService.showError("删除脚本失败！");
 						if (recoverSubscriptReferenceMessage != "")
 							notificationService.showError("该子脚本已作为异常恢复脚本：" + recoverSubscriptReferenceMessage);
 						if (subscriptReferenceMessage != "")
-							notificationService.showError("该子脚本已被其它业务脚本/子脚本引用：" + subscriptReferenceMessage);
+							notificationService.showError("该子脚本已被其它脚本/子脚本引用：" + subscriptReferenceMessage);
 					}
 				} else
 					self.deleteSubScriptErrorFunction();
@@ -908,7 +908,7 @@ define(
 							$$("rfm").moveFile(self.sourceId, self.targetId);
 						$$("rfm").refreshCursor();
 						self.treeAdjust();
-						notificationService.showSuccess('粘贴业务脚本组成功');
+						notificationService.showSuccess('粘贴脚本组成功');
 						$.unblockUI();
 					} else
 						self.moveScriptGroupErrorFunction();
@@ -919,9 +919,9 @@ define(
 			this.moveScriptGroupErrorFunction = function (errorMessages) {
 				$.unblockUI();
 				if (errorMessages === 'OVER_MAX_SCRIPT_NUM') {
-					notificationService.showError('业务脚本数量/子脚本已达上限,请安装对应的许可文件!');
+					notificationService.showError('脚本数量/子脚本已达上限,请安装对应的许可文件!');
 				} else {
-					notificationService.showError('粘贴业务脚本组失败');
+					notificationService.showError('粘贴脚本组失败');
 				}
 			};
 
@@ -970,7 +970,7 @@ define(
 							$$("rfm").moveFile(self.sourceId, self.targetId);
 						self.treeAdjust();
 						$$("rfm").refreshCursor();
-						notificationService.showSuccess('粘贴业务脚本/子脚本成功');
+						notificationService.showSuccess('粘贴脚本/子脚本成功');
 					} else
 						self.moveScriptErrorFunction();
 				} else
@@ -979,9 +979,9 @@ define(
 
 			this.moveScriptErrorFunction = function (errorMessages) {
 				if (errorMessages === 'OVER_MAX_SCRIPT_NUM') {
-					notificationService.showError('业务脚本数量/子脚本已达上限,请安装对应的许可文件!');
+					notificationService.showError('脚本数量/子脚本已达上限,请安装对应的许可文件!');
 				} else {
-					notificationService.showError('粘贴业务脚本/子脚本失败');
+					notificationService.showError('粘贴脚本/子脚本失败');
 				}
 			};
 
@@ -1002,15 +1002,15 @@ define(
 					var message = self
 						.getTestRunReference(data.result.referencesByTestSet);
 					if (message == "")
-						notificationService.showInfo('该业务脚本未被引用');
+						notificationService.showInfo('该脚本未被引用');
 					else
-						notificationService.showInfo("该业务脚本已被测试集引用：" + message);
+						notificationService.showInfo("该脚本已被测试集引用：" + message);
 				} else
 					self.getReferenceOfScriptErrorFunction();
 			};
 
 			this.getReferenceOfScriptErrorFunction = function () {
-				notificationService.showError('获取业务脚本引用失败！');
+				notificationService.showError('获取脚本引用失败！');
 			};
 
 			this.referenceOfScript = function (sourceId) {
@@ -1034,7 +1034,7 @@ define(
 						notificationService.showInfo("该子脚本已作为异常恢复脚本："
 							+ recoverSubscriptReferenceMessage);
 					if (subscriptReferenceMessage != "")
-						notificationService.showInfo("该子脚本已被其它业务脚本/子脚本引用："
+						notificationService.showInfo("该子脚本已被其它脚本/子脚本引用："
 							+ subscriptReferenceMessage);
 				} else
 					self.getReferenceOfSubScriptErrorFunction();
@@ -1058,22 +1058,22 @@ define(
 						self.selectedItem.type = "text";
 						self.selectedItem.dataType = "subscript";
 						self.selectedItem.parameter = null;
-						notificationService.showSuccess('业务脚本转换子脚成功!');
+						notificationService.showSuccess('脚本转换子脚成功!');
 						$$("rfm").refreshCursor();
 					}
 					if (data.result.state == "FailedByReference") {
 						var testset = data.result.referencesByTestSet;
 						if (testset && testset.length > 0)
-							notificationService.showWarn("该业务脚本已被" + testset[0].name + "等测试集引用，不能转换成子脚本！");
+							notificationService.showWarn("该脚本已被" + testset[0].name + "等测试集引用，不能转换成子脚本！");
 						else
-							notificationService.showWarn("该业务脚本已被测试集引用，不能转换成子脚本！");
+							notificationService.showWarn("该脚本已被测试集引用，不能转换成子脚本！");
 					}
 				} else
 					self.transitToSubscriptErrorFunction();
 			};
 
 			this.transitToSubscriptErrorFunction = function () {
-				notificationService.showError('业务脚本转换成子脚本失败');
+				notificationService.showError('脚本转换成子脚本失败');
 			};
 
 			this.convertToSubScript = function (item) {
@@ -1095,21 +1095,21 @@ define(
 						self.selectedItem.type = "file";
 						self.selectedItem.dataType = "testcase";
 						delete self.selectedItem.parameter;
-						notificationService.showSuccess('子脚本转换为业务脚本成功!');
+						notificationService.showSuccess('子脚本转换为脚本成功!');
 						$$("rfm").refreshCursor();
 					}
 					else if (data.result.state == "FailedByReference") {
 						var script = data.result.referencesByScript;
 						var recover = data.result.referencesByRecoverSubscript;
 						if (script && script.length > 0)
-							notificationService.showWarn("该子脚本已经被" + script[0].name + "等其它脚本或者业务脚本引用，不能转换成业务脚本！");
+							notificationService.showWarn("该子脚本已经被" + script[0].name + "等其它脚本或者脚本引用，不能转换成脚本！");
 						else if (recover && recover.length > 0)
-							notificationService.showWarn("该子脚本已经作为异常恢复脚本，不能转换成业务脚本！");
+							notificationService.showWarn("该子脚本已经作为异常恢复脚本，不能转换成脚本！");
 						else
-							notificationService.showWarn("该子脚本已被引用，不能转换成业务脚本！");
+							notificationService.showWarn("该子脚本已被引用，不能转换成脚本！");
 					}
 					else if (data.result.state == "FailedByParameterNotEmpty")
-						notificationService.showWarn("带参子脚本不能转换成业务脚本！");
+						notificationService.showWarn("带参子脚本不能转换成脚本！");
 					else if (subscriptReferenceMessage == "FailedByUnknowError")
 						self.transitToScriptErrorFunction();
 					else
@@ -1119,7 +1119,7 @@ define(
 			};
 
 			this.transitToScriptErrorFunction = function () {
-				notificationService.showError('子脚本转换为业务脚本失败');
+				notificationService.showError('子脚本转换为脚本失败');
 			};
 
 			this.convertToTestCase = function (item) {
@@ -1129,7 +1129,7 @@ define(
 				if (parameter) {
 					var parameters = JSON.parse(parameter);
 					if (parameters.length > 0) {
-						notificationService.showWarn('子脚本包含参数，无法转换为业务脚本！');
+						notificationService.showWarn('子脚本包含参数，无法转换为脚本！');
 						return;
 					}
 				}
@@ -1224,7 +1224,7 @@ define(
 					return;
 				}
 				self.exportData = new Map();
-				self.excelReport.data = [[1, 1, "ID", ""], [1, 2, "业务脚本ID", ""],
+				self.excelReport.data = [[1, 1, "ID", ""], [1, 2, "脚本ID", ""],
 				[1, 3, "路径", ""], [1, 4, "名称", ""],
 				[1, 5, "类型", ""], [1, 6, "内容", ""],
 				[1, 7, "参数", ""], [1, 8, "备注", ""]];
@@ -1309,7 +1309,7 @@ define(
 									self.excelReport.data.push([i, 2, value.customizedId, ""]);
 									self.excelReport.data.push([i, 3, value.path, ""]);
 									self.excelReport.data.push([i, 4, value.name, ""]);
-									self.excelReport.data.push([i, 5, value.type == "testcase" ? "业务脚本" : "子脚本", ""]);
+									self.excelReport.data.push([i, 5, value.type == "testcase" ? "脚本" : "子脚本", ""]);
 									self.excelReport.data.push([i, 6, value.script, ""]);
 									self.excelReport.data.push([i, 7, value.parameter, ""]);
 									self.excelReport.data.push([i, 8, value.description, ""]);
@@ -1397,10 +1397,10 @@ define(
 							root.push(scriptGroups);
 							self.initScriptTree(root);
 						} else
-							notificationService.showError('获取项目业务脚本信息失败');
+							notificationService.showError('获取项目脚本信息失败');
 					},
 					function () {
-						notificationService.showError('获取项目业务脚本信息失败');
+						notificationService.showError('获取项目脚本信息失败');
 					});
 			};
 
@@ -1476,7 +1476,7 @@ define(
 								on: {
 									"onViewInit": function (name, config) {
 										if (name === 'search')
-											config.placeholder = "查找ID/业务脚本ID/名称";
+											config.placeholder = "查找ID/脚本ID/名称";
 										else if (name == "table") {
 											var columns = config.columns;
 											columns.splice(3, 1);
@@ -1518,21 +1518,21 @@ define(
 													return obj.id;
 												}
 											};
-											var customizedIdColumn = {
-												id: "customizedId",
-												header: {
-													text: "业务脚本ID",
-													css: { "text-align": "left" }
-												},
-												fillspace: 1,
-												sort: "string",
-												template: function (obj, common) {
-													if (obj.customizedId == undefined || obj.customizedId == null)
-														return "";
-													return obj.customizedId;
-												}
-											};
-											columns.splice(2, 0, customizedIdColumn);
+											// var customizedIdColumn = {
+											// 	id: "customizedId",
+											// 	header: {
+											// 		text: "脚本ID",
+											// 		css: { "text-align": "left" }
+											// 	},
+											// 	fillspace: 1,
+											// 	sort: "string",
+											// 	template: function (obj, common) {
+											// 		if (obj.customizedId == undefined || obj.customizedId == null)
+											// 			return "";
+											// 		return obj.customizedId;
+											// 	}
+											// };
+											//columns.splice(2, 0, customizedIdColumn);
 											columns.splice(3, 0, descriptionColumn);
 											columns.splice(5, 0, idColumn);
 											// 将idColumn放入数组最后一项
@@ -1574,7 +1574,7 @@ define(
 										var item = $$("rfm").getItem(id);
 										item.id = id;
 										if (item.type === "folder" && $$("rfm").getFirstChildId(item.id) != null) {
-											notificationService.showError('业务脚本组不为空，不允许删除！');
+											notificationService.showError('脚本组不为空，不允许删除！');
 										} else {
 											self.selectedItem = item;
 											$('#rundeleteTestcaseModal').modal('show');
@@ -1822,13 +1822,13 @@ define(
 											$$("rfm").getMenu().hide();
 										}
 
-										// if (id === "createSubScript") {
-										// 	var parent = $$("rfm").getCurrentFolder();
-										// 	if (parent === fileManagerUtility.root)
-										// 		parent = "";
-										// 	self.createSubScript(parent);
-										// 	$$("rfm").getMenu().hide();
-										// }
+										if (id === "createSubScript") {
+											var parent = $$("rfm").getCurrentFolder();
+											if (parent === fileManagerUtility.root)
+												parent = "";
+											self.createSubScript(parent);
+											$$("rfm").getMenu().hide();
+										}
 										return true;
 									},
 								},
@@ -1836,9 +1836,9 @@ define(
 								ready: function () {
 									var actions = this.getMenu();
 									var createItem = actions.getItem("create");
-									createItem.value = "新建业务脚本组";
+									createItem.value = "新建脚本组";
 									var uploadItem = actions.getItem("upload");
-									uploadItem.value = "跨项目脚本导入";
+									uploadItem.value = "跨项目导入";
 									//移除actions里的导入菜单项
 									if (!self.systemConfig.getConfig("utpclient.testcase_mgr.import")) {
 										actions.remove("upload");
@@ -1859,18 +1859,18 @@ define(
 											},
 											7);
 									}
-									// actions.add(
-									// 	{
-									// 		id: "createSubScript",
-									// 		icon: "fm-file-text",
-									// 		value: "新建子脚本"
-									// 	},
-									// 	6);
+									actions.add(
+										{
+											id: "createSubScript",
+											icon: "fm-file-text",
+											value: "新建逻辑块"
+										},
+										6);
 									// actions.add(
 									// 	{
 									// 		id: "convertScript",
 									// 		icon: "webix_fmanager_icon fa-exchange",
-									// 		value: "业务脚本/公共脚本转换"
+									// 		value: "脚本/公共脚本转换"
 									// 	},
 									// 	9);
 									actions.add({
@@ -1880,7 +1880,7 @@ define(
 										{
 											id: "verify",
 											icon: "webix_fmanager_icon fa-cog",
-											value: "验证业务脚本"
+											value: "验证脚本"
 										},
 										11);
 									actions.add(
@@ -1936,7 +1936,7 @@ define(
 										actions.remove("create");
 										actions.remove("createTestCase");
 										actions.remove("createTimeSeriesTestCase");
-										// actions.remove("createSubScript");
+										actions.remove("createSubScript");
 										actions.remove("convertScript");
 										actions.remove("upload");
 										actions.remove("remove");
@@ -1965,7 +1965,7 @@ define(
 										var parent = $$("rfm").getCurrentFolder();
 										if (parent === fileManagerUtility.root) {
 											if (obj.id === "createTestCase"
-												// || obj.id === "createSubScript"
+												|| obj.id === "createSubScript"
 												|| obj.id === "remove"
 												|| obj.id === "forceRemove"
 												|| obj.id === "edit"
@@ -1986,7 +1986,7 @@ define(
 										if (item.type === "file") {
 											if (obj.id === "createTestCase"
 												|| obj.id === "createTimeSeriesTestCase"
-												// || obj.id === "createSubScript"
+												|| obj.id === "createSubScript"
 												|| obj.id === "upload"
 												|| obj.id === "create")
 												return false;
@@ -1994,7 +1994,7 @@ define(
 										if (item.type === "text") {
 											if (obj.id === "createTestCase"
 												|| obj.id === "createTimeSeriesTestCase"
-												// || obj.id === "createSubScript"
+												|| obj.id === "createSubScript"
 												|| obj.id === "create"
 												|| obj.id === "upload"
 												|| obj.id === "exportWord"
@@ -2004,7 +2004,7 @@ define(
 										if (dataId === fileManagerUtility.root) {
 											if (obj.id === "createTestCase"
 												|| obj.id === "createTimeSeriesTestCase"
-												// || obj.id === "createSubScript"
+												|| obj.id === "createSubScript"
 												|| obj.id === "remove"
 												|| obj.id === "forceRemove"
 												|| obj.id === "edit"
@@ -2047,11 +2047,11 @@ define(
 							var column = common.column.id;
 							if (column == "type") {
 								if (obj[column] == 'folder')
-									return "业务脚本组";
+									return "脚本组";
 								if (obj[column] == 'text')
 									return "子脚本";
 								if (obj[column] == 'file')
-									return "业务脚本";
+									return "脚本";
 							}
 							else if (column == "location") {
 								var parents = $$("rfm").getPathNames(obj.id);

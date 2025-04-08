@@ -651,7 +651,6 @@ define(
 				self.antbotRefreshSubScription = app.on('antbotRefresh:event').then(function () { self.getAgentConfig(); }, this);
 				self.antbotAddSubScription = app.on('antbotAdd:event').then(function () { self.enterAddItemMode(); }, this);
 				ursService.getAllAgentType(loginManager.getOrganization(), loginManager.getAuthorizationKey(), self.loadAllAgentTypeSuccessFunction, self.loadAllAgentTypeErrorFunction);
-
 			};
 
 			//获取所有的机器人类型

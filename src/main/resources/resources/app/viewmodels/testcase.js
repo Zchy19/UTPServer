@@ -45,12 +45,10 @@ define(
 			};
 
 			this.getScriptGroupByProjectSuccessFunction = function (data) {
-				self.projectManager.subScriptMappingClear();
 				self.projectManager.testcaseMappingClear();
 				if (data != null && data.status === 1
 					&& data.result != null) {
-					var scriptGroups = self.projectManager
-						.generateScriptGroupsFromFlatInfo(data.result);
+					var scriptGroups = self.projectManager.generateScriptGroupsFromFlatInfo(data.result);
 					var root = [];
 					root.push(scriptGroups);
 					self.refreshFileManager(root);
@@ -618,52 +616,52 @@ define(
 			};
 
 			// create sub script
-			// this.createSubScriptSuccessFunction = function (data) {
-			// 	if (data && data.status === 1) {
-			// 		var retNewSubScript = data.result;
-			// 		if (retNewSubScript != null) {
-			// 			$$("fm").add({
-			// 				id: retNewSubScript.id,
-			// 				value: retNewSubScript.name,
-			// 				date: new Date(),
-			// 				type: "text",
-			// 				dataType: "subscript"
-			// 			}, 0, retNewSubScript.parentScriptGroupId);
-			// 			self.treeAdjust();
-			// 			$$("fm").refreshCursor();
-			// 			notificationService.showSuccess('创建子脚本成功');
-			// 			self.getScriptGroupByProject();
-			// 		} else
-			// 			self.createSubScriptErrorFunction();
-			// 	} else if (data && data.status === 0 && data.result != null) {
-			// 		self.createSubScriptErrorFunction(data.result.errorMessages);
-			// 	} else {
-			// 		self.createSubScriptErrorFunction();
-			// 	}
-			// };
+			this.createSubScriptSuccessFunction = function (data) {
+				if (data && data.status === 1) {
+					var retNewSubScript = data.result;
+					if (retNewSubScript != null) {
+						$$("fm").add({
+							id: retNewSubScript.id,
+							value: retNewSubScript.name,
+							date: new Date(),
+							type: "text",
+							dataType: "usrlogicblock"
+						}, 0, retNewSubScript.parentScriptGroupId);
+						self.treeAdjust();
+						$$("fm").refreshCursor();
+						notificationService.showSuccess('创建逻辑块成功');
+						self.getScriptGroupByProject();
+					} else
+						self.createSubScriptErrorFunction();
+				} else if (data && data.status === 0 && data.result != null) {
+					self.createSubScriptErrorFunction(data.result.errorMessages);
+				} else {
+					self.createSubScriptErrorFunction();
+				}
+			};
 
-			// this.createSubScriptErrorFunction = function (errorMessages) {
-			// 	if (errorMessages === 'OVER_MAX_SUBSCRIPT_NUM') {
-			// 		notificationService.showError('子脚本数量已达上限,请安装对应的许可文件!');
-			// 	} else {
-			// 		notificationService.showError('创建子脚本失败');
-			// 	}
-			// };
+			this.createSubScriptErrorFunction = function (errorMessages) {
+				if (errorMessages === 'OVER_MAX_SUBSCRIPT_NUM') {
+					notificationService.showError('逻辑块数量已达上限,请安装对应的许可文件!');
+				} else {
+					notificationService.showError('创建逻辑块失败');
+				}
+			};
 
-			// this.createSubScript = function (parentId) {
-			// 	var defNewScriptGroup = {
-			// 		id: 0,
-			// 		customizedId: '',
-			// 		projectId: self.selectionManager.selectedProject().id,
-			// 		parentScriptGroupId: parentId,
-			// 		description: '',
-			// 		name: '新建子脚本',
-			// 		parameter: ""
-			// 	};
-			// 	self.utpService.createSubScript(defNewScriptGroup,
-			// 		self.createSubScriptSuccessFunction,
-			// 		self.createSubScriptErrorFunction);
-			// };
+			this.createSubScript = function (parentId) {
+				var defNewScriptGroup = {
+					id: 0,
+					customizedId: '',
+					projectId: self.selectionManager.selectedProject().id,
+					parentScriptGroupId: parentId,
+					description: '',
+					name: '新建逻辑块',
+					parameter: ""
+				};
+				self.utpService.createSubScript(defNewScriptGroup,
+					self.createSubScriptSuccessFunction,
+					self.createSubScriptErrorFunction);
+			};
 
 			// edit
 			this.editName = function (name) {
@@ -1529,21 +1527,21 @@ define(
 													return obj.id;
 												}
 											};
-											var customizedIdColumn = {
-												id: "customizedId",
-												header: {
-													text: "测试用例ID",
-													css: { "text-align": "left" }
-												},
-												fillspace: 1,
-												sort: "string",
-												template: function (obj, common) {
-													if (obj.customizedId == undefined || obj.customizedId == null)
-														return "";
-													return obj.customizedId;
-												}
-											};
-											columns.splice(2, 0, customizedIdColumn);
+											// var customizedIdColumn = {
+											// 	id: "customizedId",
+											// 	header: {
+											// 		text: "测试用例ID",
+											// 		css: { "text-align": "left" }
+											// 	},
+											// 	fillspace: 1,
+											// 	sort: "string",
+											// 	template: function (obj, common) {
+											// 		if (obj.customizedId == undefined || obj.customizedId == null)
+											// 			return "";
+											// 		return obj.customizedId;
+											// 	}
+											// };
+											// columns.splice(2, 0, customizedIdColumn);
 											columns.splice(3, 0, descriptionColumn);
 											columns.splice(5, 0, idColumn);
 											// 将idColumn放入数组最后一项
@@ -1833,13 +1831,13 @@ define(
 											$$("fm").getMenu().hide();
 										}
 
-										// if (id === "createSubScript") {
-										// 	var parent = $$("fm").getCurrentFolder();
-										// 	if (parent === fileManagerUtility.root)
-										// 		parent = "";
-										// 	self.createSubScript(parent);
-										// 	$$("fm").getMenu().hide();
-										// }
+										if (id === "createSubScript") {
+											var parent = $$("fm").getCurrentFolder();
+											if (parent === fileManagerUtility.root)
+												parent = "";
+											self.createSubScript(parent);
+											$$("fm").getMenu().hide();
+										}
 										return true;
 									},
 								},
@@ -1849,7 +1847,7 @@ define(
 									var createItem = actions.getItem("create");
 									createItem.value = "新建测试用例组";
 									var uploadItem = actions.getItem("upload");
-									uploadItem.value = "跨项目脚本导入";
+									uploadItem.value = "跨项目导入";
 									//移除actions里的导入菜单项
 									if (!self.systemConfig.getConfig("utpclient.testcase_mgr.import")) {
 										actions.remove("upload");
@@ -1870,13 +1868,13 @@ define(
 											},
 											7);
 									}
-									// actions.add(
-									// 	{
-									// 		id: "createSubScript",
-									// 		icon: "fm-file-text",
-									// 		value: "新建子脚本"
-									// 	},
-									// 	6);
+									actions.add(
+										{
+											id: "createSubScript",
+											icon: "fm-file-text",
+											value: "新建逻辑块"
+										},
+										6);
 									// actions.add(
 									// 	{
 									// 		id: "convertScript",
@@ -1947,7 +1945,7 @@ define(
 										actions.remove("create");
 										actions.remove("createTestCase");
 										actions.remove("createTimeSeriesTestCase");
-										// actions.remove("createSubScript");
+										actions.remove("createSubScript");
 										actions.remove("convertScript");
 										actions.remove("upload");
 										actions.remove("remove");
@@ -1982,7 +1980,7 @@ define(
 										var parent = $$("fm").getCurrentFolder();
 										if (parent === fileManagerUtility.root) {
 											if (obj.id === "createTestCase"
-												// || obj.id === "createSubScript"
+												|| obj.id === "createSubScript"
 												|| obj.id === "remove"
 												|| obj.id === "forceRemove"
 												|| obj.id === "edit"
@@ -2003,7 +2001,7 @@ define(
 										if (item.type === "file") {
 											if (obj.id === "createTestCase"
 												|| obj.id === "createTimeSeriesTestCase"
-												// || obj.id === "createSubScript"
+												|| obj.id === "createSubScript"
 												|| obj.id === "upload"
 												|| obj.id === "create")
 												return false;
@@ -2011,7 +2009,7 @@ define(
 										if (item.type === "text") {
 											if (obj.id === "createTestCase"
 												|| obj.id === "createTimeSeriesTestCase"
-												// || obj.id === "createSubScript"
+												|| obj.id === "createSubScript"
 												|| obj.id === "create"
 												|| obj.id === "upload"
 												|| obj.id === "exportWord"
@@ -2021,7 +2019,7 @@ define(
 										if (dataId === fileManagerUtility.root) {
 											if (obj.id === "createTestCase"
 												|| obj.id === "createTimeSeriesTestCase"
-												// || obj.id === "createSubScript"
+												|| obj.id === "createSubScript"
 												|| obj.id === "remove"
 												|| obj.id === "forceRemove"
 												|| obj.id === "edit"

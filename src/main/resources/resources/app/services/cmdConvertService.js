@@ -826,7 +826,7 @@
 						cmdUserLanguage = cmdUserLanguage.replace(new RegExp('\n', 'g'), "↵");
 						if (displayStep)
 							sequenceDiagramStr = sequenceDiagramStr
-								+ "步骤 " + stepsCount + ": "
+								+ stepsCount + ": "
 								+ cmdUserLanguage;
 						else
 							sequenceDiagramStr = sequenceDiagramStr
@@ -853,7 +853,7 @@
 							cmdUserLanguage = commandItemList[i];
 							if (displayStep)
 								sequenceDiagramStr = sequenceDiagramStr
-									+ "步骤 " + stepsCount + ": [" + agentName + "(未知)] "
+									+ stepsCount + ": [" + agentName + "(未知)] "
 									+ cmdUserLanguage;
 							else
 								sequenceDiagramStr = sequenceDiagramStr
@@ -864,7 +864,7 @@
 							cmdUserLanguage = cmdUserLanguage.replace(new RegExp('\n', 'g'), "↵");
 							if (displayStep)
 								sequenceDiagramStr = sequenceDiagramStr
-									+ "步骤 " + stepsCount + ": [" + agentName + "] "
+									+ stepsCount + ": [" + agentName + "] "
 									+ cmdUserLanguage;
 							else
 								sequenceDiagramStr = sequenceDiagramStr
@@ -931,7 +931,7 @@
 								step.stepType = "script"
 							}
 						} else {
-							step.stepType = "subScript"
+							step.stepType = "usrlogicblock"
 						}
 					}
 					cmdUserLanguage = self.convertEngineCmdToUserLanguange(command, parameters);
@@ -1183,7 +1183,7 @@
 			if (type == "testcase" || type == "runablescript") {
 				begin = self.TESTCASE_BEGIN + self.CMD_SEPARATOR;
 				end = self.TESTCASE_END;
-			} else if (type == "subscript") {
+			} else if (type == 'usrlogicblock' || type == "syslogicblock") {
 				begin = self.SUBSCRIPT_BEGIN + self.CMD_SEPARATOR;
 				end = self.SUBSCRIPT_END;
 			}

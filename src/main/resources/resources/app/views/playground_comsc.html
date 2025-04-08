@@ -5,7 +5,7 @@
 				<li class="" data-bind="click:initBasicInfo"><a href="#comscbasic" data-toggle="tab"
 						aria-expanded="true">基本信息</a></li>
 				<li class="active" data-bind="click: showScriptInStepsView"><a href="#comscstep" data-toggle="tab"
-						aria-expanded="false">测试步骤</a></li>
+						aria-expanded="false">测试序列</a></li>
 				<li class="" data-bind="click: enableBlockScriptEdit"><a href="#comscedit" data-toggle="tab"
 						aria-expanded="false">编辑内容</a></li>
 				<li class="" data-bind="click: showScriptInSequenceView"><a href="#comscdiagram" data-toggle="tab"
@@ -185,7 +185,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span >X</span></button>
 			-->
-				<h4 class="modal-title">为测试机器人插入操作步骤</h4>
+				<h4 class="modal-title">插入机器人命令</h4>
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
@@ -235,50 +235,25 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title">插入子脚本</h4>
+				<h4 class="modal-title">插入逻辑块</h4>
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
-					<label><span lang="en">请选择子脚本<font color="red">*</font></span></label>
+					<label><span lang="en">请选择逻辑块<font color="red">*</font></span></label>
 					<div id="comscSubScriptTreeview" style="background-color: #ffffff; height: 260px;"></div>
 				</div>
-				<div class="form-group">
+				<!-- <div class="form-group">
 					<label><input type="radio" name="scriptFunType" value="0"
 							data-bind="checked: selectScriptFunType" />调用子脚本</label>
 					<label><input type="radio" name="scriptFunType" value="1"
 							data-bind="checked: selectScriptFunType" />获取脚本内容</label>
-				</div>
+				</div> -->
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-primary" data-bind="click: $root.insertSubScript">
 					<span lang="en">确定</span>
 				</button>
 				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
-			</div>
-
-		</div>
-	</div>
-</div>
-
-<div class="modal fade" id="comscAntbotScriptModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-	data-backdrop="static">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h4 class="modal-title">插入子脚本</h4>
-			</div>
-			<div class="modal-body">
-				<div class="form-group">
-					<label><span lang="en">请选择子脚本<font color="red">*</font></span></label>
-					<div id="comscAntbotScriptTreeview" style="background-color: #ffffff; height: 260px;"></div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-bind="click: addSubScript">
-					<span lang="en">确定</span>
-				</button>
-				<button type="button" class="btn btn-default pull-left" data-dismiss="modal"
-					data-bind="click: cancelAntbotScript">取消</button>
 			</div>
 
 		</div>

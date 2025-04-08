@@ -597,7 +597,7 @@ define(
                     projectId: 0,
                     parentScriptGroupId: parentId,
                     description: '',
-                    name: '新建公共逻辑',
+                    name: '新建公共逻辑块',
                     type:  'usrlogicblock'
                 };
                 self.utpService.createScript(defNewscript,
@@ -619,7 +619,7 @@ define(
             			}, 0, retNewSubScript.parentScriptGroupId);
             			self.treeAdjust();
             			$$("cfm").refreshCursor();
-            			notificationService.showSuccess('创建公共逻辑成功');
+            			notificationService.showSuccess('创建逻辑块成功');
             			self.getScriptGroupByProject();
             		} else
             			self.createSubScriptErrorFunction();
@@ -632,9 +632,9 @@ define(
 
             this.createSubScriptErrorFunction = function (errorMessages) {
             	if (errorMessages === 'OVER_MAX_SUBSCRIPT_NUM') {
-            		notificationService.showError('子脚本数量已达上限,请安装对应的许可文件!');
+            		notificationService.showError('逻辑块数量已达上限,请安装对应的许可文件!');
             	} else {
-            		notificationService.showError('创建子脚本失败');
+            		notificationService.showError('创建逻辑块失败');
             	}
             };
 
@@ -645,7 +645,7 @@ define(
             		projectId: 0,
             		parentScriptGroupId: parentId,
             		description: '',
-            		name: '新建公共逻辑',
+            		name: '新建公共逻辑块',
             		parameter: ""
             	};
             	self.utpService.createSubScript(defNewScriptGroup,
@@ -1356,21 +1356,21 @@ define(
             this.permissionErrorFunction = function () {
                 notificationService.showError('该功能无法使用,请安装相应许可！');
             };
-            this.exportWord = function (item) {
-                var enable = self.systemConfig.getEnableByFeatureName('utpclient.testcase_mgr.export_word')
-                if (!enable) {
-                    self.permissionErrorFunction();
-                    return;
-                }
-                if (item.type === "folder") {
-                    var id = item.id;
-                    if (id === fileManagerUtility.root)
-                        id = 0;
-                    utpService.exportScriptGroup(0, id, self.fetchWordDataSuccessFunction, self.fetchWordDataErrorFunction);
-                }
-                else
-                    utpService.exportScript(0, item.id, self.fetchWordDataSuccessFunction, self.fetchWordDataErrorFunction);
-            };
+            // this.exportWord = function (item) {
+            //     var enable = self.systemConfig.getEnableByFeatureName('utpclient.testcase_mgr.export_word')
+            //     if (!enable) {
+            //         self.permissionErrorFunction();
+            //         return;
+            //     }
+            //     if (item.type === "folder") {
+            //         var id = item.id;
+            //         if (id === fileManagerUtility.root)
+            //             id = 0;
+            //         utpService.exportScriptGroup(0, id, self.fetchWordDataSuccessFunction, self.fetchWordDataErrorFunction);
+            //     }
+            //     else
+            //         utpService.exportScript(0, item.id, self.fetchWordDataSuccessFunction, self.fetchWordDataErrorFunction);
+            // };
             this.sourceId = "";
             this.sourceType = ""; // text, folder, script
             this.copyOrCut = true; // true: copy, false, cut
@@ -1514,21 +1514,21 @@ define(
                                                     return obj.id;
                                                 }
                                             };
-                                            var customizedIdColumn = {
-                                                id: "customizedId",
-                                                header: {
-                                                    text: "公共逻辑ID",
-                                                    css: { "text-align": "left" }
-                                                },
-                                                fillspace: 1,
-                                                sort: "string",
-                                                template: function (obj, common) {
-                                                    if (obj.customizedId == undefined || obj.customizedId == null)
-                                                        return "";
-                                                    return obj.customizedId;
-                                                }
-                                            };
-                                            columns.splice(2, 0, customizedIdColumn);
+                                            // var customizedIdColumn = {
+                                            //     id: "customizedId",
+                                            //     header: {
+                                            //         text: "公共逻辑ID",
+                                            //         css: { "text-align": "left" }
+                                            //     },
+                                            //     fillspace: 1,
+                                            //     sort: "string",
+                                            //     template: function (obj, common) {
+                                            //         if (obj.customizedId == undefined || obj.customizedId == null)
+                                            //             return "";
+                                            //         return obj.customizedId;
+                                            //     }
+                                            // };
+                                            // columns.splice(2, 0, customizedIdColumn);
                                             columns.splice(3, 0, descriptionColumn);
                                             columns.splice(5, 0, idColumn);
                                             // 将idColumn放入数组最后一项
@@ -1544,14 +1544,14 @@ define(
                                         view.parse(item.outlets);
                                         view.config.id = "test";
                                     },
-                                    "onBeforeUploadDialog": function (id) {
-                                        $('#commonreferScriptModal').modal({ show: true });
-                                        self.sourceId = id;
-                                        return false;
-                                    },
-                                    "onBeforeFileUpload": function (config) {
-                                        return false;
-                                    },
+                                    // "onBeforeUploadDialog": function (id) {
+                                    //     $('#commonreferScriptModal').modal({ show: true });
+                                    //     self.sourceId = id;
+                                    //     return false;
+                                    // },
+                                    // "onBeforeFileUpload": function (config) {
+                                    //     return false;
+                                    // },
                                     "onBeforeAdd": function (id, item) {
                                         return true;
                                     },
@@ -1703,10 +1703,10 @@ define(
                                     },
 
                                     "onItemClick": function (id, e, node) {
-                                        if (id === 'configCustomizedField') {
-                                            $('#commonscriptCustomizedFieldModal').modal({ show: true });
-                                            $$("cfm").getMenu().hide();
-                                        }
+                                        // if (id === 'configCustomizedField') {
+                                        //     $('#commonscriptCustomizedFieldModal').modal({ show: true });
+                                        //     $$("cfm").getMenu().hide();
+                                        // }
 
                                         if (id === "verify") {
                                             var itemId = $$("cfm").getActive();
@@ -1773,50 +1773,50 @@ define(
                                             $$("cfm").getMenu().hide();
                                             return false;
                                         }
-                                        if (id === "exportWord") {
-                                            var itemId = $$("cfm").getActive();
-                                            var item = $$("cfm").getItem(itemId);
-                                            self.exportWord(item);
-                                            return false;
-                                        }
-                                        if (id === "export") {
-                                            var itemId = $$("cfm").getActive();
-                                            var item = $$("cfm").getItem(itemId);
-                                            var nodes = [];
-                                            if (item.type === "file" || item.type === "text") {
-                                                var parentId = $$("cfm").getCurrentFolder();
-                                                var pathNames = $$("cfm").getPathNames(parentId).map(
-                                                    function (elem) {
-                                                        return elem.value;
-                                                    }).join("/");
-                                                var node = {
-                                                    id: itemId,
-                                                    name: item.value,
-                                                    path: pathNames + "/",
-                                                    type: item.dataType
-                                                };
-                                                nodes.push(node);
-                                            } else if (item.type === "folder") {
-                                                $$("cfm").data.eachLeaf(itemId,
-                                                    function (obj) {
-                                                        var parentId = $$("cfm").getParentId(obj.id);
-                                                        var pathNames = $$("cfm").getPathNames(parentId).map(
-                                                            function (elem) {
-                                                                return elem.value;
-                                                            })
-                                                            .join("/");
-                                                        var node = {
-                                                            id: obj.id,
-                                                            name: obj.value,
-                                                            path: pathNames + "/",
-                                                            type: obj.dataType
-                                                        };
-                                                        nodes.push(node);
-                                                    });
-                                            }
-                                            self.exportScript(nodes);
-                                            $$("cfm").getMenu().hide();
-                                        }
+                                        // if (id === "exportWord") {
+                                        //     var itemId = $$("cfm").getActive();
+                                        //     var item = $$("cfm").getItem(itemId);
+                                        //     self.exportWord(item);
+                                        //     return false;
+                                        // }
+                                        // if (id === "export") {
+                                        //     var itemId = $$("cfm").getActive();
+                                        //     var item = $$("cfm").getItem(itemId);
+                                        //     var nodes = [];
+                                        //     if (item.type === "file" || item.type === "text") {
+                                        //         var parentId = $$("cfm").getCurrentFolder();
+                                        //         var pathNames = $$("cfm").getPathNames(parentId).map(
+                                        //             function (elem) {
+                                        //                 return elem.value;
+                                        //             }).join("/");
+                                        //         var node = {
+                                        //             id: itemId,
+                                        //             name: item.value,
+                                        //             path: pathNames + "/",
+                                        //             type: item.dataType
+                                        //         };
+                                        //         nodes.push(node);
+                                        //     } else if (item.type === "folder") {
+                                        //         $$("cfm").data.eachLeaf(itemId,
+                                        //             function (obj) {
+                                        //                 var parentId = $$("cfm").getParentId(obj.id);
+                                        //                 var pathNames = $$("cfm").getPathNames(parentId).map(
+                                        //                     function (elem) {
+                                        //                         return elem.value;
+                                        //                     })
+                                        //                     .join("/");
+                                        //                 var node = {
+                                        //                     id: obj.id,
+                                        //                     name: obj.value,
+                                        //                     path: pathNames + "/",
+                                        //                     type: obj.dataType
+                                        //                 };
+                                        //                 nodes.push(node);
+                                        //             });
+                                        //     }
+                                        //     self.exportScript(nodes);
+                                        //     $$("cfm").getMenu().hide();
+                                        // }
 
                                         // if (id === "createSubScript") {
                                         // 	var parent = $$("cfm").getCurrentFolder();
@@ -1832,18 +1832,19 @@ define(
                                 ready: function () {
                                     var actions = this.getMenu();
                                     var createItem = actions.getItem("create");
+                                    actions.remove("upload"); 
                                     createItem.value = "新建公共逻辑组";
-                                    var uploadItem = actions.getItem("upload");
-                                    uploadItem.value = "跨项目脚本导入";
+                                    // var uploadItem = actions.getItem("upload");
+                                    // uploadItem.value = "跨项目脚本导入";
                                     //移除actions里的导入菜单项
-                                    if (!self.systemConfig.getConfig("utpclient.testcase_mgr.import")) {
-                                        actions.remove("upload");
-                                    }
+                                    // if (!self.systemConfig.getConfig("utpclient.testcase_mgr.import")) {
+                                    //     actions.remove("upload");
+                                    // }
                                     actions.add(
                                         {
                                             id: "createTestCase",
                                             icon: "fm-file",
-                                            value: "新建公共逻辑"
+                                            value: "新建公共逻辑块"
                                         },
                                         5);
                                     if (self.systemConfig.getConfig("utpclient.testcase_mgr.timing_use_case")) {
@@ -1886,24 +1887,24 @@ define(
                                             value: "查找所有引用"
                                         },
                                         12);
-                                    if (self.systemConfig.getConfig("utpclient.testcase_mgr.export_excel")) {
-                                        actions.add(
-                                            {
-                                                id: "export",
-                                                icon: "webix_fmanager_icon fa-download",
-                                                value: "导出"
-                                            },
-                                            13);
-                                    }
-                                    if (self.systemConfig.getConfig("utpclient.testcase_mgr.export_word")) {
-                                        actions.add(
-                                            {
-                                                id: "exportWord",
-                                                icon: "webix_fmanager_icon fa-file-word-o",
-                                                value: "导出Word"
-                                            },
-                                            14);
-                                    }
+                                    // if (self.systemConfig.getConfig("utpclient.testcase_mgr.export_excel")) {
+                                    //     actions.add(
+                                    //         {
+                                    //             id: "export",
+                                    //             icon: "webix_fmanager_icon fa-download",
+                                    //             value: "导出"
+                                    //         },
+                                    //         13);
+                                    // }
+                                    // if (self.systemConfig.getConfig("utpclient.testcase_mgr.export_word")) {
+                                    //     actions.add(
+                                    //         {
+                                    //             id: "exportWord",
+                                    //             icon: "webix_fmanager_icon fa-file-word-o",
+                                    //             value: "导出Word"
+                                    //         },
+                                    //         14);
+                                    // }
                                     actions.add(
                                         {
                                             id: "refresh",
@@ -1918,15 +1919,15 @@ define(
                                             value: "强制删除"
                                         },
                                         16);
-                                    if (self.systemConfig.getConfig("utpclient.testcase_mgr.customize_field")) {
-                                        actions.add(
-                                            {
-                                                id: "configCustomizedField",
-                                                icon: "webix_fmanager_icon fa-tag",
-                                                value: "自定义字段"
-                                            },
-                                            17);
-                                    }
+                                    // if (self.systemConfig.getConfig("utpclient.testcase_mgr.customize_field")) {
+                                    //     actions.add(
+                                    //         {
+                                    //             id: "configCustomizedField",
+                                    //             icon: "webix_fmanager_icon fa-tag",
+                                    //             value: "自定义字段"
+                                    //         },
+                                    //         17);
+                                    // }
                                     //移除所有选项
                                     if (self.systemConfig.getConfig("utpclient.testcase_mgr.readonlymode")) {
                                         actions.remove("create");
@@ -1934,7 +1935,7 @@ define(
                                         actions.remove("createTimeSeriesTestCase");
                                         // actions.remove("createSubScript");
                                         actions.remove("convertScript");
-                                        actions.remove("upload");
+                                        // actions.remove("upload");
                                         actions.remove("remove");
                                         actions.remove("forceRemove");
                                         actions.remove("edit");
@@ -1942,7 +1943,7 @@ define(
                                         actions.remove("copy");
                                         actions.remove("paste");
                                         //移除自定义字段
-                                        actions.remove("configCustomizedField");
+                                        // actions.remove("configCustomizedField");
                                         //移除验证测试用例
                                         actions.remove("verify");
 
@@ -1983,7 +1984,7 @@ define(
                                             if (obj.id === "createTestCase"
                                                 || obj.id === "createTimeSeriesTestCase"
                                                 // || obj.id === "createSubScript"
-                                                || obj.id === "upload"
+                                                // || obj.id === "upload"
                                                 || obj.id === "create")
                                                 return false;
                                         }
@@ -1992,8 +1993,8 @@ define(
                                                 || obj.id === "createTimeSeriesTestCase"
                                                 // || obj.id === "createSubScript"
                                                 || obj.id === "create"
-                                                || obj.id === "upload"
-                                                || obj.id === "exportWord"
+                                                // || obj.id === "upload"
+                                                // || obj.id === "exportWord"
                                                 || obj.id === "verify")
                                                 return false;
                                         }

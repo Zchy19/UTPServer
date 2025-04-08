@@ -1831,7 +1831,7 @@ define(['knockout', 'jquery', 'komapping',
 				if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					var topBlocks = self.getTopBlocks();
 					if (topBlocks.length > 0 && topBlocks[0].type == "procedures_defscript") {
-						steps += "子脚本:" + self.currentScript.name();
+						steps += "逻辑块:" + self.currentScript.name();
 						var macro = topBlocks[0].arguments_;
 						if (macro != null && macro.length > 0)
 							steps += " 参数：" + JSON.stringify(macro);

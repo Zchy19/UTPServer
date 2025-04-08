@@ -286,7 +286,7 @@ define(
 
 			this.enterAddItemMode = function () {
 				self.editingAgentConfig.id(0);
-				self.editingAgentConfig.projectId(selectionManager.selectedProject().id);
+				self.editingAgentConfig.projectId(0);
 				self.editingAgentConfig.antbotType('');
 				self.editingAgentConfig.antbotName('');
 				self.editingAgentConfig.recordsetId('');
@@ -372,7 +372,7 @@ define(
 			};
 
 			this.getAgentConfig = function () {
-				self.projectManager.updateAgentConfigFromServer(selectionManager.selectedProject().id);
+				self.projectManager.updateAgentConfigFromServer(0);
 			};
 
 			this.addAgentConfigErrorFunction = function () {
@@ -454,7 +454,7 @@ define(
 					self.editingAgentConfig.protocolSignalId(self.selectedBigData());
 				}
 
-				self.editingAgentConfig.projectId(selectionManager.selectedProject().id);
+				self.editingAgentConfig.projectId(0);
 				self.editingAgentConfig.antbotType(self.selectedUnexpiredAntbotType());
 				utpService.createAgentConfig(komapping.toJS(self.editingAgentConfig), self.addAgentConfigSuccessFunction, self.addAgentConfigErrorFunction);
 			}
@@ -503,7 +503,7 @@ define(
 				// update agent config
 				self.editingAgentConfig.antbotType(self.selectedAntbotType());
 				utpService.updateAgentConfig(
-					{ id: self.editingAgentConfig.id(), projectId: selectionManager.selectedProject().id, newAntbotName: self.editingAgentConfig.antbotName(), newSelectedBigData: self.editingAgentConfig.protocolSignalId(), newRecordsetId: self.editingAgentConfig.recordsetId() },
+					{ id: self.editingAgentConfig.id(), projectId: 0, newAntbotName: self.editingAgentConfig.antbotName(), newSelectedBigData: self.editingAgentConfig.protocolSignalId(), newRecordsetId: self.editingAgentConfig.recordsetId() },
 					self.updateAgentConfigSuccessFunction, self.updateAgentConfigErrorFunction);
 			}
 
@@ -511,7 +511,7 @@ define(
 			this.isAmend = ko.observable(false);
 
 			this.deleteCurrentAntbot = function () {
-				utpService.deleteAgentConfig(selectionManager.selectedProject().id, self.currentAntbot().id,
+				utpService.deleteAgentConfig(0, self.currentAntbot().id,
 					function (data) {
 						if (data != null && data.status === 1 && data.result) {
 							self.projectManager.agentsConfigData.remove(self.currentAntbot());
@@ -650,7 +650,6 @@ define(
 				self.comAntbotRefreshSubScription = app.on('comAntbotRefresh:event').then(function () { self.getAgentConfig(); }, this);
 				self.comAntbotAddSubScription = app.on('comAntbotAdd:event').then(function () { self.enterAddItemMode(); }, this);
 				ursService.getAllAgentType(loginManager.getOrganization(), loginManager.getAuthorizationKey(), self.loadAllAgentTypeSuccessFunction, self.loadAllAgentTypeErrorFunction);
-
 			};
 
 			//获取所有的机器人类型

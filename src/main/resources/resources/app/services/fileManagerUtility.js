@@ -70,7 +70,7 @@
 				    cut: "剪切",
 				    paste: "粘贴",				    
 				    remove: "删除",
-				    create: "新建业务脚本组",
+				    create: "新建脚本组",
 				    upload: "导入",
 				    rename: "重命名",
 				    location: "Location",
@@ -90,7 +90,7 @@
 				    yes: "Yes",
 				    no: "No",
 				    types:{
-				        folder: "业务脚本组",
+				        folder: "脚本组",
 				        doc: "Document",
 				        excel: "Excel",
 				        pdf: "PDF",
@@ -101,7 +101,7 @@
 				        code: "Code",
 				        audio: "Audio",
 				        archive: "Archive",
-				        file: "业务脚本"
+				        file: "脚本"
 				    }
 				};
 		};
@@ -146,7 +146,7 @@
 				        excel: "Excel",
 				        pdf: "PDF",
 				        pp: "PowerPoint",
-				        text: "子脚本",
+				        text: "逻辑块",
 				        video: "Video File",
 				        image: "Image",
 				        code: "Code",

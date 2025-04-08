@@ -280,9 +280,9 @@ define(
 				});
 			}
 
-			this.editMessageField() = function(){
+			this.editMessageField = function() {
 				$('#messageFieldSettingModal').modal('show');
-			}
+			};
 			this.enterAddItemMode = function () {
 				self.isEditMode(false);
 				self.editingMonitorTestSetConfig.id(0);
@@ -555,58 +555,58 @@ define(
 				} else self.getMonitoringExecutionDataError()
 			}
 
-			this.initGenericProtocolTree = function (data) {
-				$('#genericProtocolTreeview').html('');
-				self.exceptionCheck(false);
-				self.selectedMessageTemplate(undefined);
-				self.messageTemplates([]);
-				self.clearProtocolConfigView();
-				self.protocolFieldsconfig.removeAll();
-				self.genericProtocolName(data.value);
-				webix.ready(function () {
-					self.genericProtocolTree = webix.ui({
-						container: "genericProtocolTreeview",
-						view: "tree",
-						type: "lineTree",
-						select: true,
-						template: "{common.icon()}&nbsp;#value#",
-						data: data,
-						ready: function () {
-							this.closeAll();
-							// this.sort("value", "asc", "string");
-						}
-					});
+			// this.initGenericProtocolTree = function (data) {
+			// 	$('#genericProtocolTreeview').html('');
+			// 	self.exceptionCheck(false);
+			// 	self.selectedMessageTemplate(undefined);
+			// 	self.messageTemplates([]);
+			// 	self.clearProtocolConfigView();
+			// 	self.protocolFieldsconfig.removeAll();
+			// 	self.genericProtocolName(data.value);
+			// 	webix.ready(function () {
+			// 		self.genericProtocolTree = webix.ui({
+			// 			container: "genericProtocolTreeview",
+			// 			view: "tree",
+			// 			type: "lineTree",
+			// 			select: true,
+			// 			template: "{common.icon()}&nbsp;#value#",
+			// 			data: data,
+			// 			ready: function () {
+			// 				this.closeAll();
+			// 				// this.sort("value", "asc", "string");
+			// 			}
+			// 		});
 
-					self.genericProtocolTree.attachEvent("onItemClick", function (id, e, node) {
-						// var item = this.getItem(id);
-						if (self.protocolNeedConditionSetting() || self.protocolNeedFieldSelectionSetting() || self.protocolNeedMultipleFieldSelectionSetting() ||
-							self.protocolNeedFieldConditionSetting() || self.protocolNeedMessageNameSetting() ||
-							self.protocolNeedFieldValueSetting() || self.protocolNeedFieldSetting()) {
-							self.exceptionCheck(false);
-							self.protocolFieldsconfig.removeAll();
-							self.currentGenericFrameMessageName = "";
-							for (var i = 0; i < self.protocol.protocol.messages.length; i++) {
-								if (self.protocol.protocol.messages[i].id === id) {
-									self.selectedMessage = JSON.parse(JSON.stringify(self.protocol.protocol.messages[i]));
-									self.currentGenericFrameMessageName = self.selectedMessage.messageName;
-									self.genericFrameInfo.id = self.selectedMessage.id;
-									self.selectedMessage.fieldValues = null;
-									self.genericCommandField(self.selectedMessage.messageName);
-									self.initProtocolConfigView(self.selectedMessage, true, true);
-									if (self.protocolNeedFieldValueSetting() || self.protocolNeedFieldSetting()) {
-										self.getActiveMessageTemplate(self.genericFrameInfo.protocolId, self.selectedMessage.messageName)
-									}
-									break;
-								}
-							}
-							$('#exceptionCheckConfig').bootstrapSwitch("state", false);
-							$('#exceptionCheckConfig').on('switchChange.bootstrapSwitch', function (event, state) {
-								self.protocolConfigViewModeChange(state);
-							});
-						}
-					});
-				});
-			};
+			// 		self.genericProtocolTree.attachEvent("onItemClick", function (id, e, node) {
+			// 			// var item = this.getItem(id);
+			// 			if (self.protocolNeedConditionSetting() || self.protocolNeedFieldSelectionSetting() || self.protocolNeedMultipleFieldSelectionSetting() ||
+			// 				self.protocolNeedFieldConditionSetting() || self.protocolNeedMessageNameSetting() ||
+			// 				self.protocolNeedFieldValueSetting() || self.protocolNeedFieldSetting()) {
+			// 				self.exceptionCheck(false);
+			// 				self.protocolFieldsconfig.removeAll();
+			// 				self.currentGenericFrameMessageName = "";
+			// 				for (var i = 0; i < self.protocol.protocol.messages.length; i++) {
+			// 					if (self.protocol.protocol.messages[i].id === id) {
+			// 						self.selectedMessage = JSON.parse(JSON.stringify(self.protocol.protocol.messages[i]));
+			// 						self.currentGenericFrameMessageName = self.selectedMessage.messageName;
+			// 						self.genericFrameInfo.id = self.selectedMessage.id;
+			// 						self.selectedMessage.fieldValues = null;
+			// 						self.genericCommandField(self.selectedMessage.messageName);
+			// 						self.initProtocolConfigView(self.selectedMessage, true, true);
+			// 						if (self.protocolNeedFieldValueSetting() || self.protocolNeedFieldSetting()) {
+			// 							self.getActiveMessageTemplate(self.genericFrameInfo.protocolId, self.selectedMessage.messageName)
+			// 						}
+			// 						break;
+			// 					}
+			// 				}
+			// 				$('#exceptionCheckConfig').bootstrapSwitch("state", false);
+			// 				$('#exceptionCheckConfig').on('switchChange.bootstrapSwitch', function (event, state) {
+			// 					self.protocolConfigViewModeChange(state);
+			// 				});
+			// 			}
+			// 		});
+			// 	});
+			// };
 
 			this.getMonitoringExecutionDataError = function (error) {
 

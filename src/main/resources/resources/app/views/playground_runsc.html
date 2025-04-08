@@ -5,7 +5,7 @@
 				<li class="" data-bind="click:initBasicInfo"><a href="#runscbasic" data-toggle="tab"
 						aria-expanded="true">基本信息</a></li>
 				<li class="active" data-bind="click: showScriptInStepsView"><a href="#runscstep" data-toggle="tab"
-						aria-expanded="false">测试步骤</a></li>
+						aria-expanded="false">测试序列</a></li>
 				<li class="" data-bind="click: enableBlockScriptEdit"><a href="#runscedit" data-toggle="tab"
 						aria-expanded="false">编辑内容</a></li>
 				<li class="" data-bind="click: showScriptInSequenceView"><a href="#runscdiagram" data-toggle="tab"
@@ -29,10 +29,10 @@
 							data-bind="click: insertSubScriptCmd, visible: commandMode() == false">
 							<span lang="en">脚本</span>
 						</button>
-						<button class="btn btn-primary"
-							data-bind="click: insertCheckpointCmd,visible: commandMode() == false && isRunableScript == true&& systemConfig.getConfig('utpclient.requirement_mgr') ">
+						<!-- <button class="btn btn-primary"
+							data-bind="click: insertCheckpointCmd,visible: commandMode() == false && isRunableScript == false&& systemConfig.getConfig('utpclient.requirement_mgr') ">
 							<span lang="en">需求点</span>
-						</button>
+						</button> -->
 						<div class="btn-group"> &emsp; </div>
 						<button class="btn btn-primary"
 							data-bind="click: expandBlocky, visible: commandMode() == false">
@@ -60,7 +60,7 @@
 							<span lang="en">保存</span>
 						</button>
 						<button class="btn btn-primary"
-							data-bind="enable: testcaseSavedFlag() == true, visible: commandMode() == false&& isRunableScript == true, click: gotoVerification">
+							data-bind="enable: testcaseSavedFlag() == true, visible: commandMode() == false&& isRunableScript == false, click: gotoVerification">
 							<span lang="en">验证</span>
 						</button>
 						<div class="pull-right">
@@ -94,32 +94,32 @@
 					<div class="row">
 						<section class="col-md-7">
 							<div class="form-group">
-								<label class="control-label" data-bind="visible: isRunableScript == true">测试用例名称<font
+								<label class="control-label" data-bind="visible: isRunableScript == false">测试用例名称<font
 										color="red">*</font></label>
-								<label class="control-label" data-bind="visible: isRunableScript == false">名称<font
+								<label class="control-label" data-bind="visible: isRunableScript == true">名称<font
 										color="red">*</font></label>
 								<input type="text" class="form-control" data-bind="value:currentScript.name"
 									placeholder="名称 ...">
 							</div>
-							<div class="form-group" data-bind="visible: isRunableScript == true">
+							<div class="form-group" data-bind="visible: isRunableScript == false">
 								<label class="control-label">业务脚本ID</label>
 								<input type="text" class="form-control" data-bind="value:currentScript.customizedId"
 									placeholder="标识...">
 							</div>
 							<div class="form-group">
-								<label class="control-label" data-bind="visible: isRunableScript == true">测试用例描述</label>
-								<label class="control-label" data-bind="visible: isRunableScript == false">描述</label>
+								<label class="control-label" data-bind="visible: isRunableScript == false">测试用例描述</label>
+								<label class="control-label" data-bind="visible: isRunableScript == true">描述</label>
 								<textarea class="form-control" rows="4" data-bind="value:currentScript.description"
 									placeholder="描述 ..."></textarea>
 							</div>
 							<div class="form-group"
-								data-bind="visible: isRunableScript == true&&customField()&&systemConfig.getConfig('utpclient.testcase_mgr.customize_field')">
+								data-bind="visible: isRunableScript == false&&customField()&&systemConfig.getConfig('utpclient.testcase_mgr.customize_field')">
 								<label class="control-label">自定义字段</label>
 								<div id="runscCustomizedFieldDiv" style="width:100%; height:150px;"></div>
 							</div>
 						</section>
 						<section class="col-md-5"
-							data-bind="visible: systemConfig.getConfig('utpclient.testcase_mgr.link_requirement')&&isRunableScript == true">
+							data-bind="visible: systemConfig.getConfig('utpclient.testcase_mgr.link_requirement')&&isRunableScript == false">
 							<div class="form-group">
 								<label class="control-label">关联的需求点</label>
 								<div id="runscRequirement_reference"></div>
@@ -185,7 +185,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span >X</span></button>
 			-->
-				<h4 class="modal-title">为测试机器人插入操作步骤</h4>
+				<h4 class="modal-title">插入机器人命令</h4>
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
@@ -235,50 +235,25 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title">插入子脚本</h4>
+				<h4 class="modal-title">插入逻辑块</h4>
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
-					<label><span lang="en">请选择子脚本<font color="red">*</font></span></label>
+					<label><span lang="en">请选择逻辑块<font color="red">*</font></span></label>
 					<div id="runscSubScriptTreeview" style="background-color: #ffffff; height: 260px;"></div>
 				</div>
-				<div class="form-group">
+				<!-- <div class="form-group">
 					<label><input type="radio" name="scriptFunType" value="0"
 							data-bind="checked: selectScriptFunType" />调用子脚本</label>
 					<label><input type="radio" name="scriptFunType" value="1"
 							data-bind="checked: selectScriptFunType" />获取脚本内容</label>
-				</div>
+				</div> -->
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-primary" data-bind="click: $root.insertSubScript">
 					<span lang="en">确定</span>
 				</button>
 				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
-			</div>
-
-		</div>
-	</div>
-</div>
-
-<div class="modal fade" id="runscAntbotScriptModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-	data-backdrop="static">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h4 class="modal-title">插入子脚本</h4>
-			</div>
-			<div class="modal-body">
-				<div class="form-group">
-					<label><span lang="en">请选择子脚本<font color="red">*</font></span></label>
-					<div id="runscAntbotScriptTreeview" style="background-color: #ffffff; height: 260px;"></div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-bind="click: addSubScript">
-					<span lang="en">确定</span>
-				</button>
-				<button type="button" class="btn btn-default pull-left" data-dismiss="modal"
-					data-bind="click: cancelAntbotScript">取消</button>
 			</div>
 
 		</div>
@@ -447,7 +422,7 @@
 		<block type="logic_exittest"></block>
 		<!-- <block type="logic_asynchronous"></block> -->
 	</category>
-	<category name="检查判定" colour="210">
+	<!-- <category name="检查判定" colour="210">
 		<block type="procedures_checkpoint"></block>
 		<block type="logic_logic"></block>
 		<block type="logic_check"></block>
@@ -475,7 +450,7 @@
 				</shadow>
 			</value>
 		</block>
-	</category>
+	</category> -->
 	<category name="变量定义" colour="330" custom="VARIABLE"></category>
 	<category name="逻辑运算" colour="310">
 		<block type="logic_compare"></block>

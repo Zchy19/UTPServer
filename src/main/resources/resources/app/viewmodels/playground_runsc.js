@@ -472,10 +472,10 @@ define(['knockout', 'jquery', 'komapping',
 			}
 
 			// insert checkpoint
-			this.insertCheckpointCmd = function () {
-				var project = self.projectManager.getRequirements();
-				$('#runscInsertCheckPointModal').modal({ show: true }, { data: project });
-			}
+			// this.insertCheckpointCmd = function () {
+			// 	var project = self.projectManager.getRequirements();
+			// 	$('#runscInsertCheckPointModal').modal({ show: true }, { data: project });
+			// }
 
 			this.initCheckPointTree = function (data) {
 				$('#runscCheckPointTreeview').html('');
