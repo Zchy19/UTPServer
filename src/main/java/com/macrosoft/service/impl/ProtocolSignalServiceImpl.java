@@ -126,12 +126,18 @@ public class ProtocolSignalServiceImpl implements ProtocolSignalService {
     @Override
     @Transactional
     public void removeProtocolSignal(String id) {
-
+        // 根据 id 查询协议
         ProtocolSignal protocolSignal = this.protocolSignalDAO.getProtocolSignal(id);
+
+        // 新增校验：如果 organizationId 为 0，则不允许删除
+        if (protocolSignal.getOrganizationId() == 0) {
+            throw new IllegalStateException("系统内置协议，不允许删除");
+        }
+
+        // 原有逻辑
         if (ProtocolDataType.compareToIgnoreCase(protocolSignal.getDataType()) == 0) {
             this.MessageTemplateDAO.expireMessageTemplate(id);
         }
-
         this.protocolSignalDAO.removeProtocolSignal(id);
     }
 

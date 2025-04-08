@@ -56,7 +56,7 @@ public class ProtocolSignalDAOImpl implements ProtocolSignalDAO {
         query.setParameter("dataType", protocolSignalInfo.getDataType());
         query.setParameter("fileName", protocolSignalInfo.getFileName());
         query.setParameter("bigdata", protocolSignalInfo.getBigdata());
-        query.setParameter("organizationId", 0);
+        query.setParameter("organizationId", protocolSignalInfo.getOrganizationId());
         query.setParameter("createdAt", protocolSignalInfo.getCreatedAt()); // 当前时间
         query.setParameter("protocolType", protocolSignalInfo.getProtocolType());
         query.setParameter("projectId", protocolSignalInfo.getProjectId());
