@@ -5,8 +5,8 @@ define(
 		'services/executionManager',
 		'services/projectManager', 'services/protocolService', 'knockout', 'validator', 'jsoneditor', 'lodash', 'knockout-postbox'],
 	function ($, app, bootstrap, lang, dtManager, langManager, utilityService,
-		utpService, systemConfig, selectionManager, cmdConvertService, notificationService, komapping,
-		executionManager, projectManager, protocolService, ko, validator, JSONEditor, _) {
+			  utpService, systemConfig, selectionManager, cmdConvertService, notificationService, komapping,
+			  executionManager, projectManager, protocolService, ko, validator, JSONEditor, _) {
 
 		function ProtocolViewModel() {
 			var self = this;
@@ -145,7 +145,6 @@ define(
 				} else {
 					self.protocolPattern(true);
 				}
-				self.rotocolTypeName = '';
 				self.selectedFile = null;
 				self.currentProtocolContent = { "littleEndian": false, "messages": [{ "messageName": "消息名", "fields": [] }], "messageAttributeTable": [], "bitsTypeDefineTable": [], "structTypeDefineTable": [], "enumTypeDefineTable": [], "algorithmDefineTable": [] };
 				self.selectedProtocolName('');
@@ -289,24 +288,56 @@ define(
 					return;
 				}
 
+				let protocoltype = ''
+				if (self.protocolTypeName() == '自定义(Custom Protocol)') {
+					protocoltype = 'UserDefinedProtocol'
+				} else {
+					protocoltype = self.protocolTypeName()
+				}
+
 				if (self.protocolPattern()) {
 					if (!self.savePageData()) {
 						return;
 					}
 					let complete = self.complete();
 					complete.littleEndian = self.littleEndian();
-					var simpleProtocol = JSON.stringify(complete);
+					let protocol = {
+						protocolName: self.selectedProtocolName(),
+						protocolType: protocoltype,
+						protocol: complete
+					}
+					var simpleProtocol = JSON.stringify(protocol);
 					if (simpleProtocol == "false") {
 						return false;
 					}
 					const blob = new Blob([simpleProtocol], { type: 'application/json;charset=utf-8' });
 					self.selectedFile = new File([blob], self.selectedProtocolName() + '.uProto', { type: "application/json;charset=utf-8" });
 				} else {
-					const blob = new Blob([self.editor.getText()], { type: 'application/json;charset=utf-8' });
-					self.selectedFile = new File([blob], self.selectedProtocolName() + '.uProto', { type: "application/json;charset=utf-8" });
+					let text = self.editor.getText();
+					try {
+						// 将文本解析为JSON对象
+						const parsedProtocol = JSON.parse(text);
+
+						// 用解析后的对象替换complete
+						let protocol = {
+							protocolName: self.selectedProtocolName(),
+							protocolType: protocoltype,
+							protocol: parsedProtocol  // 这里用解析后的JSON对象替换complete
+						};
+
+						// 后续序列化操作
+						var simpleProtocol = JSON.stringify(protocol);
+						if (simpleProtocol == "false") {
+							return false;
+						}
+						const blob = new Blob([simpleProtocol], { type: 'application/json;charset=utf-8' });
+						self.selectedFile = new File([blob], self.selectedProtocolName() + '.uProto', { type: "application/json;charset=utf-8" });
+					} catch (e) {
+						// JSON解析失败时的错误处理
+						notificationService.showError('协议JSON格式错误: ' + e.message);
+						return;
+					}
 				}
-
-
 
 				if (self.selectedFile === null) {
 					notificationService.showError('请选择协议文件！');
@@ -315,11 +346,7 @@ define(
 				var fd = new FormData();
 				fd.append('dataType', protocolService.dataType.GENERICBUSFRAME);
 				fd.append('file', self.selectedFile);
-				if (self.protocolTypeName() == '自定义(Custom Protocol)') {
-					fd.append('protocolType', 'UserDefinedProtocol');
-				} else {
-					fd.append('protocolType', self.protocolTypeName());
-				}
+				fd.append('protocolType', protocoltype)
 				utpService.addBigData(fd, self.addProtocolSuccessFunction, self.addProtocolErrorFunction);
 				self.protocolTypeName('');
 			};
@@ -455,13 +482,14 @@ define(
 						// 解析原始协议数据
 						const rawData = JSON.parse(data.result.bigdata);
 
+						// 确定protocol字段的内容：如果原始数据包含protocol字段，则使用它，否则使用整个原始数据
+						const protocolContent = rawData.protocol !== undefined ? rawData.protocol : rawData;
+
 						// 构建新格式协议对象
 						const newProtocolFormat = {
 							protocolName: self.selectedProtocolName() || "未命名协议",
 							protocolType: "UserDefinedProtocol",
-							protocol: {
-								...rawData, // 保留所有原始字段
-							}
+							protocol: protocolContent
 						};
 
 						// 转换为JSON字符串并创建Blob
@@ -2451,8 +2479,9 @@ define(
 
 			this.messageAttributeSet = function () {
 				let messageName = document.getElementById('simpleMessageName').value.trim();
-				if(messageName == "" || messageName == null || messageName == undefined){
+				if (messageName == "" || messageName == null || messageName == undefined) {
 					notificationService.showError("请先定义消息名称,再设置消息属性");
+					return;
 				}
 				$('#messageAttributeModal').modal('show');
 			};
@@ -2896,7 +2925,7 @@ define(
 								}
 							}
 							/*
-							var idErrors = self.protocolIdCheck(json.messages);						
+							var idErrors = self.protocolIdCheck(json.messages);
 							for (var i = 0; i < idErrors.length; i++) {
 								errors.push({
 									path: idErrors[i],
@@ -3451,7 +3480,7 @@ define(
 
 			this.littleEndian = ko.observable(false);
 			this.getSchema = function (protocol) {
-				self.littleEndian(false);
+				// self.littleEndian(false);
 				var schemaObj = {
 					title: "protocol",
 					description: "protocol",

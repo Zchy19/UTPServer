@@ -93,6 +93,24 @@
 																		event: {change: selectedMonitorTestsetTypeChanged}">
 						</select>
 					</div>
+
+					<div class="form-group">
+						<label class="control-label">机器人<font color="red">*</font></label>
+						<select class="form-control" id="monitorTestSetAntbot" data-bind="
+							    options: projectManager.agentsConfigData,
+								value: editingMonitorTestSetConfig.antBot,
+								optionsText: 'antbotName',
+								event: {change: selectedMonitorTestSetAntbotChanged}">
+						</select>
+					</div>
+
+					<div class="form-group" data-bind="visible: showMonitorRange() == true">
+						<label class="control-label">监控范围<font
+								color="red">*</font></label>
+						<select class="form-control" id="monitorTestSetRange" data-bind="options: monitorRange,value:selectedMonitorRange">
+						</select>
+					</div>
+
 					<div class="form-group" data-bind="if: editingMonitorTestSetConfig.type() == 0 || editingMonitorTestSetConfig.type() == 1">
 						<label class="control-label">启动脚本<font color="red">*</font></label>
 						<button class="btn btn-primary" data-bind="click: opensendCommandScriptUI.bind($data, 'start')">
@@ -111,6 +129,14 @@
 							<span data-bind="text:stopScriptName"></span> 
 						</button>
 					</div>
+
+					<div class="form-group" data-bind="visible: selectedMonitorRange() == '监控字段' || selectedMonitorRange() == '监控报文-字段'">
+						<label class="control-label">消息字段<font color="red">*</font></label>
+						<button class="btn btn-primary" data-bind="click: editMessageField">
+							<span data-bind="text:messageName() + '-' + fieldName()"></span> 
+						</button>
+					</div>
+
 					<div class="form-group">
 						<button type="button" class="btn btn-primary" data-bind="click: submitMonitorTestSetConfig"><span lang="en">确定</span></button>
 					</div>
@@ -210,6 +236,59 @@
 				<button type="button" class="btn btn-outline" data-dismiss="modal">否</button>
 				<button type="button" class="btn btn-outline" data-dismiss="modal"
 						data-bind="click:confirmRemoveExecutionResult">是</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="messageFieldSettingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	data-backdrop="static" style="overflow-x: hidden;overflow-y: auto;">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">消息帧结构设置</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label>
+						<span lang="en" data-bind='text:genericProtocolName'></span>
+					</label>
+					<div class="row">
+						<div class="col-md-4">
+							<div class="form-group">
+								<div id="genericProtocolTreeview" style="background-color: #ffffff; height: 350px;">
+								</div>
+							</div>
+							<div class="form-group" data-bind="visible: messageTemplates().length > 0">
+								<label class="control-label">消息模板</label>
+								<small>
+									<select class="form-control" data-bind="options: messageTemplates,
+										optionsText: 'templateName',
+										value: selectedMessageTemplate,
+										optionsCaption: '协议默认',
+										event: { change: messageTemplateChanged }">
+									</select>
+								</small>
+							</div>
+						</div>
+						<div class="col-md-8">
+							<div class="form-group">
+								<div id="protocolConfigView"></div>
+							</div>
+							<div class="form-group" data-bind="visible: exceptionCheck()">
+								<!--之前为全部数据-->
+								<label data-bind="visible: onlySelection() == true"><span lang="en">全部字段</span></label>
+								<!--之前为异常数据设定-->
+								<label data-bind="visible: onlySelection() == false"><span lang="en">全部字段</span></label>
+								<input type="checkbox" id="exceptionCheckConfig" data-on-text="是" data-off-text="否">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-bind=""><span lang="en">提交</span></button>
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
 			</div>
 		</div>
 	</div>
