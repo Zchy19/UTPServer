@@ -11,6 +11,7 @@ import com.macrosoft.model.ScriptGroup;
 import com.macrosoft.model.ScriptType;
 import com.macrosoft.model.TestSet;
 import com.macrosoft.model.composition.ScriptInfo;
+import com.macrosoft.model.enums.ScriptGroupType;
 import com.macrosoft.service.ScriptGroupService;
 import com.macrosoft.service.ScriptService;
 import com.macrosoft.service.TestSetService;
@@ -61,12 +62,14 @@ public class ScriptGroupController {
 		try {
 			ScriptGroupAndScriptFlatData projectFlatData = new ScriptGroupAndScriptFlatData();
 			projectFlatData.scriptGroups = this.scriptGroupService.listScriptGroupsByType(projectId, type);
+			projectFlatData.scriptGroups.addAll(this.scriptGroupService.listScriptGroupsByType(projectId, ScriptGroupType.LogicBlock.getType()));
 			if(Objects.equals(type, "logicblock")) {
 				projectFlatData.scripts = this.scriptService.listScriptInfos(projectId, ScriptType.SysLogicBlock);
 				projectFlatData.scripts.addAll(this.scriptService.listScriptInfos(projectId, ScriptType.UsrLogicBlock));
 				return new ApiResponse<>(ApiResponse.Success, projectFlatData);
 			}
 			projectFlatData.scripts = this.scriptService.listScriptInfos(projectId, type);
+			projectFlatData.scripts.addAll(this.scriptService.listScriptInfos(projectId, ScriptType.UsrLogicBlock));
 			return new ApiResponse<>(ApiResponse.Success, projectFlatData);
 		} catch (Exception ex) {
 			logger.error("getProjectFlatData", ex);
@@ -77,15 +80,13 @@ public class ScriptGroupController {
 	/**
 	 * 获取项目的完整平面数据（脚本组、脚本和测试集）
 	 * @param projectId 项目ID
-	 * @param type 数据类型
 	 * @return 包含脚本组、脚本和测试集信息的API响应
 	 */
-	@GetMapping("/project/getProjectFullFlatData/{projectId}/{type}")
-	public ApiResponse<ProjectFullFlatData> getProjectFullFlatData(@PathVariable("projectId") long projectId,
-																   @PathVariable("type") String type) {
+	@GetMapping("/project/getProjectFullFlatData/{projectId}")
+	public ApiResponse<ProjectFullFlatData> getProjectFullFlatData(@PathVariable("projectId") long projectId) {
 		try {
 			ProjectFullFlatData projectFlatData = new ProjectFullFlatData();
-			projectFlatData.scriptGroups = this.scriptGroupService.listScriptGroupsByType(projectId, type);
+			projectFlatData.scriptGroups = this.scriptGroupService.listScriptGroups(projectId);
 			projectFlatData.scripts = this.scriptService.listScriptInfos(projectId);
 			projectFlatData.testsets = this.testSetService.listTestSetsByProjectId(projectId);
 			return new ApiResponse<>(ApiResponse.Success, projectFlatData);
@@ -181,14 +182,12 @@ public class ScriptGroupController {
 	/**
 	 * 获取项目下的脚本组列表
 	 * @param projectId 项目ID
-	 * @param type 脚本组类型
 	 * @return 包含脚本组列表的API响应
 	 */
 	@GetMapping("/scriptgroup/getByProjectId/{projectId}/{type}")
-	public ApiResponse<List<ScriptGroup>> getScriptGroupByProjectId(@PathVariable("projectId") long projectId,
-																	@PathVariable("type") String type) {
+	public ApiResponse<List<ScriptGroup>> getScriptGroupByProjectId(@PathVariable("projectId") long projectId) {
 		try {
-			List<ScriptGroup> result = this.scriptGroupService.listScriptGroupsByType(projectId, type);
+			List<ScriptGroup> result = this.scriptGroupService.listScriptGroups(projectId);
 			return new ApiResponse<>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("getScriptGroupByProjectId", ex);
