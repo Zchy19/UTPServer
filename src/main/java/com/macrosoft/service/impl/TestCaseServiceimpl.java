@@ -29,18 +29,6 @@ public class TestCaseServiceimpl implements TestCaseService {
 
     @Override
     @Transactional
-    public TestCase addTestCase(TestCase testCase) {
-        try {
-            testCaseDAO.addTestCase(testCase);
-            return testCase;
-        } catch (Exception e) {
-            logger.error("Error adding test case: " + e.getMessage());
-            throw e;
-        }
-    }
-
-    @Override
-    @Transactional
     public TestCase updateTestCase(TestCase testCase) {
         try {
             testCaseDAO.updateTestCase(testCase);
@@ -92,6 +80,7 @@ public class TestCaseServiceimpl implements TestCaseService {
     }
 
     @Override
+    @Transactional
     public TestCaseMessageInfo createTestCase(TestCaseAggregate testCaseAggregate) {
         long projectId = testCaseAggregate.getScript().getProjectId();
         boolean isMaxScriptNum = scriptService.isOverMaxScriptNum(projectId, "utpserver", "utpserver.script.count");
@@ -102,7 +91,9 @@ public class TestCaseServiceimpl implements TestCaseService {
         }
         testCaseAggregate.getScript().setType(ScriptType.TestCaseType);
         Script script = scriptService.addScript(projectId, testCaseAggregate.getScript());
-        TestCase testCase = addTestCase(testCaseAggregate.getTestCase());
+        TestCase testCase = testCaseAggregate.getTestCase();
+        testCase.setId(script.getId());
+        testCaseDAO.addTestCase(testCase);
         return TestCaseMessageInfo.builder()
                 .message("CREATE_SUCCESS")
                 .testCaseAggregate(TestCaseAggregate.builder()

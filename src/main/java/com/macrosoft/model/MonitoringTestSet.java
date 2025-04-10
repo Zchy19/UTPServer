@@ -29,7 +29,16 @@ public class MonitoringTestSet implements Serializable{
 	private long startScriptId;
 	private long sendCommandScriptId;
 	private long stopScriptId;
-	
+	private String antBot;
+
+	public String getAntBot() {
+		return antBot;
+	}
+
+	public void setAntBot(String antBot) {
+		this.antBot = antBot;
+	}
+
 	public long getId() {
 		return id;
 	}
