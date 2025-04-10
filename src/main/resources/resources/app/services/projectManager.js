@@ -14,6 +14,7 @@
 
 		this.projects = ko.observableArray([]);
 		this.agentsConfigData = ko.observableArray([]); //antbotName
+		this.comagentsConfigData = ko.observableArray([]); //公共逻辑库下的机器人
 		this.projectConfigData = null;
 		this.testCaseGroupManager = null;
 		this.runableScriptGroupManager = null;		
@@ -247,7 +248,11 @@
 				}
 
 				for (var i = 0; i < data.result.length; i++) {
-					self.agentsConfigData.push(data.result[i]);
+					if(data.result[i].projectId == 0){
+						self.comagentsConfigData.push(data.result[i]);
+					}else{
+						self.agentsConfigData.push(data.result[i]);
+					}
 				}
 			}
 		
@@ -266,6 +271,7 @@
 		
 		this.agentConfigDataclear = function()	{
 			self.agentsConfigData([]);
+			self.comagentsConfigData([]);
 		};
 		this.testcaseMappingClear = function(){
 			self.testcaseMapping = new Map();
@@ -614,12 +620,12 @@
 				var dataType = script.type;
 				var scriptType = '';
 				
-				if(script.type === "testcase"){
+				if(script.type === "testcase" || script.type === "runablescript"){
 					scriptType = 'file';
 					if(script.type == undefined)
 						dataType = 'testcase';
 				}
-				else if(script.type === "subscript"){
+				else if(script.type === "usrlogicblock" || script.type === "syslogicblock"){
 					scriptType = 'text';					
 					if(script.type == undefined)			
 						dataType = 'usrlogicblock';	
@@ -636,7 +642,7 @@
 						dataType: dataType
 				};
 				
-				if(script.type === "subscript")
+				if(script.type === "usrlogicblock" || script.type === "syslogicblock")
 					file.parameter = script.parameter;
 				parent.data.push(file);
 			}			
@@ -709,11 +715,11 @@
 					if(script.type == undefined)
 						dataType = 'testcase';
 				}
-				else if(script.type === "syslogicblock" || script.type === "usrlogicblock"){
-						scriptType = 'text';
-						if(script.type == undefined)
-							dataType = 'usrlogicblock';
-					}
+				else if(script.type === "usrlogicblock" || script.type === "syslogicblock"){
+					scriptType = 'text';					
+					if(script.type == undefined)			
+						dataType = 'usrlogicblock';	
+				}
 				
 				var file = {
 						id: script.id,
@@ -741,6 +747,130 @@
 			return scriptGroups;
 		};
 		
+		this.generateSubScriptGroupsFromFlatInfo = function(data) {
+			var scriptGroupMapping = new Map();
+			var scriptParentMapping = new Map();
+			
+			// 创建两个根分组文件夹
+			var group0Folder = {
+				id: -1, // 唯一ID，避免冲突
+				value: '公共逻辑',
+				type: 'folder',
+				open: false,
+				date: new Date(2014, 2, 10, 16, 10),
+				dataType: "scriptGroup",
+				data: []
+			};
+			
+			var groupOtherFolder = {
+				id: -2,
+				value: '当前项目',
+				type: 'folder',
+				open: false,
+				date: new Date(2014, 2, 10, 16, 10),
+				dataType: "scriptGroup", // later remove
+				data: []
+			};
+			
+			// 注册根文件夹
+			scriptGroupMapping.set(group0Folder.id, group0Folder);
+			scriptGroupMapping.set(groupOtherFolder.id, groupOtherFolder);
+			
+			// 处理 scriptGroups，生成唯一键避免ID冲突
+			for (var i = 0; i < data.scriptGroups.length; i++) {
+				var group = data.scriptGroups[i];
+				if (!group) continue;
+				
+				var groupUniqueKey = group.id + '_' + group.projectId; // 唯一键
+				var folder = {
+					id: groupUniqueKey,
+					customizedId: '',
+					value: group.name,
+					description: group.description,
+					type: "folder",
+					date: new Date(2014, 2, 10, 16, 10),
+					dataType: "scriptGroup",
+					open: false,
+					data: []
+				};
+				
+				if (self.currentTestCaseOpenFolders && $.inArray(group.id, self.currentTestCaseOpenFolders) >= 0) {
+					folder.open = true;
+				}
+				
+				scriptGroupMapping.set(groupUniqueKey, folder);
+				
+				// 确定父节点ID
+				var parentId;
+				if (group.parentScriptGroupId === 0) {
+					// 根目录下，根据projectId分配
+					parentId = group.projectId === 0 ? group0Folder.id : groupOtherFolder.id;
+				} else {
+					// 父节点唯一键由父ID和当前projectId组成（假设父节点在同一项目）
+					parentId = group.parentScriptGroupId + '_' + group.projectId;
+				}
+				scriptParentMapping.set(groupUniqueKey, parentId);
+			}
+			
+			// 构建层级结构
+			scriptGroupMapping.forEach(function(value, key) {
+				if (key === group0Folder.id || key === groupOtherFolder.id) return; // 跳过根节点
+				
+				var parentId = scriptParentMapping.get(key);
+				if (parentId != null) {
+					var parent = scriptGroupMapping.get(parentId);
+					if (parent) {
+						parent.data.push(value);
+					}
+				}
+			});
+			
+			// 处理 scripts，正确查找父节点
+			for (var i = 0; i < data.scripts.length; i++) {
+				var script = data.scripts[i];
+				if (!script) continue;
+				
+				// 构造父节点的唯一键
+				var parentUniqueKey = script.parentScriptGroupId + '_' + script.projectId;
+				var parent = scriptGroupMapping.get(parentUniqueKey);
+				if (!parent) continue;
+				
+				var scriptType = '';
+				var dataType = script.type;
+				
+				if (script.type === "testcase" || script.type === "runablescript") {
+					scriptType = 'file';
+					dataType = script.type || 'testcase';
+				} else if (script.type === "usrlogicblock" || script.type === "syslogicblock") {
+					scriptType = 'text';
+					dataType = script.type || 'usrlogicblock';
+				}
+				
+				var file = {
+					id: script.id,
+					customizedId: script.customizedId,
+					value: script.name,
+					description: script.description,
+					parentScriptGroupId: parent.id,
+					type: scriptType,
+					date: new Date(2014, 2, 10, 16, 10),
+					dataType: dataType
+				};
+				
+				// 其他属性处理...
+				parent.data.push(file);
+			}
+			
+			// 返回结构
+			return {
+				id: self.fileManagerUtility.root,
+				value: self.selectionManager.selectedProject().name,
+				open: false,
+				type: "folder",
+				date: new Date(2014, 2, 10, 16, 10),
+				data: [group0Folder, groupOtherFolder]
+			};
+		};
 		this.generateScriptGroups = function(data){			
 			var scriptGroups = {
 					id: self.fileManagerUtility.root, 

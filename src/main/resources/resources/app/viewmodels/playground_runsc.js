@@ -302,7 +302,7 @@ define(['knockout', 'jquery', 'komapping',
 			// insert sub script
 			this.getSubScriptSuccessFunction = function (data) {
 				if (data != null && data.status === 1) {
-					var scripts = self.projectManager.generateScriptGroupsFromFlatInfo(data.result);
+					var scripts = self.projectManager.generateSubScriptGroupsFromFlatInfo(data.result);
 					self.projectManager.removeEmptyScriptGroup(scripts.data);
 					if (scripts.data == null || scripts.data.length == 0)
 						notificationService.showWarn('该项目中不存在子脚本定义，无法引用.');

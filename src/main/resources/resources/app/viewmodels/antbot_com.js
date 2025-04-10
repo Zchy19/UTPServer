@@ -418,7 +418,7 @@ define(
 							configInfo.isDue = true
 							configInfo.isOverDue = true
 						}
-						self.projectManager.agentsConfigData.unshift(configInfo);
+						self.projectManager.comagentsConfigData.unshift(configInfo);
 						notificationService.showSuccess('创建测试机器人成功');
 					}
 					else if (configInfo.result == 'FailedByExistsSameAntbotName')
@@ -463,13 +463,13 @@ define(
 				if (data && data.status === 1) {
 					var configInfo = data.result;
 					if (configInfo.result == 'Success') {
-						for (var i = 0; i < self.projectManager.agentsConfigData().length; i++) {
-							if (self.projectManager.agentsConfigData()[i].id === configInfo.antbotId) {
-								var target = JSON.parse(JSON.stringify(self.projectManager.agentsConfigData()[i]));
+						for (var i = 0; i < self.projectManager.comagentsConfigData().length; i++) {
+							if (self.projectManager.comagentsConfigData()[i].id === configInfo.antbotId) {
+								var target = JSON.parse(JSON.stringify(self.projectManager.comagentsConfigData()[i]));
 								target.antbotName = configInfo.antbotName;
 								target.protocolSignalId = configInfo.protocolSignalId;
 								target.recordsetId = configInfo.newRecordsetId;
-								self.projectManager.agentsConfigData.splice(i, 1, target);
+								self.projectManager.comagentsConfigData.splice(i, 1, target);
 								break;
 							}
 						}
@@ -514,7 +514,7 @@ define(
 				utpService.deleteAgentConfig(0, self.currentAntbot().id,
 					function (data) {
 						if (data != null && data.status === 1 && data.result) {
-							self.projectManager.agentsConfigData.remove(self.currentAntbot());
+							self.projectManager.comagentsConfigData.remove(self.currentAntbot());
 							notificationService.showSuccess('删除测试机器人成功');
 						}
 						else

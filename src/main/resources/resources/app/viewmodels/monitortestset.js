@@ -1,11 +1,12 @@
 define(
 	['jquery', 'durandal/app', 'bootstrap', 'lang', 'services/datatableManager',
-		'services/langManager', 'services/viewManager',
+		'services/langManager', 'services/viewManager', 'services/protocolService',
 		'services/fileManagerUtility', 'services/utpService', 'services/notificationService', 'komapping',
-		'services/selectionManager', 'services/projectManager', 'knockout', 'knockout-postbox'],
+		'services/selectionManager', 'services/projectManager', 'knockout', 'knockout-postbox', 'jsoneditor', 'lodash',
+		'bootstrapSwitch', 'ace/ace', 'ace/ext/language_tools'],
 	function ($, app, bootstrap, lang, dtManager, langManager,
-		viewManager, fileManagerUtility, utpService, notificationService, komapping,
-		selectionManager, projectManager, ko) {
+		viewManager, protocolService, fileManagerUtility, utpService, notificationService, komapping,
+		selectionManager, projectManager, ko, JSONEditor, _, bootstrapSwitch, ace) {
 
 		function MonitorTestSetViewModel() {
 			var self = this;
@@ -13,7 +14,8 @@ define(
 			this.selectionManager = selectionManager;
 			this.projectManager = projectManager;
 			this.viewManager = viewManager;
-
+			this.protocolService = protocolService;
+			this.JSONEditor = JSONEditor;
 			this.scriptsData = null;
 			this.currentMonitorTestSet = ko.observable();
 			this.monitorTestSets = ko.observableArray([]);
@@ -147,6 +149,11 @@ define(
 				// 	notificationService.showWarn('请选择停止脚本！');
 				// 	return;
 				// }
+				if (self.editingMonitorTestSetConfig.antBot() == null) {
+					notificationService.showWarn('请选择机器人');
+					return;
+				}
+
 				self.editingMonitorTestSetConfig.projectId(selectionManager.selectedProject().id);
 				if (self.isEditMode()) {
 					updateMonitorTestSetConfig();
@@ -162,6 +169,9 @@ define(
 			};
 
 			this.addMonitorScript = function (targetAntbot, monitorType) {
+				if (monitorType == null || monitorType == undefined) {
+					notificationService.showError('机器人配置错误,请先检查机器人设置');
+				}
 				const antbotName = self.editingMonitorTestSetConfig.antBot().antbotName; // 如 "CAN1"
 				// 1. 安全获取并处理数据源
 				let scriptEdit = ko.unwrap(targetAntbot.preDefinedCmdSeqs); // 解包Knockout Observable
@@ -185,7 +195,7 @@ define(
 					parentScriptGroupId: 0,
 					script: 'TESTCASE_BEGIN',
 					blockyXml: '',
-					type: 'usrlogicblock'
+					type: 'testcase'
 				};
 
 				const stopScript = {
@@ -196,7 +206,7 @@ define(
 					parentScriptGroupId: 0,
 					script: 'TESTCASE_BEGIN',
 					blockyXml: '',
-					type: 'usrlogicblock'
+					type: 'testcase'
 				};
 
 				// 2. 根据监控类型选择命令组
@@ -243,6 +253,26 @@ define(
 				startScript.script += 'óòTESTCASE_END';
 				stopScript.script += 'óòTESTCASE_END';
 
+				utpService.createScript(startScript,
+					function (data) {
+						if (data && data.status === 1) {
+							self.editingMonitorTestSetConfig.startScriptId(data.result.id);
+						}
+						else
+							self.updateScriptErrorFunction();
+					},
+					self.createScriptErrorFunction)
+
+				utpService.createScript(stopScript,
+					function (data) {
+						if (data && data.status === 1) {
+							self.editingMonitorTestSetConfig.stopScriptId(data.result.id);
+						}
+						else
+							self.updateScriptErrorFunction();
+					},
+					self.createScriptErrorFunction)
+
 				// return { startScript, stopScript };
 				console.log(startScript);
 				console.log(stopScript);
@@ -259,13 +289,13 @@ define(
 						blockyXml: self.currentScript.blockyXml(),
 						parameter: JSON.stringify(macro)
 					}
-					self.utpService.updateFullSubScript(selectedScript, self.updateScriptSuccessFunction, self.updateScriptErrorFunction);
+					utpService.updateFullSubScript(selectedScript, self.updateScriptSuccessFunction, self.updateScriptErrorFunction);
 				}
 				return true;
 			};
 
 			// 辅助函数：向脚本追加命令
-			this.appendCommandsToScript = function(scriptObj, commands, antbotName) {
+			this.appendCommandsToScript = function (scriptObj, commands, antbotName) {
 				commands.forEach(cmd => {
 					const params = cmd.Params.map(p => {
 						if (typeof p === 'string') {
@@ -280,8 +310,44 @@ define(
 				});
 			}
 
-			this.editMessageField = function() {
-				$('#messageFieldSettingModal').modal('show');
+			this.createScriptErrorFunction = function () {
+				notificationService.showError('监控集自动生成脚本错误');
+			};
+
+			this.protocol = null
+			this.editMessageField = function () {
+				console.log(self.editingMonitorTestSetConfig.antBot());
+				protocolSignalId = self.editingMonitorTestSetConfig.antBot().protocolSignalId;
+
+				utpService.getProtocol(self.editingMonitorTestSetConfig.antBot().protocolSignalId,
+					function (data) {
+						if (data && data.status === 1 && data.result) {
+							self.protocol = JSON.parse(data.result.bigdata);
+							var root = {
+								id: self.protocol.protocolName,
+								value: self.protocol.protocolName,
+								data: []
+							};
+							if (self.protocol.messages == undefined || self.protocol.messages == null || self.protocol.messages.length == 0) {
+								notificationService.showWarn('协议文件中不存在消息定义，请确认协议文件是否正确!');
+								return;
+							}
+							for (var i = 0; i < self.protocol.messages.length; i++) {
+								var id = self.protocol.messages[i].messageName;
+								self.protocol.messages[i].id = id ? id : i;
+								var equiNode = {
+									id: id ? id : i,
+									value: self.protocol.messages[i].messageName,
+									data: []
+								}
+								root.data.push(equiNode);
+							}
+						}
+						$('#messageFieldSettingModal').modal({ show: true }, { data: root });
+					},
+					function () {
+						notificationService.showError('获取协议文件失败');
+					});
 			};
 			this.enterAddItemMode = function () {
 				self.isEditMode(false);
@@ -298,6 +364,10 @@ define(
 				self.stopScriptName("选择脚本");
 				self.showMonitorTestsetResult(false);
 				self.updateAccord();
+				// 手动触发监控范围更新
+				if (self.editingMonitorTestSetConfig.antBot()) {
+					self.selectedMonitorTestSetAntbotChanged();
+				}
 			};
 
 			this.enterEditItemMode = function (item) {
@@ -329,6 +399,10 @@ define(
 					self.stopScriptName(stopScript.value);
 				self.showMonitorTestsetResult(false);
 				self.updateAccord();
+				// 手动触发监控范围更新
+				if (self.editingMonitorTestSetConfig.antBot()) {
+					self.selectedMonitorTestSetAntbotChanged();
+				}
 			};
 
 			this.getMonitorTestSetConfigSuccessFunction = function (data) {
@@ -487,6 +561,9 @@ define(
 					// 检查存在的命令类型
 					let hasStartBusMonitor = false;
 					let hasStartMsgFieldMonitor = false;
+					let hasStartChannelMonitor = false; // 新增单通道监控
+					let hasStartGroupMonitor = false;   // 新增通道组监控
+					let hasStartTmpGroupMonitor = false;// 新增多通道监控
 
 					// 确保cmdSeqs是数组且可遍历
 					if (Array.isArray(cmdSeqs)) {
@@ -494,6 +571,9 @@ define(
 							const keys = Object.keys(cmdSeq);
 							if (keys.includes('startBusMonitor')) hasStartBusMonitor = true;
 							if (keys.includes('startMsgFieldMonitor')) hasStartMsgFieldMonitor = true;
+							if (keys.includes('startChannelMonitor')) hasStartChannelMonitor = true; // 新增
+							if (keys.includes('startGroupMonitor')) hasStartGroupMonitor = true;     // 新增
+							if (keys.includes('startTmpGroupMonitor')) hasStartTmpGroupMonitor = true; // 新增
 						});
 					}
 
@@ -507,10 +587,19 @@ define(
 					if (hasStartBusMonitor && hasStartMsgFieldMonitor) {
 						self.monitorRange.push("监控报文-字段");
 					}
+					if (hasStartChannelMonitor) {
+						self.monitorRange.push("单通道"); // 新增
+					}
+					if (hasStartGroupMonitor) {
+						self.monitorRange.push("通道组"); // 新增
+					}
+					if (hasStartTmpGroupMonitor) {
+						self.monitorRange.push("多通道"); // 新增
+					}
 				}
 
 				// 控制界面显示逻辑
-				self.showMonitorRange(self.monitorRange().length > 1);
+				self.showMonitorRange(self.monitorRange().length > 0);
 				if (!self.showMonitorRange()) {
 					self.selectedMonitorRange(self.monitorRange()[0] || "");
 				}
@@ -555,58 +644,84 @@ define(
 				} else self.getMonitoringExecutionDataError()
 			}
 
-			// this.initGenericProtocolTree = function (data) {
-			// 	$('#genericProtocolTreeview').html('');
-			// 	self.exceptionCheck(false);
-			// 	self.selectedMessageTemplate(undefined);
-			// 	self.messageTemplates([]);
-			// 	self.clearProtocolConfigView();
-			// 	self.protocolFieldsconfig.removeAll();
-			// 	self.genericProtocolName(data.value);
-			// 	webix.ready(function () {
-			// 		self.genericProtocolTree = webix.ui({
-			// 			container: "genericProtocolTreeview",
-			// 			view: "tree",
-			// 			type: "lineTree",
-			// 			select: true,
-			// 			template: "{common.icon()}&nbsp;#value#",
-			// 			data: data,
-			// 			ready: function () {
-			// 				this.closeAll();
-			// 				// this.sort("value", "asc", "string");
-			// 			}
-			// 		});
+			this.genericProtocolName = ko.observable();
+			this.messageTemplates = ko.observableArray([]);
+			this.selectedMessageTemplate = ko.observable();
+			this.exceptionCheck = ko.observable(false);
+			this.selectedMessage = null;
 
-			// 		self.genericProtocolTree.attachEvent("onItemClick", function (id, e, node) {
-			// 			// var item = this.getItem(id);
-			// 			if (self.protocolNeedConditionSetting() || self.protocolNeedFieldSelectionSetting() || self.protocolNeedMultipleFieldSelectionSetting() ||
-			// 				self.protocolNeedFieldConditionSetting() || self.protocolNeedMessageNameSetting() ||
-			// 				self.protocolNeedFieldValueSetting() || self.protocolNeedFieldSetting()) {
-			// 				self.exceptionCheck(false);
-			// 				self.protocolFieldsconfig.removeAll();
-			// 				self.currentGenericFrameMessageName = "";
-			// 				for (var i = 0; i < self.protocol.protocol.messages.length; i++) {
-			// 					if (self.protocol.protocol.messages[i].id === id) {
-			// 						self.selectedMessage = JSON.parse(JSON.stringify(self.protocol.protocol.messages[i]));
-			// 						self.currentGenericFrameMessageName = self.selectedMessage.messageName;
-			// 						self.genericFrameInfo.id = self.selectedMessage.id;
-			// 						self.selectedMessage.fieldValues = null;
-			// 						self.genericCommandField(self.selectedMessage.messageName);
-			// 						self.initProtocolConfigView(self.selectedMessage, true, true);
-			// 						if (self.protocolNeedFieldValueSetting() || self.protocolNeedFieldSetting()) {
-			// 							self.getActiveMessageTemplate(self.genericFrameInfo.protocolId, self.selectedMessage.messageName)
-			// 						}
-			// 						break;
-			// 					}
-			// 				}
-			// 				$('#exceptionCheckConfig').bootstrapSwitch("state", false);
-			// 				$('#exceptionCheckConfig').on('switchChange.bootstrapSwitch', function (event, state) {
-			// 					self.protocolConfigViewModeChange(state);
-			// 				});
-			// 			}
-			// 		});
-			// 	});
-			// };
+			this.genericFrameInfo = {
+				protocolId: "",
+				id: "",
+				fields: [],
+				conditions: []
+			};
+			this.clearMonitorProtocolConfigView = function () {
+				$('#MonitorProtocolConfigView').html('');
+			};
+
+			this.initGenericProtocolTree = function (data) {
+				$('#monitorProtocolTreeview').html('');
+				self.exceptionCheck(false);
+				self.selectedMessageTemplate(undefined);
+				self.messageTemplates([]);
+				self.clearMonitorProtocolConfigView();
+				// self.protocolFieldsconfig.removeAll();
+				self.genericProtocolName(data.value);
+				webix.ready(function () {
+					self.genericProtocolTree = webix.ui({
+						container: "monitorProtocolTreeview",
+						view: "tree",
+						type: "lineTree",
+						select: true,
+						template: "{common.icon()}&nbsp;#value#",
+						data: data,
+						ready: function () {
+							this.closeAll();
+							// this.sort("value", "asc", "string");
+						}
+					});
+
+					self.genericProtocolTree.attachEvent("onItemClick", function (id, e, node) {
+						// var item = this.getItem(id);
+						if (true) {
+							self.exceptionCheck(false);
+							// self.protocolFieldsconfig.removeAll();
+							// self.currentGenericFrameMessageName = "";
+							for (var i = 0; i < self.protocol.messages.length; i++) {
+								if (self.protocol.messages[i].id === id) {
+									self.selectedMessage = JSON.parse(JSON.stringify(self.protocol.messages[i]));
+									// self.currentGenericFrameMessageName = self.selectedMessage.messageName;
+									// self.genericFrameInfo.id = self.selectedMessage.id;
+									self.selectedMessage.fieldValues = null;
+									// self.genericCommandField(self.selectedMessage.messageName);
+									self.initProtocolConfigView(self.selectedMessage, true, true);
+									//self.getActiveMessageTemplate(self.genericFrameInfo.protocolId, self.selectedMessage.messageName)
+									break;
+								}
+							}
+							$('#exceptionCheckConfig').bootstrapSwitch("state", false);
+							$('#exceptionCheckConfig').on('switchChange.bootstrapSwitch', function (event, state) {
+								self.protocolConfigViewModeChange(state);
+							});
+						}
+					});
+				});
+			};
+
+			this.onlySelection = ko.observable(false);
+			this.exceptionCheck = ko.observable(false);
+			this.initProtocolConfigView = function (message, keepAllFields, needSchemaCheck) {
+				self.clearMonitorProtocolConfigView();
+				self.onlySelection(false);
+				var currentProtocolMode = self.protocolService.protocolModeEnum.valueSetting;
+				var multipleSelection = true;
+				var options = self.protocolService.protocolOptionInit(self.protocol, message, currentProtocolMode, multipleSelection, keepAllFields, needSchemaCheck, message.fieldValues);
+				const container = document.getElementById('MonitorProtocolConfigView');
+				var obj = self.protocolService.editedProtocolConfig;
+				let editor = new self.JSONEditor(container, options, obj);
+				self.protocolService.editor = editor;
+			};
 
 			this.getMonitoringExecutionDataError = function (error) {
 

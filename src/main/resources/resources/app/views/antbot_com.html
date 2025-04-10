@@ -16,8 +16,8 @@
 				</th>
 			</tr>
 		</thead>
-		<tbody data-bind='foreach: projectManager.agentsConfigData'
-			data-bind="visible: projectManager.agentsConfigData().length > 0">
+		<tbody data-bind='foreach: projectManager.comagentsConfigData'
+			data-bind="visible: projectManager.comagentsConfigData().length > 0">
 			<tr>
 				<td><small><label data-bind='text:antbotName'></label></small></td>
 				<td><small><label data-bind="text:$parent.typeAlias($data.antbotType)"></label></small></td>

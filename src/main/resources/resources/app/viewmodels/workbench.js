@@ -74,7 +74,6 @@ define(
 			self.isButtonTestcaseFeatureDisabled(false);
 			self.viewManager.operationActivePage('');
 			self.viewManager.statisticalStateActivePage('');
-			self.projectManager.updateAgentConfigFromServer(selectionManager.selectedProject().id);
 			app.trigger('enableTestcase:event');
 		};
 
@@ -88,7 +87,6 @@ define(
 			self.isButtonTestcaseFeatureDisabled(false);
 			self.viewManager.operationActivePage('');
 			self.viewManager.statisticalStateActivePage('');
-			self.projectManager.updateAgentConfigFromServer(selectionManager.selectedProject().id);
 			app.trigger('enableRunableScript:event');
 		};
 
@@ -102,7 +100,6 @@ define(
 			self.isButtonTestcaseFeatureDisabled(false);
 			self.viewManager.operationActivePage('');
 			self.viewManager.statisticalStateActivePage('');
-			self.projectManager.updateAgentConfigFromServer(0);
 			app.trigger('enableCommonscript:event');
 		};
 		this.isButtonTestcaseFeatureDisabled=ko.observable(false);

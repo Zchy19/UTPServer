@@ -177,6 +177,11 @@ public class SubScriptController {
 			result.scripts = this.mScriptService.listScriptInfos(projectId, ScriptType.UsrLogicBlock);
 			result.scripts.addAll(this.mScriptService.listScriptInfos(projectId, ScriptType.SysLogicBlock));
 			result.scriptGroups = this.mScriptGroupService.listScriptGroups(projectId);
+			if(projectId != 0){
+				result.scripts.addAll(this.mScriptService.listScriptInfos(0, ScriptType.UsrLogicBlock));
+				result.scripts.addAll(this.mScriptService.listScriptInfos(0, ScriptType.SysLogicBlock));
+				result.scriptGroups.addAll(this.mScriptGroupService.listScriptGroups(0));
+			}
 			return new ApiResponse<ScriptGroupAndScriptFlatData>(ApiResponse.Success, result);
 		} catch (Exception ex) {
 			logger.error("getSubscriptFlatData", ex);
