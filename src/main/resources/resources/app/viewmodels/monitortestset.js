@@ -15,7 +15,6 @@ define(
 			this.projectManager = projectManager;
 			this.viewManager = viewManager;
 			this.protocolService = protocolService;
-			this.JSONEditor = JSONEditor;
 			this.scriptsData = null;
 			this.currentMonitorTestSet = ko.observable();
 			this.monitorTestSets = ko.observableArray([]);
@@ -719,8 +718,8 @@ define(
 				var options = self.protocolService.protocolOptionInit(self.protocol, message, currentProtocolMode, multipleSelection, keepAllFields, needSchemaCheck, message.fieldValues);
 				const container = document.getElementById('MonitorProtocolConfigView');
 				var obj = self.protocolService.editedProtocolConfig;
-				let editor = new self.JSONEditor(container, options, obj);
-				self.protocolService.editor = editor;
+				self.editor = new JSONEditor(container, options, obj);
+				self.protocolService.editor = self.editor;
 			};
 
 			this.getMonitoringExecutionDataError = function (error) {

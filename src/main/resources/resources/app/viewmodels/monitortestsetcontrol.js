@@ -46,7 +46,7 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 				$('#monitorTestControlDynamicTargetEngineModal').modal('hide');
 				$('.modal-backdrop').remove();
 			};
- 
+
 			this.confirmTargetEngine = function () {
 				var selectTargetEngineStatus = null;
 				for (var i = 0; i < self.targetEngineCandidates().length; i++) {
@@ -71,17 +71,17 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 					// notificationService.showProgressSuccess('获取执行器地址成功。', 100);
 					if (response.engineStatuses && response.engineStatuses.length > 1) {
 						for (var i = 0; i < response.engineStatuses.length; i++) {
-							if(response.engineStatuses[i].shareMode == 0){
-								response.engineStatuses[i].property= "全局共享";
-								response.engineStatuses[i].describe="所有团队共享使用，多人同时执行测试，多节点分布式测试";
+							if (response.engineStatuses[i].shareMode == 0) {
+								response.engineStatuses[i].property = "全局共享";
+								response.engineStatuses[i].describe = "所有团队共享使用，多人同时执行测试，多节点分布式测试";
 							}
-							if(response.engineStatuses[i].shareMode == 1){
-								response.engineStatuses[i].property= "团队共享";
-								response.engineStatuses[i].describe="团队共享使用，多人同时执行测试，毫秒级实时性测试";
+							if (response.engineStatuses[i].shareMode == 1) {
+								response.engineStatuses[i].property = "团队共享";
+								response.engineStatuses[i].describe = "团队共享使用，多人同时执行测试，毫秒级实时性测试";
 							}
-							if(response.engineStatuses[i].shareMode == 2){
-								response.engineStatuses[i].property= "个人独用";
-								response.engineStatuses[i].describe="仅限所登录的账号执行测试，毫秒级实时性测试";
+							if (response.engineStatuses[i].shareMode == 2) {
+								response.engineStatuses[i].property = "个人独用";
+								response.engineStatuses[i].describe = "仅限所登录的账号执行测试，毫秒级实时性测试";
 							}
 						}
 						self.targetEngineCandidates(response.engineStatuses);
@@ -108,27 +108,33 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 
 			this.prepareExecution = function () {
 				if (self.saveOneMonitorControlDataToScript()) {
-				// TODO
-				// notificationService.showProgressSuccess('探测可用的执行器实例...', 0);
-				ursService.getEngineAddress(loginManager.getOrganization(), $.cookie("userName"), loginManager.getAuthorizationKey(), self.getEngineAddressSuccessFunction, self.getEngineAddressErrorFunction);
+					// TODO
+					// notificationService.showProgressSuccess('探测可用的执行器实例...', 0);
+					ursService.getEngineAddress(loginManager.getOrganization(), $.cookie("userName"), loginManager.getAuthorizationKey(), self.getEngineAddressSuccessFunction, self.getEngineAddressErrorFunction);
 				}
 			};
+
+			this.setFlag = ko.observable(false);
+			this.setMonitorConfig = function () {
+				self.setFlag(true);
+				self.saveOneMonitorControlDataToScript()
+			}
 			this.triggerStop = false;
 			this.sendMonitoringExecutionCommandSuccessFunction = function (data) {
 				if (data && data.status === 1 && data.result) {
-					self.triggerStop = true;	
-					notificationService.showSuccess('正在准备发送数据...')	
+					self.triggerStop = true;
+					notificationService.showSuccess('正在准备发送数据...')
 					self.getExecutionStatus();
 					// notificationService.showSuccess('发送控制数据成功！');
-				}else{
+				} else {
 					self.sendMonitoringExecutionCommandErrorFunction(data.result);
 				}
 			};
 
 			this.sendMonitoringExecutionCommandErrorFunction = function (msg) {
-				if(msg=="ExceedMaxExecutionCount"){
+				if (msg == "ExceedMaxExecutionCount") {
 					notificationService.showError('执行已超过每日最大次数限制,请安装相应许可');
-				}else{
+				} else {
 					notificationService.showError('发送控制数据失败！');
 				}
 			};
@@ -164,7 +170,7 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 									else if (result.status == executionManager.utpCoreNetworkError) {
 										var errorMessage = "执行器连接断开，请检查连接状态,再次尝试。"
 										notificationService.showError(errorMessage);
-									}else if(result.status == executionManager.engineInitError){
+									} else if (result.status == executionManager.engineInitError) {
 										var errorMessage = "暂无可用执行器，请确认执行器是否登录或已有测试在执行中。"
 										notificationService.showError(errorMessage);
 									}
@@ -183,7 +189,7 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 								}
 								if (result.status == executionManager.unknownError || result.status == executionManager.configureError || result.status == executionManager.engineInitError
 									|| result.status == executionManager.startExecutionError || result.status == executionManager.utpCoreNetworkError ||
-									result.status == executionManager.terminated || result.status == executionManager.AntbotNotFoundError|| result.status == executionManager.completed || result.status == executionManager.stopped) {
+									result.status == executionManager.terminated || result.status == executionManager.AntbotNotFoundError || result.status == executionManager.completed || result.status == executionManager.stopped) {
 									self.triggerStop = false;
 								}
 								self.executeState(result.status);
@@ -191,7 +197,7 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 								notificationService.showError('数据获取异常');
 								return
 							}
-							if ( self.triggerStop ||
+							if (self.triggerStop ||
 								(self.executeState() == executionManager.exceptionHandling || self.executeState() == executionManager.reconnectingNetwork ||
 									self.executeState() == executionManager.stopping || self.executeState() == executionManager.resuming ||
 									self.executeState() == executionManager.pausing || self.executeState() == executionManager.running || self.executeState() == executionManager.starting
@@ -211,8 +217,8 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 						notificationService.showError('获取验证状态失败!');
 					}
 				);
-			}		
-			this.executionId=0;
+			}
+			this.executionId = 0;
 			this.sendCommand = function () {
 				var engineStatus = self.viewManager.selectedMonitorTestsetActiveEngine;
 				if (engineStatus == null) {
@@ -222,25 +228,25 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 				self.executionId = executionManager.getGuid();
 				var transformConfig = JSON.parse(JSON.stringify(cmdConvertService.transformConfig));
 				var obj = {
-					scriptGroupId:self.viewManager.selectedMonitorTestsetActiveData.id,
+					scriptGroupId: self.viewManager.selectedMonitorTestsetActiveData.id,
 					executionId: self.executionId,
 					scriptIds: [self.viewManager.selectedMonitorTestsetActiveData.sendCommandScriptId],
 					projectId: self.selectionManager.selectedProject().id,
 					utpCoreIpAddress: engineStatus.utpIpAddress,
 					utpCorePort: engineStatus.utpPort,
 					executedByUserId: $.cookie("userName"),
-					isSendEmail:false,
-					isTestcaseCollect:true,
-					isTestcasePersist:false,
-					isTeststepCollect:true,
-					isTeststepPersist:false,
-					isTestdataCollect:true,
-					isTestdataPersist:true,
-					isAutoRun:true,
-					isSend:true,
-					isMonitordataPersistence:true,
-					domainId:loginManager.getOrganization(),
-					transformConfig:JSON.stringify(transformConfig)
+					isSendEmail: false,
+					isTestcaseCollect: true,
+					isTestcasePersist: false,
+					isTeststepCollect: true,
+					isTeststepPersist: false,
+					isTestdataCollect: true,
+					isTestdataPersist: true,
+					isAutoRun: true,
+					isSend: true,
+					isMonitordataPersistence: true,
+					domainId: loginManager.getOrganization(),
+					transformConfig: JSON.stringify(transformConfig)
 				}
 				self.utpService.sendMonitoringExecutionCommand(obj, self.sendMonitoringExecutionCommandSuccessFunction, self.sendMonitoringExecutionCommandErrorFunction);
 			};
@@ -248,18 +254,18 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 			this.showMonitorControlData = function () {
 				if (self.selectedControlCmdInfo == null)
 					return;
-				if(self.selectedControlCmdInfo.controlDataType=="InputMessage"){
+				if (self.selectedControlCmdInfo.controlDataType == "InputMessage") {
 					if (cmdConvertService.needBigDataConfig(self.selectedControlCmdInfo.agent.antbotType)) {
 						self.utpService.getProtocol(self.selectedControlCmdInfo.agent.protocolSignalId, self.getProtocolSuccessFunction, self.getProtocolErrorFunction);
 					}
 					self.genericProtocolProcess();
 				}
 				//单信号数据或者信号组数据
-				if (self.selectedControlCmdInfo.controlDataType == "SignalGroup"||self.selectedControlCmdInfo.controlDataType == "Signal"||self.selectedControlCmdInfo.controlDataType == "TmpSignalGroup") {
+				if (self.selectedControlCmdInfo.controlDataType == "SignalGroup" || self.selectedControlCmdInfo.controlDataType == "Signal" || self.selectedControlCmdInfo.controlDataType == "TmpSignalGroup") {
 					if (cmdConvertService.signalNeedBigDataConfig(self.selectedControlCmdInfo.agent.antbotType)) {
 						self.utpService.getProtocol(self.selectedControlCmdInfo.agent.protocolSignalId, self.signalGetProtocolSuccessFunction, self.getProtocolErrorFunction);
 					}
-				}				
+				}
 			};
 			//单信号协议数据解析
 			this.signalGetProtocolSuccessFunction = function (data) {
@@ -267,7 +273,7 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 					// self.protocolService.addProtocol(data.result);
 					self.protocol = JSON.parse(data.result.bigdata);
 					//遍历协议中的信号
-					var signalTemp=[];
+					var signalTemp = [];
 					for (var i = 0; i < self.protocol.signalMappingTable.length; i++) {
 						//将协议中的logicName取出来
 						signalTemp.push(self.protocol.signalMappingTable[i].logicName);
@@ -319,17 +325,29 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 				return cmdSegments.join(cmdConvertService.PARA_SEPARATOR);
 			};
 			this.saveScript = function (paramValue) {
-				if(self.selectedControlCmdInfo == null)
+				if (self.selectedControlCmdInfo == null)
 					return;
 				var commandItemList = self.currentScript.script.split(cmdConvertService.CMD_SEPARATOR);
-				
-				if(self.selectedControlCmdInfo.cmdIndex >= commandItemList.length)
+
+				if (self.selectedControlCmdInfo.cmdIndex >= commandItemList.length)
 					return;
-				var updateCmdArray = [{"cmdIndex":self.selectedControlCmdInfo.cmdIndex, "updateParams":[{"index":self.selectedControlCmdInfo.updateParamsInfo[0], "value":paramValue}]}];
-				self.utpService.updateFullScript(cmdConvertService.publicSaveScript(self.currentScript, updateCmdArray),self.updateScriptSuccessFunction, self.updateScriptErrorFunction);
+				var updateCmdArray = [{ "cmdIndex": self.selectedControlCmdInfo.cmdIndex, "updateParams": [{ "index": self.selectedControlCmdInfo.updateParamsInfo[0], "value": paramValue }] }];
+				self.utpService.updateFullScript(cmdConvertService.publicSaveScript(self.currentScript, updateCmdArray), self.updateScriptSuccessFunction, self.updateScriptErrorFunction);
 			};
+
+			this.saveStartScript = function (paramValue) {
+				if (self.selectedControlCmdInfo == null)
+					return;
+				var commandItemList = self.currentScript.script.split(cmdConvertService.CMD_SEPARATOR);
+
+				if (self.selectedControlCmdInfo.cmdIndex >= commandItemList.length)
+					return;
+				var updateCmdArray = [{ "cmdIndex": self.selectedControlCmdInfo.cmdIndex, "updateParams": [{ "index": self.selectedControlCmdInfo.updateParamsInfo[0], "value": paramValue }] }];
+				self.utpService.updateFullScript(cmdConvertService.publicSaveScript(self.startScript, updateCmdArray), self.updateScriptSuccessFunction, self.updateScriptErrorFunction);
+			};
+
 			//树数据逻辑部分封装
-			this.inputMessageTree=function(){
+			this.inputMessageTree = function () {
 
 				self.genericFrameInfo.fields = [];
 				self.genericFrameInfo.conditions = [];
@@ -420,11 +438,11 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 						return;
 				}
 				return true;
-			} 
+			}
 			//保存数据
 			this.saveOneMonitorControlDataToScript = function () {
-				if(self.selectedControlCmdInfo== null){return;}
-				if(self.saveMonitorControlDataToScript(self.selectedControlCmdInfo.controlDataType)){
+				if (self.selectedControlCmdInfo == null) { return; }
+				if (self.saveMonitorControlDataToScript(self.selectedControlCmdInfo.controlDataType)) {
 					return true;
 				};
 				return false;
@@ -440,12 +458,25 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 						var paramValue = "";
 						if (self.protocolNeedConditionSetting() || self.protocolNeedFieldSetting()) {
 							paramValue = self.composeFieldGroupSetting();
-							self.saveScript(paramValue);
+
+							// 判断设置监控字段
+							let test = JSON.parse(paramValue);
+							if (self.setFlag() && test.config.length != 1) {
+								notificationService.showError('请选择一个消息字段作为监控字段');
+								self.setFlag(false);
+								return;
+							}else if(self.setFlag() && test.config.length == 1){
+								self.saveStartScript(paramValue);
+								self.setFlag(false);
+							}else if(!self.setFlag()){
+								self.saveScript(paramValue);
+								self.setFlag(false);
+							}
 						} else if (self.protocolNeedFieldConditionSetting() || self.protocolNeedFieldValueSetting() || self.protocolNeedMessageNameSetting() || self.protocolNeedFieldSelectionSetting() || self.protocolNeedMultipleFieldSelectionSetting()) {
 							paramValue = self.composeFieldSetting();
 							self.saveScript(paramValue);
 						}
-					} 
+					}
 					else {
 						return;
 					}
@@ -464,8 +495,8 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 				}
 				else if (monitorControlDataType == "TmpSignalGroup") {
 					//临时信号组的数据
-					let TmpSignalName=[];
-					let TmpSignalvalue=[];
+					let TmpSignalName = [];
+					let TmpSignalvalue = [];
 					document.querySelectorAll('#inputBox label').forEach((item, index) => {
 						TmpSignalName.push(item.innerText)
 						TmpSignalvalue.push(document.querySelectorAll('#inputBox input')[index].value)
@@ -486,7 +517,7 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 							return;
 						}
 					}
-					self.TmpgroupSaveSignalSet(TmpSignalName,TmpSignalvalue);
+					self.TmpgroupSaveSignalSet(TmpSignalName, TmpSignalvalue);
 				}
 				else if (monitorControlDataType == "Signal") {
 					//单信号
@@ -506,7 +537,7 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 				return true;
 			};
 			//临时信号组保存数据
-			this.TmpgroupSaveSignalSet = function (TmpSignalName,TmpSignalvalue) {
+			this.TmpgroupSaveSignalSet = function (TmpSignalName, TmpSignalvalue) {
 				if (self.selectedControlCmdInfo == null)
 					return;
 				var commandItemList = self.currentScript.script.split(cmdConvertService.CMD_SEPARATOR);
@@ -550,19 +581,19 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 			};
 
 			this.composeFieldGroupSetting = function () {
-				if(self.selectedControlCmdInfo == null || self.selectedControlCmdInfo.updateParamsInfo.length != 1)
+				if (self.selectedControlCmdInfo == null || self.selectedControlCmdInfo.updateParamsInfo.length != 1)
 					return;
 				var assistInputType = self.selectedControlCmdInfo.updateParamsInfo[0].assistInputType;
 				var jsonValue = "";
 				if (assistInputType) {
 					if (assistInputType === 'messageFiledsConditionJson') {
-						 jsonValue = JSON.stringify({
+						jsonValue = JSON.stringify({
 							messageName: self.currentGenericFrameMessageName,
 							config: self.genericFrameInfo.conditions
 						});
 					}
 					else if (assistInputType === 'messageFiledsValueJson') {
-							jsonValue = JSON.stringify({
+						jsonValue = JSON.stringify({
 							messageName: self.currentGenericFrameMessageName,
 							messageTemplate: null,
 							config: self.genericFrameInfo.fields
@@ -573,11 +604,11 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 			};
 
 			this.composeFieldSetting = function () {
-				
-				if(self.selectedControlCmdInfo == null || self.selectedControlCmdInfo.updateParamsInfo.length != 1)
+
+				if (self.selectedControlCmdInfo == null || self.selectedControlCmdInfo.updateParamsInfo.length != 1)
 					return;
 				var assistInputType = self.selectedControlCmdInfo.updateParamsInfo[0].assistInputType;
-				
+
 				var messageName = self.currentGenericFrameMessageName;
 				var path = "";
 				var value = "";
@@ -720,40 +751,40 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 				self.clearProtocolConfigView();
 				self.protocolFieldsconfig.removeAll();
 				self.genericProtocolName(data.value);
-				webix.ready(function(){						
+				webix.ready(function () {
 					self.genericProtocolTree = webix.ui({
-						container:"monitorTestsetProtocolTreeview",
-						view:"tree",
-						type:"lineTree",
-						select:true,
-						template:"{common.icon()}&nbsp;#value#",
-						data : data,
-						ready:function(){
+						container: "monitorTestsetProtocolTreeview",
+						view: "tree",
+						type: "lineTree",
+						select: true,
+						template: "{common.icon()}&nbsp;#value#",
+						data: data,
+						ready: function () {
 							this.closeAll();
 							this.sort("value", "asc", "string");
 						}
 					});
 
-					self.genericProtocolTree.attachEvent("onItemClick", function(id, e, node) {
-						if(self.protocolNeedConditionSetting() || self.protocolNeedFieldSelectionSetting() || self.protocolNeedMultipleFieldSelectionSetting() || 
+					self.genericProtocolTree.attachEvent("onItemClick", function (id, e, node) {
+						if (self.protocolNeedConditionSetting() || self.protocolNeedFieldSelectionSetting() || self.protocolNeedMultipleFieldSelectionSetting() ||
 							self.protocolNeedFieldConditionSetting() || self.protocolNeedMessageNameSetting() ||
-							self.protocolNeedFieldValueSetting() || self.protocolNeedFieldSetting()){
-								self.exceptionCheck(false);
-								self.protocolFieldsconfig.removeAll();
-								self.currentGenericFrameMessageName = "";
-								for(var i = 0; i < self.protocol.messages.length; i++){
-									if(self.protocol.messages[i].id === id){
-										self.selectedMessage = JSON.parse(JSON.stringify(self.protocol.messages[i]));
-										self.currentGenericFrameMessageName = self.selectedMessage.messageName;								
-										self.genericFrameInfo.id = self.selectedMessage.id;
-										self.selectedMessage.fieldValues = null;
-										self.genericCommandField(self.selectedMessage.messageName);											
-										self.initProtocolConfigView(self.selectedMessage, true, false);
-										if(self.protocolNeedFieldValueSetting() || self.protocolNeedFieldSetting()){
-										}
-										break;
+							self.protocolNeedFieldValueSetting() || self.protocolNeedFieldSetting()) {
+							self.exceptionCheck(false);
+							self.protocolFieldsconfig.removeAll();
+							self.currentGenericFrameMessageName = "";
+							for (var i = 0; i < self.protocol.messages.length; i++) {
+								if (self.protocol.messages[i].id === id) {
+									self.selectedMessage = JSON.parse(JSON.stringify(self.protocol.messages[i]));
+									self.currentGenericFrameMessageName = self.selectedMessage.messageName;
+									self.genericFrameInfo.id = self.selectedMessage.id;
+									self.selectedMessage.fieldValues = null;
+									self.genericCommandField(self.selectedMessage.messageName);
+									self.initProtocolConfigView(self.selectedMessage, true, false);
+									if (self.protocolNeedFieldValueSetting() || self.protocolNeedFieldSetting()) {
 									}
+									break;
 								}
+							}
 							$('#monitorTestsetExceptionCheckConfig').bootstrapSwitch("state", false);
 							$('#monitorTestsetExceptionCheckConfig').on('switchChange.bootstrapSwitch', function (event, state) {
 								self.protocolConfigViewModeChange(state);
@@ -780,10 +811,10 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 				self.protocolNeedFieldValueSetting(false);
 				self.protocolNeedFieldConditionSetting(false);
 
-				if(self.selectedControlCmdInfo == null || self.selectedControlCmdInfo.updateParamsInfo.length != 1)
+				if (self.selectedControlCmdInfo == null || self.selectedControlCmdInfo.updateParamsInfo.length != 1)
 					return;
 				var assistInputType = self.selectedControlCmdInfo.updateParamsInfo[0].assistInputType;
-				
+
 				if (assistInputType) {
 					if (assistInputType === 'messageFiledsValueJson')
 						self.protocolNeedFieldSetting(true);
@@ -807,7 +838,7 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 			};
 
 			this.genericProtocolFieldSettingProcess = function () {
-				if (self.protocol==null){
+				if (self.protocol == null) {
 					return;
 				}
 				var protocol = self.protocol;
@@ -847,17 +878,17 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 					if (self.currentScript.script != null && self.currentScript.script != '') {
 						self.curControlCmdInfoArray = cmdConvertService.agentControlDataCmdAnalysis(self.currentScript.script);
 						if (self.curControlCmdInfoArray == null || self.curControlCmdInfoArray.length == 0) {
-								self.containControlData(false);
-								notificationService.showError('该脚本不存在控制量，请重新设定！');
-								return;							
+							self.containControlData(false);
+							notificationService.showError('该脚本不存在控制量，请重新设定！');
+							return;
 						}
 						else {
 							self.monitorControlData.removeAll();
-							for(let i = 0; i < self.curControlCmdInfoArray.length; i++){
+							for (let i = 0; i < self.curControlCmdInfoArray.length; i++) {
 								self.monitorControlData.push({
 									name: self.curControlCmdInfoArray[i].controlDataName,
 									value: self.curControlCmdInfoArray[i]
-								});	
+								});
 							}
 							//加载项目时，清空信号组数组
 							self.groupRepetition.removeAll();
@@ -871,6 +902,16 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 					self.getScriptErrorFunction();
 			};
 
+			this.startScript = null;
+			this.stopScript = null;
+			// this.getStartScriptSuccessFunction()  = function (data) {
+			// 	if (data && data.status === 1 && data.result) {
+			// 		self.startScript = data.result;
+			// 	}
+			// 	else
+			// 		self.getScriptErrorFunction();
+			// };
+
 			this.getScriptErrorFunction = function () {
 				notificationService.showError('获取脚本信息失败');
 			};
@@ -880,6 +921,28 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 					self.utpService.getFullScript(selectionManager.selectedProject().id, self.viewManager.selectedMonitorTestsetActiveData.sendCommandScriptId, self.getScriptSuccessFunction, self.getScriptErrorFunction);
 				}
 			};
+
+			this.getStartAndStopScript = function () {
+				if (self.viewManager.selectedMonitorTestsetActiveData.StartScriptId != 0)
+					self.utpService.getFullScript(selectionManager.selectedProject().id, self.viewManager.selectedMonitorTestsetActiveData.startScriptId,
+						function (data) {
+							if (data && data.status === 1 && data.result) {
+								self.startScript = data.result;
+							}
+							else
+								self.getScriptErrorFunction();
+						}, self.getScriptErrorFunction);
+				if (self.viewManager.selectedMonitorTestsetActiveData.StartScriptId != 0)
+					self.utpService.getFullScript(selectionManager.selectedProject().id, self.viewManager.selectedMonitorTestsetActiveData.stopScriptId,
+						function (data) {
+							if (data && data.status === 1 && data.result) {
+								self.stopScript = data.result;
+							}
+							else
+								self.getScriptErrorFunction();
+						}, self.getScriptErrorFunction);
+			}
+
 
 			this.activate = function () { };
 
@@ -892,6 +955,7 @@ define(['jquery', 'durandal/plugins/http', 'komapping', 'services/executionManag
 				self.selectedMonitorTestSet = self.viewManager.selectedMonitorTestsetActiveData;
 				self.selectedMonitorTestSetName(self.viewManager.selectedMonitorTestsetActiveData.name);
 				self.getScript();
+				self.getStartAndStopScript();
 			};
 		}
 		return new MonitorTestSetControlViewModel();
