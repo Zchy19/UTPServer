@@ -5,16 +5,14 @@ import com.macrosoft.model.TestCase;
 import com.macrosoft.model.composition.TestCaseAggregate;
 import com.macrosoft.model.composition.TestCaseInfo;
 
-public interface TestCaseService{
-    public TestCase addTestCase(TestCase testCase);
+public interface TestCaseService {
+    TestCase updateTestCase(TestCase testCase);
 
-    public TestCase updateTestCase(TestCase testCase);
+    TestCaseInfo updateTestCase(TestCaseInfo testCaseInfo);
 
-    public TestCaseInfo updateTestCase(TestCaseInfo testCaseInfo);
+    void removeTestCase(long projectId, long id);
 
-    public void removeTestCase(long projectId, long id);
+    TestCase getTestCaseById(long projectId, long id);
 
-    public TestCase getTestCaseById(long projectId, long id);
-
-    public TestCaseMessageInfo createTestCase(TestCaseAggregate testCaseAggregate);
+    TestCaseMessageInfo createTestCase(TestCaseAggregate testCaseAggregate);
 }
