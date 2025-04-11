@@ -15,6 +15,7 @@ import java.io.Serializable;
 @Entity
 @Table(name="MonitoringTestSet")
 public class MonitoringTestSet implements Serializable{
+	private static final long serialVersionUID = 825946897203394597L;
 
 	@Id
 	@Column(name="id")
