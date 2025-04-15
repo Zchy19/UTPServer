@@ -74,23 +74,24 @@ public class ScriptServiceImpl implements ScriptService {
     @Override
     @Transactional
     public Script addScript(long projectId, Script script) {
+        synchronized (("addScriptLock_" + projectId).intern()) {
+            // 获取项目并生成新的脚本 ID
+            Project project = projectDAO.getProjectById(projectId);
+            long newScriptId = project.getNextEntityLogicId();
 
-        // get next scriptid from project entity.
-        Project project = projectDAO.getProjectById(projectId);
-        long newScriptId = project.getNextEntityLogicId();
+            project.setNextEntityLogicId(newScriptId + 1);
+            projectDAO.updateProject(project);
 
-        project.setNextEntityLogicId(newScriptId + 1);
-        projectDAO.updateProject(project);
+            script.setId(newScriptId);
 
-        script.setId(newScriptId);
+            // 添加脚本
+            Script resultScript = this.ScriptDAO.addScript(projectId, script);
 
-        // add script.
-        Script resultScript = this.ScriptDAO.addScript(projectId, script);
+            if (resultScript.getScript() == null) return resultScript;
 
-        if (resultScript.getScript() == null) return resultScript;
-
-        updateSubscriptReference(projectId, resultScript);
-        return resultScript;
+            updateSubscriptReference(projectId, resultScript);
+            return resultScript;
+        }
     }
 
     @Override

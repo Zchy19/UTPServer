@@ -45,6 +45,11 @@ define(
 				antBot: ko.observable()
 			};
 
+			this.monitoringTestSetAggregate = {
+				monitoringTestSet: this.editingMonitorTestSetConfig,
+				scripts: [] // 确保这里是一个有效的数组
+			};
+
 			this.initScriptTree = function (data) {
 				$('#scriptTreeview').html('');
 				webix.ready(function () {
@@ -134,20 +139,6 @@ define(
 					return;
 				}
 
-				// if((self.editingMonitorTestSetConfig.startScriptId() == '' || self.editingMonitorTestSetConfig.startScriptId() == undefined) && (self.selectedMonitorTestsetType() == 1 || self.selectedMonitorTestsetType() == 0)){
-				// 	notificationService.showWarn('请选择启动脚本！');
-				// 	return;
-				// }
-
-				// if((self.editingMonitorTestSetConfig.sendCommandScriptId() == '' || self.editingMonitorTestSetConfig.sendCommandScriptId() == undefined) && (self.selectedMonitorTestsetType() == 2 || self.selectedMonitorTestsetType() == 0)){
-				// 	notificationService.showWarn('请选择执行脚本！');
-				// 	return;
-				// }
-
-				// if((self.editingMonitorTestSetConfig.stopScriptId() == '' || self.editingMonitorTestSetConfig.stopScriptId() == undefined) && (self.selectedMonitorTestsetType() == 1 || self.selectedMonitorTestsetType() == 0)){
-				// 	notificationService.showWarn('请选择停止脚本！');
-				// 	return;
-				// }
 				if (self.editingMonitorTestSetConfig.antBot() == null) {
 					notificationService.showWarn('请选择机器人');
 					return;
@@ -188,7 +179,7 @@ define(
 				// 初始化脚本对象
 				const startScript = {
 					id: 0,
-					projectId: 0,
+					projectId: self.editingMonitorTestSetConfig.projectId(),
 					name: antbotName + "开始" + monitorType,
 					description: '',
 					parentScriptGroupId: 0,
@@ -199,8 +190,8 @@ define(
 
 				const stopScript = {
 					id: 0,
-					projectId: 0,
-					name: antbotName + "开始" + monitorType,
+					projectId: self.editingMonitorTestSetConfig.projectId(),
+					name: antbotName + "结束" + monitorType,
 					description: '',
 					parentScriptGroupId: 0,
 					script: 'TESTCASE_BEGIN',
@@ -272,9 +263,8 @@ define(
 					},
 					self.createScriptErrorFunction)
 
-				// return { startScript, stopScript };
-				console.log(startScript);
-				console.log(stopScript);
+
+
 				if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					var selectedScript = {
 						id: self.currentScript.id(),

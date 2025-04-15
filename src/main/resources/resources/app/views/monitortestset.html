@@ -132,6 +132,7 @@
 
 					<div class="form-group" data-bind="visible: selectedMonitorRange() == '监控字段' || selectedMonitorRange() == '监控报文-字段'">
 						<label class="control-label">消息字段<font color="red">*</font></label>
+<!--						todo editMessageField方法有错误-->
 						<button class="btn btn-primary" data-bind="click: editMessageField">
 							<span data-bind="text:messageName() + '-' + fieldName()"></span> 
 						</button>

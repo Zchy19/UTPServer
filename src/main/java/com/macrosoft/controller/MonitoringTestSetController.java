@@ -5,7 +5,6 @@ import com.macrosoft.logging.ILogger;
 import com.macrosoft.logging.LoggerFactory;
 import com.macrosoft.logging.TrailUtility;
 import com.macrosoft.model.MonitoringTestSet;
-import com.macrosoft.model.Script;
 import com.macrosoft.model.composition.MonitoringTestSetAggregate;
 import com.macrosoft.service.MonitoringTestSetService;
 import com.macrosoft.service.ScriptService;
@@ -92,23 +91,6 @@ public class MonitoringTestSetController {
 	@PostMapping("/create")
 	public ApiResponse<MonitoringTestSet> createMonitoringTestSet(@RequestBody MonitoringTestSetAggregate monitoringTestSetAggregate) {
 		try {
-			Script[] scripts = monitoringTestSetAggregate.getScripts();
-			for (int i = 0; i < 3; i++) {
-				if (scripts[i] != null) {
-					Script script = scriptService.addScript(scripts[i].getProjectId(), scripts[i]);
-					switch (i) {
-						case 0:
-							monitoringTestSetAggregate.getMonitoringTestSet().setStartScriptId(script.getId());
-							break;
-						case 1:
-							monitoringTestSetAggregate.getMonitoringTestSet().setSendCommandScriptId(script.getId());
-							break;
-						case 2:
-							monitoringTestSetAggregate.getMonitoringTestSet().setStopScriptId(script.getId());
-							break;
-					}
-				}
-			}
 			monitoringTestSetService.addMonitoringTestSet(monitoringTestSetAggregate.getMonitoringTestSet().getProjectId(), monitoringTestSetAggregate.getMonitoringTestSet());
 			return new ApiResponse<>(ApiResponse.Success, monitoringTestSetAggregate.getMonitoringTestSet());
 		} catch (Exception ex) {
