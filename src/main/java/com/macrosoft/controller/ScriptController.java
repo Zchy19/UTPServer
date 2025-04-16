@@ -8,6 +8,7 @@ import com.macrosoft.logging.LoggerFactory;
 import com.macrosoft.logging.TrailUtility;
 import com.macrosoft.model.*;
 import com.macrosoft.model.composition.ScriptInfo;
+import com.macrosoft.model.enums.LogicBlockProject;
 import com.macrosoft.model.enums.ScriptGroupType;
 import com.macrosoft.service.*;
 import com.macrosoft.urs.UrsServiceApis;
@@ -578,10 +579,10 @@ public class ScriptController {
 		try {
 			LogicBlockContent content = logicBlockInfo.getContent();
 			// 0为公共逻辑项目的项目id
-			long scriptGroupId = scriptGroupService.addScriptGroupByPath(logicBlockInfo.getPath(), 0L, ScriptGroupType.LogicBlock.getType());
+			long scriptGroupId = scriptGroupService.addScriptGroupByPath(logicBlockInfo.getPath(), LogicBlockProject.LOGIC_BLOCK.getId(), ScriptGroupType.LogicBlock.getType());
 			Script script = Script.builder()
 					.id(0L)
-					.projectId(0L)
+					.projectId(LogicBlockProject.LOGIC_BLOCK.getId())
 					.name(logicBlockInfo.getName())
 					.type(ScriptType.SysLogicBlock)
 					.parameter(content.getParameter())
@@ -592,7 +593,7 @@ public class ScriptController {
 					.declaredAntbots(content.getDeclaredAntbots())
 					.rwattribute(content.getRwattribute())
 					.build();
-			Script scriptAdded = scriptService.addScript(0L, script);
+			Script scriptAdded = scriptService.addScript(LogicBlockProject.LOGIC_BLOCK.getId(), script);
 			return new ApiResponse<>(ApiResponse.Success, true);
 		} catch (Exception e) {
 			return new ApiResponse<>(ApiResponse.UnHandleException, false);
