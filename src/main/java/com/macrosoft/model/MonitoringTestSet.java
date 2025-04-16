@@ -31,6 +31,15 @@ public class MonitoringTestSet implements Serializable{
 	private long sendCommandScriptId;
 	private long stopScriptId;
 	private String antBot;
+	private String monitorConfig;
+
+	public String getMonitorConfig() {
+		return monitorConfig;
+	}
+
+	public void setMonitorConfig(String monitorConfig) {
+		this.monitorConfig = monitorConfig;
+	}
 
 	public String getAntBot() {
 		return antBot;
@@ -116,6 +125,8 @@ public class MonitoringTestSet implements Serializable{
 		monitoringTestSet.setStartScriptId(this.startScriptId);
 		monitoringTestSet.setSendCommandScriptId(this.sendCommandScriptId);
 		monitoringTestSet.setStopScriptId(this.stopScriptId);
+		monitoringTestSet.setAntBot(this.antBot);
+		monitoringTestSet.setMonitorConfig(this.monitorConfig);
 		return monitoringTestSet;
 	}
 	

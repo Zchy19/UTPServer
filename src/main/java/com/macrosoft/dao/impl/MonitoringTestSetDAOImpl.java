@@ -19,9 +19,10 @@ public class MonitoringTestSetDAOImpl implements MonitoringTestSetDAO {
 
 	private static final ILogger logger = LoggerFactory.Create(MonitoringTestSetDAOImpl.class.getName());
 	private SessionFactory sessionFactory;
+
 	@Autowired
 	@Qualifier("sessionFactory")
-	public void setSessionFactory(SessionFactory sf){
+	public void setSessionFactory(SessionFactory sf) {
 		this.sessionFactory = sf;
 	}
 
@@ -38,7 +39,8 @@ public class MonitoringTestSetDAOImpl implements MonitoringTestSetDAO {
 		Session session = this.sessionFactory.getCurrentSession();
 		StringBuilder sqlBuilder = new StringBuilder();
 		sqlBuilder.append(" update MonitoringTestSet set Name =:name, Description =:description, ");
-		sqlBuilder.append(" startScriptId =:startScriptId, sendCommandScriptId =:sendCommandScriptId, stopScriptId =:stopScriptId, type =:type, antBot =:antBot ");
+		sqlBuilder.append(" startScriptId =:startScriptId, sendCommandScriptId =:sendCommandScriptId, stopScriptId =:stopScriptId, ");
+		sqlBuilder.append(" type =:type, antBot =:antBot, monitorConfig =:monitorConfig ");
 		sqlBuilder.append(" where projectId =:projectId and id=:id ");
 
 		SQLQuery query = session.createSQLQuery(sqlBuilder.toString());
@@ -51,6 +53,7 @@ public class MonitoringTestSetDAOImpl implements MonitoringTestSetDAO {
 		query.setParameter("stopScriptId", monitoringTestSet.getStopScriptId());
 		query.setParameter("type", monitoringTestSet.getType());
 		query.setParameter("antBot", monitoringTestSet.getAntBot());
+		query.setParameter("monitorConfig", monitoringTestSet.getMonitorConfig());
 		query.executeUpdate();
 
 		TrailUtility.Trail(logger, TrailUtility.Trail_Update, "updateMonitoringTestSet", String.format("projectId:%s, id: %s", projectId, monitoringTestSet.getId()));
