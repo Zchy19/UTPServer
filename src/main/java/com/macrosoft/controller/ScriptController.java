@@ -11,11 +11,13 @@ import com.macrosoft.model.composition.ScriptInfo;
 import com.macrosoft.model.enums.LogicBlockProject;
 import com.macrosoft.model.enums.ScriptGroupType;
 import com.macrosoft.service.*;
+import com.macrosoft.service.impl.AgentConfigServiceImpl;
 import com.macrosoft.urs.UrsServiceApis;
 import com.macrosoft.utilities.ExportTestCaseUtility;
 import com.macrosoft.utilities.StringUtility;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -41,6 +43,8 @@ public class ScriptController {
 	private UrsConfigurationImpl ursConfig;
 	private AgentConfigService mAgentConfigService;
 	private RequirementService mRequirementService;
+    @Autowired
+    private AgentConfigServiceImpl agentConfigServiceImpl;
 
 	@Autowired
 	public void setUrsConfig(UrsConfigurationImpl ursConfig) {
@@ -575,10 +579,10 @@ public class ScriptController {
 	导入公共逻辑脚本
 	 */
 	@PostMapping("/importgloballogicblock")
-	private ApiResponse<Boolean> importGlobalLogicBlock(@RequestBody LogicBlockInfo logicBlockInfo) {
+	@Transactional
+    public ApiResponse<Boolean> importGlobalLogicBlock(@RequestBody LogicBlockInfo logicBlockInfo) {
 		try {
 			LogicBlockContent content = logicBlockInfo.getContent();
-			// 0为公共逻辑项目的项目id
 			long scriptGroupId = scriptGroupService.addScriptGroupByPath(logicBlockInfo.getPath(), LogicBlockProject.LOGIC_BLOCK.getId(), ScriptGroupType.LogicBlock.getType());
 			Script script = Script.builder()
 					.id(0L)
@@ -594,6 +598,9 @@ public class ScriptController {
 					.rwattribute(content.getRwattribute())
 					.build();
 			Script scriptAdded = scriptService.addScript(LogicBlockProject.LOGIC_BLOCK.getId(), script);
+			AgentConfig agentConfig = logicBlockInfo.getAgentConfig();
+			agentConfig.setProjectId(LogicBlockProject.LOGIC_BLOCK.getId());
+			agentConfigServiceImpl.addAgentConfig(LogicBlockProject.LOGIC_BLOCK.getId(), agentConfig);
 			return new ApiResponse<>(ApiResponse.Success, true);
 		} catch (Exception e) {
 			return new ApiResponse<>(ApiResponse.UnHandleException, false);
