@@ -598,9 +598,11 @@ public class ScriptController {
 					.rwattribute(content.getRwattribute())
 					.build();
 			Script scriptAdded = scriptService.addScript(LogicBlockProject.LOGIC_BLOCK.getId(), script);
-			AgentConfig agentConfig = logicBlockInfo.getAgentConfig();
-			agentConfig.setProjectId(LogicBlockProject.LOGIC_BLOCK.getId());
-			agentConfigServiceImpl.addAgentConfig(LogicBlockProject.LOGIC_BLOCK.getId(), agentConfig);
+			if(logicBlockInfo.getAgentConfig() != null) {
+				AgentConfig agentConfig = logicBlockInfo.getAgentConfig();
+				agentConfig.setProjectId(LogicBlockProject.LOGIC_BLOCK.getId());
+				agentConfigServiceImpl.addAgentConfig(LogicBlockProject.LOGIC_BLOCK.getId(), agentConfig);
+			}
 			return new ApiResponse<>(ApiResponse.Success, true);
 		} catch (Exception e) {
 			return new ApiResponse<>(ApiResponse.UnHandleException, false);
