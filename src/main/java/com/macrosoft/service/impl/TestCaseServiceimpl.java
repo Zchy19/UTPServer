@@ -47,7 +47,7 @@ public class TestCaseServiceimpl implements TestCaseService {
                         .id(testCaseInfo.getScriptInfo().getId())
                         .projectId(testCaseInfo.getScriptInfo().getProjectId())
                         .userTestCaseId(testCaseInfo.getUserTestCaseId())
-                        .customizedFileds(testCaseInfo.getCustomizedFileds())
+                        .customizedFields(testCaseInfo.getCustomizedFields())
                         .build();
             testCaseDAO.updateTestCase(testCase);
             return testCaseInfo;

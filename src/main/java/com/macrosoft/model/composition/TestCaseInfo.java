@@ -17,5 +17,5 @@ import lombok.NoArgsConstructor;
 public class TestCaseInfo {
     private ScriptInfo scriptInfo;
     private Integer userTestCaseId;
-    private String customizedFileds;
+    private String customizedFields;
 }

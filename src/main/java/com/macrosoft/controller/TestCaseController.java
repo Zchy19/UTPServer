@@ -176,7 +176,7 @@ public class TestCaseController {
                         return testCase != null ? TestCaseInfo.builder()
                                 .scriptInfo(scriptInfo)
                                 .userTestCaseId(testCase.getUserTestCaseId())
-                                .customizedFileds(testCase.getCustomizedFileds())
+                                .customizedFields(testCase.getCustomizedFields())
                                 .build() : null;
                     })
                     .filter(java.util.Objects::nonNull)

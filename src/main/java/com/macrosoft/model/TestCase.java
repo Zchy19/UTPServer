@@ -46,8 +46,8 @@ public class TestCase implements Serializable {
     /**
     * 自定义字段，存储额外的自定义信息，最长255字符
     */
-    @Column(name="customizedFileds")
-    private String customizedFileds;
+    @Column(name="customizedFields")
+    private String customizedFields;
 
     public TestCase() {
     }
