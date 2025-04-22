@@ -101,7 +101,7 @@ define(['knockout', 'jquery', 'komapping',
 						var script = cmdConvertService.txtToScript(scriptStr);
 						self.lastscriptStr = script;
 						var dom = null;
-						if (selectionManager.selectedNodeType === 'subscript')
+						if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock')
 							dom = Blockly.Xml.subScriptToDom(script, self.workspace);
 						else
 							dom = Blockly.Xml.scriptToDom(script, self.workspace);
@@ -1560,7 +1560,7 @@ define(['knockout', 'jquery', 'komapping',
 					self.currentScript.customizedId(data.result.customizedId);
 					self.currentScript.customizedFields(data.result.customizedFields);
 					var topBlocks = self.getTopBlocks();
-					if (selectionManager.selectedNodeType === 'subscript' && topBlocks[0].type === "procedures_defscript")
+					if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock' && topBlocks[0].type === "procedures_defscript")
 						topBlocks[0].setFieldValue(self.currentScript.name(), 'SCRIPTNAME');
 					notificationService.showSuccess('基本信息更新成功');
 				}
@@ -1615,7 +1615,7 @@ define(['knockout', 'jquery', 'komapping',
 					parentScriptGroupId: self.currentScript.parentScriptGroupId(),
 					customizedFields: JSON.stringify(customizedFields)
 				}
-				if (selectionManager.selectedNodeType === 'subscript')
+				if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock')
 					self.utpService.updateSubScript(selectedScript, self.updateBasicSuccessFunction, self.updateBasicErrorFunction);
 				else
 					self.utpService.updateScript(selectedScript, self.updateBasicSuccessFunction, self.updateBasicErrorFunction);
@@ -1628,7 +1628,7 @@ define(['knockout', 'jquery', 'komapping',
 					return false;
 				}
 				var macro = [];
-				if (selectionManager.selectedNodeType === 'subscript') {
+				if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					if (topBlocks.length == 0 || topBlocks[0].type != "procedures_defscript") {
 						notificationService.showError('子脚本定义不存在！');
 						return false;
@@ -1649,7 +1649,7 @@ define(['knockout', 'jquery', 'komapping',
 				//添加换行符
 				// scriptContent = scriptContent.replace(new RegExp(cmdSeparator, 'g'), cmdSeparator + '\n');
 
-				if (selectionManager.selectedNodeType === 'subscript') {
+				if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					/*scriptContent = scriptContent.substring(scriptContent.indexOf(cmdConvertService.CMD_SEPARATOR));
 					for(var i=0; i < macro.length; i++){
 						if(scriptContent.indexOf("%" + macro[i] + "%") >= 0){
@@ -1692,7 +1692,7 @@ define(['knockout', 'jquery', 'komapping',
 				self.currentScript.blockyXml(xml);
 				if (selectionManager.selectedNodeType === 'runablescript')
 					self.utpService.updateFullScript(komapping.toJS(self.currentScript), self.updateScriptSuccessFunction, self.updateScriptErrorFunction);
-				else if (selectionManager.selectedNodeType === 'subscript') {
+				else if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					var selectedScript = {
 						id: self.currentScript.id(),
 						customizedId: self.currentScript.customizedId(),
@@ -1720,7 +1720,7 @@ define(['knockout', 'jquery', 'komapping',
 					scriptContent = testcaseBegCmd + scriptContent + testcaseEndCmd;
 				}
 				var macro = [];
-				if (selectionManager.selectedNodeType === 'subscript') {
+				if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					if (!scriptContent.startsWith(self.currentScript.name())) {
 						notificationService.showError('子脚本定义不存在！');
 						return false;
@@ -1752,7 +1752,7 @@ define(['knockout', 'jquery', 'komapping',
 				self.currentScript.blockyXml(xml);
 				if (selectionManager.selectedNodeType === 'runablescript')
 					self.utpService.updateFullScript(komapping.toJS(self.currentScript), self.updateScriptSuccessFunction, self.updateScriptErrorFunction);
-				else if (selectionManager.selectedNodeType === 'subscript') {
+				else if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					var selectedScript = {
 						id: self.currentScript.id(),
 						customizedId: self.currentScript.customizedId(),
@@ -1825,7 +1825,7 @@ define(['knockout', 'jquery', 'komapping',
 					scriptContent = scriptContent.substring(0, scriptContent.length - cmdSeparatorLength);
 				}
 				var steps = "\n";
-				if (selectionManager.selectedNodeType === 'subscript') {
+				if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					var topBlocks = self.getTopBlocks();
 					if (topBlocks.length > 0 && topBlocks[0].type == "procedures_defscript") {
 						steps += "子脚本:" + self.currentScript.name();
@@ -1874,7 +1874,7 @@ define(['knockout', 'jquery', 'komapping',
 						if (self.commandMode()) {
 							scriptContent = self.scriptEditor.getValue().trim();
 							scriptContent = cmdConvertService.txtToScript(scriptContent);
-							if (selectionManager.selectedNodeType === 'subscript') {
+							if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 								if (scriptContent.startsWith(self.currentScript.name()))
 									scriptContent = scriptContent.substring(scriptContent.indexOf(cmdConvertService.CMD_SEPARATOR) + 2);
 							}
@@ -1892,7 +1892,7 @@ define(['knockout', 'jquery', 'komapping',
 							}
 							//添加换行符
 							scriptContent = scriptContent.replace(new RegExp(cmdSeparator, 'g'), cmdSeparator + '\n');
-							if (selectionManager.selectedNodeType === 'subscript')
+							if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock')
 								scriptContent = scriptContent.substring(scriptContent.indexOf(cmdConvertService.CMD_SEPARATOR));
 							try {
 								var sequencediagramStr = self.UtpCmdsToSeqDiagramString(scriptContent);
@@ -1984,14 +1984,14 @@ define(['knockout', 'jquery', 'komapping',
 			};
 
 			this.initBlockScript = function (script) {
-				if ((script.blockyXml === null || script.blockyXml === '') && script.type != "subscript") {
+				if ((script.blockyXml === null || script.blockyXml === '') && script.type != "usrlogicblock" && script.type != "syslogicblock") {
 					var dom = null;
 					if (script.script == null) {
 						self.showScriptInStepsView();
 						return;
 					}
 					var scriptContent = self.initTextScript(script.name, script.script, script.parameter);
-					if (selectionManager.selectedNodeType === 'subscript')
+					if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock')
 						dom = Blockly.Xml.subScriptToDom(scriptContent, self.workspace);
 					else
 						dom = Blockly.Xml.scriptToDom(scriptContent, self.workspace);
@@ -1999,7 +1999,7 @@ define(['knockout', 'jquery', 'komapping',
 					script.blockyXml = xml;
 				}
 				if (script.blockyXml != null && script.blockyXml != '') {
-					if (selectionManager.selectedNodeType === 'subscript') {
+					if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 						var re = new RegExp(cmdConvertService.SUB_SCRIPT_NAME_REGEX);
 						script.blockyXml = script.blockyXml.replace(re, '<field name="SCRIPTNAME">' + self.currentScript.name() + '</field>');
 					}
@@ -2007,7 +2007,7 @@ define(['knockout', 'jquery', 'komapping',
 					var dom2 = Blockly.Xml.textToDom(script.blockyXml);
 					Blockly.Xml.domToWorkspace(dom2, self.workspace);
 				}
-				else if (selectionManager.selectedNodeType === 'subscript') {
+				else if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					var initScriptXml = cmdConvertService.STARTER_SUB_BLOCK_XML_TEXT.replace(/XXXX/, self.currentScript.name());
 					var xml = Blockly.Xml.textToDom(initScriptXml);
 					Blockly.Xml.domToWorkspace(xml, self.workspace);
@@ -2016,7 +2016,7 @@ define(['knockout', 'jquery', 'komapping',
 			};
 
 			this.initTextScript = function (scriptName, scriptContent, paraStr) {
-				if (selectionManager.selectedNodeType === 'subscript') {
+				if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					scriptContent = scriptContent.replace(new RegExp(cmdConvertService.SUBSCRIPT_BEGIN + cmdConvertService.PARA_SEPARATOR, 'g'), "");
 					scriptContent = scriptContent.replace(new RegExp(cmdConvertService.SUBSCRIPT_END, 'g'), "");
 					var scriptDef = scriptName;

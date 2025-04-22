@@ -53,16 +53,16 @@ public class MonitoringTestSetController {
 		}
 	}
 
-//	@PostMapping("/create")
-//	public ApiResponse<MonitoringTestSet> createMonitoringTestSet(@RequestBody MonitoringTestSet monitoringTestSet) {
-//		try {
-//			monitoringTestSetService.addMonitoringTestSet(monitoringTestSet.getProjectId(), monitoringTestSet);
-//			return new ApiResponse<>(ApiResponse.Success, monitoringTestSet);
-//		} catch (Exception ex) {
-//			logger.error("createMonitoringTestSet", ex);
-//			return new ApiResponse<>(ApiResponse.UnHandleException, null);
-//		}
-//	}
+	@PostMapping("/create")
+	public ApiResponse<MonitoringTestSet> createMonitoringTestSet(@RequestBody MonitoringTestSet monitoringTestSet) {
+		try {
+			monitoringTestSetService.addMonitoringTestSet(monitoringTestSet.getProjectId(), monitoringTestSet);
+			return new ApiResponse<>(ApiResponse.Success, monitoringTestSet);
+		} catch (Exception ex) {
+			logger.error("createMonitoringTestSet", ex);
+			return new ApiResponse<>(ApiResponse.UnHandleException, null);
+		}
+	}
 
 	@PostMapping("/update")
 	public ApiResponse<MonitoringTestSet> updateMonitoringTestSet(@RequestBody MonitoringTestSet monitoringTestSet) {
@@ -88,14 +88,14 @@ public class MonitoringTestSetController {
 		}
 	}
 
-	@PostMapping("/create")
-	public ApiResponse<MonitoringTestSet> createMonitoringTestSet(@RequestBody MonitoringTestSetAggregate monitoringTestSetAggregate) {
-		try {
-			monitoringTestSetService.addMonitoringTestSet(monitoringTestSetAggregate.getMonitoringTestSet().getProjectId(), monitoringTestSetAggregate.getMonitoringTestSet());
-			return new ApiResponse<>(ApiResponse.Success, monitoringTestSetAggregate.getMonitoringTestSet());
-		} catch (Exception ex) {
-			logger.error("createMonitoringTestSet", ex);
-			return new ApiResponse<>(ApiResponse.UnHandleException, null);
-		}
-	}
+//	@PostMapping("/create")
+//	public ApiResponse<MonitoringTestSet> createMonitoringTestSet(@RequestBody MonitoringTestSetAggregate monitoringTestSetAggregate) {
+//		try {
+//			monitoringTestSetService.addMonitoringTestSet(monitoringTestSetAggregate.getMonitoringTestSet().getProjectId(), monitoringTestSetAggregate.getMonitoringTestSet());
+//			return new ApiResponse<>(ApiResponse.Success, monitoringTestSetAggregate.getMonitoringTestSet());
+//		} catch (Exception ex) {
+//			logger.error("createMonitoringTestSet", ex);
+//			return new ApiResponse<>(ApiResponse.UnHandleException, null);
+//		}
+//	}
 }

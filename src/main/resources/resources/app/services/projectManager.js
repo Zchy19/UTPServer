@@ -271,8 +271,17 @@
 		
 		this.agentConfigDataclear = function()	{
 			self.agentsConfigData([]);
+		};
+
+		this.updateComAgentConfigFromServer = function(projectID) {
+			self.comAgentConfigDataclear();
+			self.utpService.getAgentConfigByProject(projectID, self.getAgentConfigByProjectSuccessFunction, self.getAgentConfigByProjectErrorFunction);
+		};
+
+		this.comAgentConfigDataclear = function()	{
 			self.comagentsConfigData([]);
 		};
+
 		this.testcaseMappingClear = function(){
 			self.testcaseMapping = new Map();
 		};

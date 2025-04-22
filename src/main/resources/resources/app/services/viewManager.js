@@ -46,6 +46,7 @@
 		this.autotestActivePage = ko.observable('');
 		this.specialTestLoadActivePage = ko.observable('');
 		this.monitorTestsetControlActivePage = ko.observable('');
+		this.monitorTestsetConfigActivePage = ko.observable(''); // 监控配置
 		this.specialTestControlActivePage=ko.observable('');
 		this.specialTestFourControlActivePage=ko.observable('');
 		this.specialTestThreeControlActivePage=ko.observable('');
@@ -56,7 +57,9 @@
 		this.specialTestexActivePage=ko.observable('');
 		
 		this.monitorTestsetRunActivePage = ko.observable('');
-		this.selectedMonitorTestsetActiveData = null;
+		this.selectedMonitorTestsetActiveData = ko.observableArray([]);
+		this.selectedMonitorTestsetIndex = ko.observable(0);
+
 		this.selectedSpecialTestsetActiveData=null;
 		this.selectedMonitorTestsetActiveEngine = null;
 		this.selectedMonitorExecution = ko.observable('');
@@ -72,6 +75,7 @@
 		this.statisticalStateFeatureEnable = ko.observable(false);
 		this.testRecordingFeatureEnable = ko.observable(false);
 		this.enabledFeature = ko.observable('49%');
+		
 		//定义一个数组用于存页面数据
 		this.pageData = [];
 		this.featureInit = function () {

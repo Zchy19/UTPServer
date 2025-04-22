@@ -1986,14 +1986,14 @@ define(['knockout', 'jquery', 'komapping',
 			};
 
 			this.initBlockScript = function (script) {
-				if ((script.blockyXml === null || script.blockyXml === '') && script.type != "subscript") {
+				if ((script.blockyXml === null || script.blockyXml === '') && script.type != "usrlogicblock" && script.type != "syslogicblock") {
 					var dom = null;
 					if (script.script == null) {
 						self.showScriptInStepsView();
 						return;
 					}
 					var scriptContent = self.initTextScript(script.name, script.script, script.parameter);
-					if (selectionManager.selectedNodeType === 'subscript')
+					if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock')
 						dom = Blockly.Xml.subScriptToDom(scriptContent, self.workspace);
 					else
 						dom = Blockly.Xml.scriptToDom(scriptContent, self.workspace);
@@ -2001,7 +2001,7 @@ define(['knockout', 'jquery', 'komapping',
 					script.blockyXml = xml;
 				}
 				if (script.blockyXml != null && script.blockyXml != '') {
-					if (selectionManager.selectedNodeType === 'subscript') {
+					if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 						var re = new RegExp(cmdConvertService.SUB_SCRIPT_NAME_REGEX);
 						script.blockyXml = script.blockyXml.replace(re, '<field name="SCRIPTNAME">' + self.currentScript.name() + '</field>');
 					}
@@ -2009,7 +2009,7 @@ define(['knockout', 'jquery', 'komapping',
 					var dom2 = Blockly.Xml.textToDom(script.blockyXml);
 					Blockly.Xml.domToWorkspace(dom2, self.workspace);
 				}
-				else if (selectionManager.selectedNodeType === 'subscript') {
+				else if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					var initScriptXml = cmdConvertService.STARTER_SUB_BLOCK_XML_TEXT.replace(/XXXX/, self.currentScript.name());
 					var xml = Blockly.Xml.textToDom(initScriptXml);
 					Blockly.Xml.domToWorkspace(xml, self.workspace);
@@ -2018,7 +2018,7 @@ define(['knockout', 'jquery', 'komapping',
 			};
 
 			this.initTextScript = function (scriptName, scriptContent, paraStr) {
-				if (selectionManager.selectedNodeType === 'subscript') {
+				if (selectionManager.selectedNodeType === 'usrlogicblock' || selectionManager.selectedNodeType === 'syslogicblock') {
 					scriptContent = scriptContent.replace(new RegExp(cmdConvertService.SUBSCRIPT_BEGIN + cmdConvertService.PARA_SEPARATOR, 'g'), "");
 					scriptContent = scriptContent.replace(new RegExp(cmdConvertService.SUBSCRIPT_END, 'g'), "");
 					var scriptDef = scriptName;

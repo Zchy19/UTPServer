@@ -1,9 +1,10 @@
 <div class="content-wrapper">
-	<section class="content-header">
+	<!-- <section class="content-header">
 		<a href="#" data-bind="click: goback"><i class="glyphicon glyphicon-hand-left"></i> 返回</a>
-	</section>
+	</section> -->
 	<div class="row">
-		<p style="text-align: center; margin-bottom: 0px" data-bind="text: viewManager.selectedMonitorTestsetActiveData.name"></p>
+		<!-- <p style="text-align: center; margin-bottom: 0px" data-bind="text: viewManager.selectedMonitorTestsetActiveData.name"></p> -->
+		<div id="monitortestsetconfiginfo" class="col-6" data-bind="compose: viewManager.monitorTestsetConfigActivePage"></div>
 		<div id="monitortestsetcontrolinfo" class="col-6" data-bind="compose: viewManager.monitorTestsetControlActivePage"></div>
 		<div id="monitortestsetruninfo" class="col-6" data-bind="compose: viewManager.monitorTestsetRunActivePage"></div>	
 	</div>

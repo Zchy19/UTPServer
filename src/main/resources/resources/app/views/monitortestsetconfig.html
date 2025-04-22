@@ -1,0 +1,256 @@
+<div>
+	<section class="content" style="min-height: auto;">
+		<div class="box box-info">
+			<div class="box-header with-border">
+				配置信息
+				<!-- 历史配置
+				<button class="btn btn-primary" data-bind="click: enterMonitorContext">
+					使用已有配置
+				</button> -->
+				<div class="box-tools pull-right">
+					<!-- <button class="btn btn-primary" data-bind="click: addNewMonitorSet">
+						另存为新配置
+					</button>
+					<button class="btn btn-primary" data-bind="click: updateNewMonitorSet, visible: editingMonitorTestSetConfig.id() !== 0">
+						更新配置
+					</button> -->
+					<button type="button" class="btn btn-box-tool" data-widget="collapse"><i
+							class="fa fa-minus"></i></button>
+				</div>
+			</div>
+
+			<div class="box-body">
+				<div class="row">
+					<div class="col-md-4">
+						<div class="form-group">
+							<label class="control-label">请选择测试机器人<font color="red">*</font></label>
+							<select class="form-control" id="monitorTestSetAntbot" data-bind="
+									options: filteredAntbots,
+									value: editingMonitorTestSetConfig.antBot,
+									optionsText: 'antbotName',
+									optionsValue: 'antbotName',
+									optionsCaption: filteredAntbots().length === 0 ? '暂无可进行监控的类型的机器人' : '请选择',
+									event: {change: selectedMonitorTestSetAntbotChanged}
+								">
+							</select>
+						</div>
+					</div>
+
+					<div class="col-md-4">
+						<div class="form-group">
+							<label class="control-label">请选择测试行为<font color="red">*</font></label>
+							<select class="form-control" id="monitorTestSetActionGroup" data-bind="
+									options: monitorTestSetActionGroups,
+									optionsText:'group',
+									value:selectedMonitorTestSetActionGroup,
+									optionsCaption: monitorTestSetActionGroups().length === 0 ? '请先选择机器人' : '请选择',
+									event: {change: selectedMonitorTestSettActionGroupChanged}
+								">
+							</select>
+						</div>
+					</div>
+
+					<div class="col-md-3">
+						<div class="form-group" style="margin-top: 25px;" data-bind="visible: configMessageFiled">
+							<label class="control-label" style="margin-right: 10px;">监控字段:</label>
+							<button class="btn btn-primary" data-bind="click: editMessageField">
+								<span data-bind="text:messageName() + '-' + fieldName()"></span>
+							</button>
+						</div>
+					</div>
+
+					<div class="col-md-1">
+						<button class="btn btn-primary" id="saveConfigBtn" style="margin-top: 25px;">
+							确定
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+
+<div class="modal fade" id="messageFieldSettingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	data-backdrop="static" style="overflow-x: hidden;overflow-y: auto;">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">消息字段选择设置</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label>
+						<span lang="en" data-bind='text:genericProtocolName'></span>
+					</label>
+					<div class="row">
+						<div class="col-md-4">
+							<div class="form-group">
+								<div id="monitorProtocolTreeview" style="background-color: #ffffff; height: 350px;">
+								</div>
+							</div>
+							<div class="form-group" data-bind="visible: messageTemplates().length > 0">
+								<label class="control-label">消息模板</label>
+								<small>
+									<select class="form-control" data-bind="options: messageTemplates,
+										optionsText: 'templateName',
+										value: selectedMessageTemplate,
+										optionsCaption: '协议默认',
+										event: { change: messageTemplateChanged }">
+									</select>
+								</small>
+							</div>
+						</div>
+						<div class="col-md-8">
+							<div class="form-group">
+								<div id="MonitorProtocolConfigView"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="setMessageFieldBtn"><span lang="en">确定</span></button>
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="monitorConfigModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+    data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">监控集信息设置</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="simpleMessageId" class="control-label">设置名称</label>
+                    <input type="text" class="form-control" id="simpleMessageId" placeholder="输入监控集名称">
+                </div>
+                <div class="form-group">
+                    <label for="simpleMessageDescription" class="control-label">描述信息</label>
+                    <input type="text" class="form-control" id="simpleMessageDescription" placeholder="输入监控集描述">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="saveNewMonitorSetBtn">保存</button>
+                <button class="btn btn-primary" id="updateNewMonitorSetBtn">更新</button>
+                <button type="button" class="btn btn-default pull-left" id="cancelConfigModalBtn">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="monitorContext" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	data-backdrop="static" style="overflow-x: hidden;overflow-y: auto;">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title pull-left">监控集目录</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<table class="table table-bordered table-striped table-hover">
+						<thead>
+							<tr>
+								<th><small>名称</small></th>
+								<th><small>描述</small></th>
+								<th><small>类型</small></th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody data-bind='foreach: monitorTestSets' data-bind="visible: monitorTestSets().length > 0">
+							<tr>
+								<td><small><label data-bind='text:name'></label></small></td>
+								<td><small><label data-bind='text:description'></label></small></td>
+								<td><small>
+										<label data-bind='if: type == 0'>监测并控制</label>
+										<label data-bind='if: type == 1'>仅监测</label>
+										<label data-bind='if: type == 2'>仅控制</label>
+									</small></td>
+								<td>
+									<small>
+										<button class="btn btn-primary btn-sm" data-toggle="modal" title="编辑监控测试集"
+											data-original-title="Edit" data-bind="click: $parent.enterEditItemMode">
+											<i class="glyphicon glyphicon-edit"></i>
+										</button>
+										<button class="btn btn-danger btn-sm" data-toggle="tooltip" title="删除监控测试集"
+											data-original-title="Delete" data-bind="click: $parent.removeConfig">
+											<i class="glyphicon glyphicon-trash"></i>
+										</button>
+										<!-- 暂时关闭 -->
+										<!-- <button class="btn btn-success btn-sm" data-toggle="tooltip" title="查看历史记录"
+											data-original-title="History" data-bind="click: $parent.viewResult">
+											<i class="glyphicon glyphicon-th-list"></i>
+										</button> -->
+										<!-- <button class="btn btn-info btn-sm" data-toggle="tooltip" title="进入"
+											data-bind="click: $parent.gotoExecution">
+											<i class="glyphicon glyphicon-hand-right"></i>
+										</button> -->
+									</small>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<!-- <button type="button" class="btn btn-primary"><span lang="en">确定</span></button> -->
+				<button type="button" class="btn btn-default pull-left" data-dismiss="modal" data-bind="click: removeConfig">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal modal-warning fade in" id="deleteMonitorTestSetModal" tabindex="-1" role="dialog"
+	aria-labelledby="myModalLabel" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">提醒</h4>
+			</div>
+			<div class="modal-body">
+				<div>删除监测测试集，有可能导致与此相关联的历史记录显示不准确，确认删除该监测测试集？</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline" data-dismiss="modal">否</button>
+				<button type="button" class="btn btn-outline" data-dismiss="modal"
+					data-bind="click:deleteCurrentMonitorTestSet">是</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style type="text/css">
+	code {
+		background-color: #f5f5f5;
+	}
+
+	#inputBox {
+		display: flex;
+		flex-direction: column;
+	}
+
+	#MonitorProtocolConfigView {
+		width: 100%;
+		height: 400px;
+	}
+
+	.jsoneditor-is-not-default {
+		font-weight: bold;
+	}
+
+	#MonitorProtocolConfigView .different_element {
+		background-color: pink;
+	}
+
+	#MonitorProtocolConfigView .selected_element {
+		background-color: #acee61;
+	}
+
+	#MonitorProtocolConfigView .different_element div.jsoneditor-field,
+	#MonitorProtocolConfigView .different_element div.jsoneditor-value {
+		color: red;
+	}
+</style>

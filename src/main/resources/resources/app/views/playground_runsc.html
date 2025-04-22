@@ -27,7 +27,7 @@
 						</button>
 						<button class="btn btn-primary"
 							data-bind="click: insertSubScriptCmd, visible: commandMode() == false">
-							<span lang="en">脚本</span>
+							<span lang="en">逻辑块</span>
 						</button>
 						<!-- <button class="btn btn-primary"
 							data-bind="click: insertCheckpointCmd,visible: commandMode() == false && isRunableScript == false&& systemConfig.getConfig('utpclient.requirement_mgr') ">
@@ -102,7 +102,7 @@
 									placeholder="名称 ...">
 							</div>
 							<div class="form-group" data-bind="visible: isRunableScript == false">
-								<label class="control-label">业务脚本ID</label>
+								<label class="control-label">脚本ID</label>
 								<input type="text" class="form-control" data-bind="value:currentScript.customizedId"
 									placeholder="标识...">
 							</div>

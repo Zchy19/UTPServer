@@ -2,7 +2,7 @@
 	<section class="content">
 		<div class="box box-info">
 			<div class="box-header with-border">
-				<small>监测数据运行</small>
+				<!-- <small>监测数据运行</small> -->
 				<small data-bind="visible: monitorIsRunning()"><span class="dot-before">监控中...</span></small>
 				<small style="margin-left: 100px" data-bind="visible: frameListArr().length > 0">
 					<select class="btn btn-box-tool" style="color: black" data-bind="
@@ -15,8 +15,8 @@
 				</small>
 				
 				<div class="box-tools pull-right" style="margin-right: 48%;top: 2px; display: flex; align-items: center;" data-bind="visible: !projectManager.isMonitoringResult">
-					<button class="btn btn-primary" data-bind="click: prepareExecution, visible: !monitorIsRunning()">开始监测</button>
-					<button class="btn btn-primary" data-bind="click: stopExecution, visible: monitorIsRunning()">停止监测</button>
+					<button class="btn btn-primary" data-bind="click: prepareExecution, visible: !monitorIsRunning()">开始采集</button>
+					<button class="btn btn-primary" data-bind="click: stopExecution, visible: monitorIsRunning()">停止采集</button>
 					<div style="margin-left: 10px;" data-bind="visible: !monitorIsRunning()">
 						<input class="form-check-input" type="checkbox" data-bind="checked: saveData, checkedValue: 1, uncheckedValue: 0" id="defaultCheck1">
 						<label class="form-check-label" for="defaultCheck1">保存数据</label>

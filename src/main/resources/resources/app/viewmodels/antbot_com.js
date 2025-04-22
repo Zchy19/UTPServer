@@ -372,7 +372,7 @@ define(
 			};
 
 			this.getAgentConfig = function () {
-				self.projectManager.updateAgentConfigFromServer(0);
+				self.projectManager.updateComAgentConfigFromServer(0);
 			};
 
 			this.addAgentConfigErrorFunction = function () {
