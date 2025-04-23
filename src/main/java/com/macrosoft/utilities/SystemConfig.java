@@ -4,6 +4,15 @@ public class SystemConfig {
 	
 	private String utpCoreAccessLibName;
 	private String convertorMgrName;
+	private String dbcConvertor;
+
+	public String getDbcConvertor() {
+		return dbcConvertor;
+	}
+
+	public void setDbcConvertor(String dbcConvertor) {
+		this.dbcConvertor = dbcConvertor;
+	}
 
 	public String getConvertorMgrName() {
 		return convertorMgrName;

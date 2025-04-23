@@ -5,6 +5,7 @@
 	<bean id="systemConfig" class="com.macrosoft.utilities.SystemConfig">
 		<property name="utpCoreAccessLibName" value="UtpCoreAccessLibCloud64" />
 		<property name="convertorMgrName" value="convertorMgr64" />
+		<property name="dbcConvertor" value="dbcConvertor" />
 
 	</bean>
 </beans>

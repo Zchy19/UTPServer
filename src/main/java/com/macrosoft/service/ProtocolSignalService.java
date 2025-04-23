@@ -27,4 +27,6 @@ public interface ProtocolSignalService {
     public List<ProtocolSignalInfo> listProtocolSignalInfosByProtocolTypeAndProjectId(String dataType, String protocolType,long organizationId,Integer projectId);
 
     public void insertProtocolSignalByProtocolType(ProtocolSignalInfo protocolSignalInfo, MultipartFile inputFile);
+
+    public List<ProtocolSignal> parseDbcFile(String filePath);
 }

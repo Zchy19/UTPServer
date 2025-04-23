@@ -66,4 +66,8 @@ public class SystemUtil {
     public String getConvertorMgrName() {
         return systemConfig.getConvertorMgrName();
     }
+
+    public String getDbcConvertor() {
+        return systemConfig.getDbcConvertor();
+    }
 }

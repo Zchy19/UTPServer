@@ -12,267 +12,392 @@ import com.macrosoft.model.ProtocolSignal;
 import com.macrosoft.service.ProtocolSignalService;
 import com.macrosoft.utilities.FileUtility;
 import com.macrosoft.utilities.StringUtility;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.macrosoftsys.convertorMgr.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@Controller
+/**
+ * 协议信号操作的控制器，负责处理协议信号的获取、上传和删除等操作。
+ */
+@RestController
+@RequestMapping("/api/protocolSignal")
+@RequiredArgsConstructor
 public class ProtocolSignalController {
 
     private static final ILogger logger = LoggerFactory.Create(ProtocolSignalController.class.getName());
-    private ProtocolSignalService protocolSignalService;
-    @Autowired(required = true)
-    
-    public void setProtocolSignalService(ProtocolSignalService protocolSignalService) {
-        this.protocolSignalService = protocolSignalService;
-    }
+    private final ProtocolSignalService protocolSignalService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @RequestMapping(value = "/api/protocol/get/{ProtocolSignalId}", method = RequestMethod.GET)
-    public @ResponseBody
-    ApiResponse<String> getProtocol(@PathVariable("ProtocolSignalId") String protocolSignalId) {
+    /**
+     * 根据协议信号ID获取协议，从bigdata中提取协议JSON节点。
+     *
+     * @param protocolSignalId 协议信号的ID。
+     * @return 包含协议JSON字符串的ApiResponse，或错误响应。
+     */
+    @GetMapping("/get/{protocolSignalId}")
+    public ApiResponse<String> getProtocol(@PathVariable String protocolSignalId) {
         try {
-            ProtocolSignal result = this.protocolSignalService.getProtocol(protocolSignalId);
-            String bigdata = result.getBigdata();
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(bigdata);
+            ProtocolSignal result = protocolSignalService.getProtocol(protocolSignalId);
+            JsonNode jsonNode = objectMapper.readTree(result.getBigdata());
             JsonNode protocolNode = jsonNode.get("protocol");
             if (protocolNode == null) {
-                return new ApiResponse<String>(ApiResponse.UnHandleException, null);
+                return new ApiResponse<>(ApiResponse.UnHandleException, null);
             }
-            return new ApiResponse<String>(ApiResponse.Success, objectMapper.writeValueAsString(protocolNode));
+            return new ApiResponse<>(ApiResponse.Success, objectMapper.writeValueAsString(protocolNode));
         } catch (Exception ex) {
-            logger.error("getProtocolSignal", ex);
-            return new ApiResponse<String>(ApiResponse.UnHandleException, null);
+            logger.error("getProtocol", ex);
+            return new ApiResponse<>(ApiResponse.UnHandleException, null);
         }
     }
 
-
-    @RequestMapping(value = "/api/protocolSignal/upload", headers = ("content-type=multipart/*"), method = RequestMethod.POST)
-    public @ResponseBody ApiResponse<ProtocolSignalInfo> uploadProtocolSignal(@RequestParam("dataType") String dataType,@RequestParam("protocolType") String protocolType, @RequestParam("file") MultipartFile inputFile) {
+    /**
+     * 上传协议信号文件并保存到系统中。
+     *
+     * @param dataType     数据类型。
+     * @param protocolType 协议类型。
+     * @param inputFile    上传的文件。
+     * @return 包含ProtocolSignalInfo的ApiResponse，或错误响应。
+     */
+    @PostMapping(value = "/upload", consumes = "multipart/form-data")
+    public ApiResponse<ProtocolSignalInfo> uploadProtocolSignal(
+            @RequestParam String dataType,
+            @RequestParam String protocolType,
+            @RequestParam MultipartFile inputFile) {
         try {
-            boolean overMaxProtocolSignalNum = protocolSignalService.isOverMaxProtocolSignalNum(Long.parseLong(TenantContext.getOrgId()), dataType);
-            if (overMaxProtocolSignalNum) {
-                ProtocolSignalInfo protocolSignalInfo = new ProtocolSignalInfo();
-                protocolSignalInfo.setMessages("OVER_MAX_PROTOCOLSIGNAL_NUM");
-                return new ApiResponse<ProtocolSignalInfo>(ApiResponse.UnHandleException, protocolSignalInfo);
+            if (protocolSignalService.isOverMaxProtocolSignalNum(Long.parseLong(TenantContext.getOrgId()), dataType)) {
+                ProtocolSignalInfo info = new ProtocolSignalInfo();
+                info.setMessages("OVER_MAX_PROTOCOLSIGNAL_NUM");
+                return new ApiResponse<>(ApiResponse.UnHandleException, info);
             }
             if (inputFile.isEmpty()) {
-                return new ApiResponse<ProtocolSignalInfo>(ApiResponse.UnHandleException, null);
-            }
-            HttpHeaders headers = new HttpHeaders();
-            // Step1: Save uploaded file to temporary folder.
-            String originalFilename = inputFile.getOriginalFilename();
-            String ProtocolSignalFolder = protocolSignalService.resolveProtocolSignalFolderPath();
-            String id =  UUID.randomUUID().toString();
-            String destinationFilePath = ProtocolSignalFolder + File.separator + id;
-            File destinationFile = new File(destinationFilePath);
-            if (!new File(destinationFilePath).exists()) {
-                new File(destinationFilePath).mkdir();
+                return new ApiResponse<>(ApiResponse.UnHandleException, null);
             }
 
+            // 将文件保存到临时文件夹
+            String originalFilename = inputFile.getOriginalFilename();
+            String folderPath = protocolSignalService.resolveProtocolSignalFolderPath();
+            String id = UUID.randomUUID().toString();
+            String filePath = folderPath + File.separator + id;
+            File destinationFile = new File(filePath);
+            destinationFile.getParentFile().mkdirs();
             inputFile.transferTo(destinationFile);
 
-            headers.add("File Storage Uploaded Successfully - ", originalFilename);
-            logger.info(String.format("File Storage Uploaded Successfully - originalFilename: %s, destinationFilePath: %s ", originalFilename, destinationFilePath));
+            logger.info(String.format("文件上传成功: %s 到 %s", originalFilename, filePath));
 
-            String content = FileUtility.readLineByLineJava8(destinationFilePath);
-
+            // 创建并保存协议信号
             ProtocolSignal protocolSignal = new ProtocolSignal();
-
-            String orgId = TenantContext.getOrgId();
-
-            protocolSignal.setOrganizationId(StringUtility.parseLongSafely(orgId).getResult());
-
+            protocolSignal.setOrganizationId(StringUtility.parseLongSafely(TenantContext.getOrgId()).getResult());
             protocolSignal.setId(id);
             protocolSignal.setFileName(originalFilename);
             protocolSignal.setDataType(dataType);
             protocolSignal.setProtocolType(protocolType);
-            protocolSignal.setBigdata(content);
-            protocolSignal.setCreatedAt(new Date(new Date().getTime()));
+            protocolSignal.setBigdata(FileUtility.readLineByLineJava8(filePath));
+            protocolSignal.setCreatedAt(new Date());
 
-
-            this.protocolSignalService.addProtocolSignal(protocolSignal);
-
-            ProtocolSignalInfo ProtocolSignalInfo = new ProtocolSignalInfo(protocolSignal);
-
-            return new ApiResponse<ProtocolSignalInfo>(ApiResponse.Success, ProtocolSignalInfo);
+            protocolSignalService.addProtocolSignal(protocolSignal);
+            return new ApiResponse<>(ApiResponse.Success, new ProtocolSignalInfo(protocolSignal));
         } catch (Exception ex) {
             logger.error("uploadProtocolSignal", ex);
-            return new ApiResponse<ProtocolSignalInfo>(ApiResponse.UnHandleException, null);
+            return new ApiResponse<>(ApiResponse.UnHandleException, null);
         }
     }
 
-
-    @RequestMapping(value = "/api/protocolSignal/importSignalDefination", headers = ("content-type=multipart/*"), method = RequestMethod.POST)
-    public @ResponseBody ApiResponse<ProtocolSignalInfo>importSignalDefination(@RequestParam("file") MultipartFile inputFile) {
+    /**
+     * 导入信号定义文件并作为协议信号处理。
+     *
+     * @param inputFile 上传的文件。
+     * @return 包含ProtocolSignalInfo的ApiResponse，或错误响应。
+     */
+    @PostMapping(value = "/importSignalDefination", consumes = "multipart/form-data")
+    public ApiResponse<ProtocolSignalInfo> importSignalDefination(@RequestParam MultipartFile inputFile) {
         try {
             ProtocolSignalInfo protocolSignal = new ProtocolSignalInfo();
             protocolSignal.setDataType("SignalProtocol");
-
-            ApiResponse<ProtocolSignalInfo> insertProtocol = new ApiResponse<ProtocolSignalInfo>(0,protocolSignal);
-            this.protocolSignalService.insertProtocolSignalByProtocolType(protocolSignal,inputFile);
-            return insertProtocol;
+            protocolSignalService.insertProtocolSignalByProtocolType(protocolSignal, inputFile);
+            return new ApiResponse<>(ApiResponse.Success, protocolSignal);
         } catch (Exception ex) {
-            logger.error("uploadProtocolSignal", ex);
-            return new ApiResponse<ProtocolSignalInfo>(ApiResponse.UnHandleException, null);
+            logger.error("importSignalDefination", ex);
+            return new ApiResponse<>(ApiResponse.UnHandleException, null);
         }
     }
 
-    @RequestMapping(value = "/api/protocolSignal/importProtocolDefination", headers = ("content-type=multipart/*"), method = RequestMethod.POST)
-    public @ResponseBody ApiResponse<ProtocolSignalInfo>importProtocolDefination(@RequestParam("file") MultipartFile inputFile) {
+    /**
+     * 导入协议定义文件并作为协议信号处理。
+     *
+     * @param inputFile 上传的文件。
+     * @return 包含ProtocolSignalInfo的ApiResponse，或错误响应。
+     */
+    @PostMapping(value = "/importProtocolDefination", consumes = "multipart/form-data")
+    public ApiResponse<ProtocolSignalInfo> importProtocolDefination(@RequestParam MultipartFile inputFile) {
         try {
             ProtocolSignalInfo protocolSignal = new ProtocolSignalInfo();
             protocolSignal.setDataType("GenericBusFrame");
-            ApiResponse<ProtocolSignalInfo> insertProtocol = new ApiResponse<ProtocolSignalInfo>(0,protocolSignal);
-            this.protocolSignalService.insertProtocolSignalByProtocolType(protocolSignal,inputFile);
-            return insertProtocol;
+            protocolSignalService.insertProtocolSignalByProtocolType(protocolSignal, inputFile);
+            return new ApiResponse<>(ApiResponse.Success, protocolSignal);
         } catch (Exception ex) {
-            logger.error("uploadProtocolSignal", ex);
-            return new ApiResponse<ProtocolSignalInfo>(ApiResponse.UnHandleException, null);
+            logger.error("importProtocolDefination", ex);
+            return new ApiResponse<>(ApiResponse.UnHandleException, null);
         }
     }
 
-    @RequestMapping(value = "/api/protocolSignal/{dataType}/{protocolType}", method = RequestMethod.GET)
-    public @ResponseBody ApiResponse<List<ProtocolSignalInfo>> getProtocolSignalInfosByProtocolType(@PathVariable("dataType") String fileType , @PathVariable("protocolType") String protocolType) {
+    /**
+     * 根据数据类型和协议类型获取协议信号。
+     *
+     * @param dataType     数据类型。
+     * @param protocolType 协议类型。
+     * @return 包含ProtocolSignalInfo列表的ApiResponse，或错误响应。
+     */
+    @GetMapping("/{dataType}/{protocolType}")
+    public ApiResponse<List<ProtocolSignalInfo>> getProtocolSignalInfosByProtocolType(
+            @PathVariable String dataType,
+            @PathVariable String protocolType) {
         try {
-
-            String orgIdPara = TenantContext.getOrgId();
-            long orgId = StringUtility.parseLongSafely(orgIdPara).getResult();
-            List<ProtocolSignalInfo> ProtocolSignalInfos = protocolSignalService.listProtocolSignalInfosByProtocolType(fileType,protocolType, orgId);
-            return new ApiResponse<List<ProtocolSignalInfo>>(ApiResponse.Success, ProtocolSignalInfos);
+            long orgId = StringUtility.parseLongSafely(TenantContext.getOrgId()).getResult();
+            List<ProtocolSignalInfo> infos = protocolSignalService.listProtocolSignalInfosByProtocolType(dataType, protocolType, orgId);
+            return new ApiResponse<>(ApiResponse.Success, infos);
         } catch (Exception ex) {
             logger.error("getProtocolSignalInfosByProtocolType", ex);
-            return new ApiResponse<List<ProtocolSignalInfo>>(ApiResponse.UnHandleException, null);
+            return new ApiResponse<>(ApiResponse.UnHandleException, null);
         }
     }
 
-    @RequestMapping(value = "/api/protocolSignal/{dataType}/{protocolType}/{projectId}", method = RequestMethod.GET)
-    public @ResponseBody ApiResponse<List<ProtocolSignalInfo>> getProtocolsByProtocolTypeAndProjectId(@PathVariable("dataType") String fileType , @PathVariable("protocolType") String protocolType,@PathVariable("projectId") Integer projectId) {
+    /**
+     * 根据数据类型、协议类型和项目ID获取协议信号。
+     *
+     * @param dataType     数据类型。
+     * @param protocolType 协议类型。
+     * @param projectId    项目ID。
+     * @return 包含ProtocolSignalInfo列表的ApiResponse，或错误响应。
+     */
+    @GetMapping("/{dataType}/{protocolType}/{projectId}")
+    public ApiResponse<List<ProtocolSignalInfo>> getProtocolsByProtocolTypeAndProjectId(
+            @PathVariable String dataType,
+            @PathVariable String protocolType,
+            @PathVariable Integer projectId) {
         try {
-
-            String orgIdPara = TenantContext.getOrgId();
-            long orgId = StringUtility.parseLongSafely(orgIdPara).getResult();
-            List<ProtocolSignalInfo> ProtocolSignalInfos = protocolSignalService.listProtocolSignalInfosByProtocolTypeAndProjectId(fileType,protocolType, orgId,projectId);
-            return new ApiResponse<List<ProtocolSignalInfo>>(ApiResponse.Success, ProtocolSignalInfos);
+            long orgId = StringUtility.parseLongSafely(TenantContext.getOrgId()).getResult();
+            List<ProtocolSignalInfo> infos = protocolSignalService.listProtocolSignalInfosByProtocolTypeAndProjectId(dataType, protocolType, orgId, projectId);
+            return new ApiResponse<>(ApiResponse.Success, infos);
         } catch (Exception ex) {
             logger.error("getProtocolsByProtocolTypeAndProjectId", ex);
-            return new ApiResponse<List<ProtocolSignalInfo>>(ApiResponse.UnHandleException, null);
+            return new ApiResponse<>(ApiResponse.UnHandleException, null);
         }
     }
 
-    @RequestMapping(value = "/api/protocolSignal/public/{dataType}/{projectId}", method = RequestMethod.GET)
-    public @ResponseBody ApiResponse<List<ProtocolSignalInfo>> getProtocolSignalsByProjectIdAndPublic(@PathVariable("dataType") String fileType , @PathVariable("projectId") Integer projectId) {
+    /**
+     * 根据数据类型和项目ID获取公开的协议信号。
+     *
+     * @param dataType  数据类型。
+     * @param projectId 项目ID。
+     * @return 包含ProtocolSignalInfo列表的ApiResponse，或错误响应。
+     */
+    @GetMapping("/public/{dataType}/{projectId}")
+    public ApiResponse<List<ProtocolSignalInfo>> getProtocolSignalsByProjectIdAndPublic(
+            @PathVariable String dataType,
+            @PathVariable Integer projectId) {
         try {
-
-            String orgIdPara = TenantContext.getOrgId();
-            long orgId = StringUtility.parseLongSafely(orgIdPara).getResult();
-            List<ProtocolSignalInfo> ProtocolSignalInfos = protocolSignalService.listProtocolSignalInfosByProjectIdAndPublic(fileType,projectId, orgId);
-            return new ApiResponse<List<ProtocolSignalInfo>>(ApiResponse.Success, ProtocolSignalInfos);
+            long orgId = StringUtility.parseLongSafely(TenantContext.getOrgId()).getResult();
+            List<ProtocolSignalInfo> infos = protocolSignalService.listProtocolSignalInfosByProjectIdAndPublic(dataType, projectId, orgId);
+            return new ApiResponse<>(ApiResponse.Success, infos);
         } catch (Exception ex) {
             logger.error("getProtocolSignalsByProjectIdAndPublic", ex);
-            return new ApiResponse<List<ProtocolSignalInfo>>(ApiResponse.UnHandleException, null);
+            return new ApiResponse<>(ApiResponse.UnHandleException, null);
         }
     }
 
-    @RequestMapping(value = "/api/protocolSignal/list/{fileType}", method = RequestMethod.GET)
-    public @ResponseBody ApiResponse<List<ProtocolSignalInfo>> getProtocolSignalInfos(@PathVariable("fileType") String fileType) {
+    /**
+     * 根据数据类型获取组织内的协议信号。
+     *
+     * @param fileType 数据类型。
+     * @return 包含ProtocolSignalInfo列表的ApiResponse，或错误响应。
+     */
+    @GetMapping("/list/{fileType}")
+    public ApiResponse<List<ProtocolSignalInfo>> getProtocolSignalInfos(@PathVariable String fileType) {
         try {
-
-            String orgIdPara = TenantContext.getOrgId();
-            long orgId = StringUtility.parseLongSafely(orgIdPara).getResult();
-
-            logger.info("/api/protocolSignal/list/" + fileType + ", orgId:" +  orgId);
-
-            List<ProtocolSignalInfo> ProtocolSignalInfos = protocolSignalService.listProtocolSignalInfosByOrg(fileType, orgId);
-
-            return new ApiResponse<List<ProtocolSignalInfo>>(ApiResponse.Success, ProtocolSignalInfos);
+            long orgId = StringUtility.parseLongSafely(TenantContext.getOrgId()).getResult();
+            logger.info(String.format("/api/protocolSignal/list/%s, orgId: %s", fileType, orgId));
+            List<ProtocolSignalInfo> infos = protocolSignalService.listProtocolSignalInfosByOrg(fileType, orgId);
+            return new ApiResponse<>(ApiResponse.Success, infos);
         } catch (Exception ex) {
             logger.error("getProtocolSignalInfos", ex);
-            return new ApiResponse<List<ProtocolSignalInfo>>(ApiResponse.UnHandleException, null);
+            return new ApiResponse<>(ApiResponse.UnHandleException, null);
         }
     }
 
-    @RequestMapping(value = "/api/protocolSignal/list/{fileType}/{projectId}", method = RequestMethod.GET)
-    public @ResponseBody ApiResponse<List<ProtocolSignalInfo>> getProtocolSignalInfos(@PathVariable("fileType") String fileType,
-                                                                                      @PathVariable("projectId") String projectId) {
+    /**
+     * 根据数据类型和项目ID获取协议信号。
+     *
+     * @param fileType  数据类型。
+     * @param projectId 项目ID。
+     * @return 包含ProtocolSignalInfo列表的ApiResponse，或错误响应。
+     */
+    @GetMapping("/list/{fileType}/{projectId}")
+    public ApiResponse<List<ProtocolSignalInfo>> getProtocolSignalInfos(
+            @PathVariable String fileType,
+            @PathVariable String projectId) {
         try {
-            List<ProtocolSignalInfo> protocolSignalInfos = protocolSignalService.listProtocolSignalInfos(fileType, projectId);
-
-            return new ApiResponse<List<ProtocolSignalInfo>>(ApiResponse.Success, protocolSignalInfos);
+            List<ProtocolSignalInfo> infos = protocolSignalService.listProtocolSignalInfos(fileType, projectId);
+            return new ApiResponse<>(ApiResponse.Success, infos);
         } catch (Exception ex) {
             logger.error("getProtocolSignalInfos", ex);
-            return new ApiResponse<List<ProtocolSignalInfo>>(ApiResponse.UnHandleException, null);
+            return new ApiResponse<>(ApiResponse.UnHandleException, null);
         }
     }
 
-    @RequestMapping(value = "/api/protocolSignal/delete/{id}", method = RequestMethod.POST)
-    public @ResponseBody ApiResponse<Boolean> deleteProtocolSignal(@PathVariable("id") String id) {
+    /**
+     * 根据ID删除协议信号。
+     *
+     * @param id 协议信号的ID。
+     * @return 指示删除成功或失败的ApiResponse。
+     */
+    @PostMapping("/delete/{id}")
+    public ApiResponse<Boolean> deleteProtocolSignal(@PathVariable String id) {
         try {
             TrailUtility.Trail(logger, TrailUtility.Trail_Deletion, "deleteProtocolSignal");
-            this.protocolSignalService.removeProtocolSignal(id);
-            return new ApiResponse<Boolean>(ApiResponse.Success, true);
+            protocolSignalService.removeProtocolSignal(id);
+            return new ApiResponse<>(ApiResponse.Success, true);
         } catch (Exception ex) {
             logger.error("deleteProtocolSignal", ex);
-            return new ApiResponse<Boolean>(ApiResponse.UnHandleException, false);
+            return new ApiResponse<>(ApiResponse.UnHandleException, false);
         }
     }
 
-    @RequestMapping(value = "/api/protocolSignal/get/overview/{protocolSignalId}", method = RequestMethod.GET)
-    public @ResponseBody ApiResponse<ProtocolSignal> getProtocolSignalWithOverview(@PathVariable("protocolSignalId") String protocolSignalId) {
+    /**
+     * 根据ID获取协议信号及其概览。
+     *
+     * @param protocolSignalId 协议信号的ID。
+     * @return 包含ProtocolSignal的ApiResponse，或错误响应。
+     */
+    @GetMapping("/get-overview/{protocolSignalId}")
+    public ApiResponse<ProtocolSignal> getProtocolSignalWithOverview(@PathVariable String protocolSignalId) {
         try {
-            ProtocolSignal result = this.protocolSignalService.resolveProtocolSignalWithOverview(protocolSignalId);
-            return new ApiResponse<ProtocolSignal>(ApiResponse.Success, result);
+            ProtocolSignal result = protocolSignalService.resolveProtocolSignalWithOverview(protocolSignalId);
+            return new ApiResponse<>(ApiResponse.Success, result);
         } catch (Exception ex) {
             logger.error("getProtocolSignalWithOverview", ex);
-            return new ApiResponse<ProtocolSignal>(ApiResponse.UnHandleException, null);
+            return new ApiResponse<>(ApiResponse.UnHandleException, null);
         }
     }
 
-
-    @RequestMapping(value = "/api/protocolSignal/update", headers = ("content-type=multipart/*"), method = RequestMethod.POST)
-    public @ResponseBody ApiResponse<Boolean> updateBigdataStorage(@RequestParam("id") String protocolSignalId, @RequestParam("file") MultipartFile inputFile,@RequestParam("protocolType") String protocolType) {
-
+    /**
+     * 使用新文件更新协议信号的bigdata存储。
+     *
+     * @param id 协议信号的ID。
+     * @param inputFile        上传的文件。
+     * @param protocolType     协议类型。
+     * @return 指示更新成功或失败的ApiResponse。
+     */
+    @PostMapping(value = "/update", consumes = "multipart/form-data")
+    public ApiResponse<Boolean> updateBigdataStorage(
+            @RequestParam String id,
+            @RequestParam MultipartFile inputFile,
+            @RequestParam String protocolType) {
         if (inputFile.isEmpty()) {
-            return new ApiResponse<Boolean>(ApiResponse.UnHandleException, false);
+            return new ApiResponse<>(ApiResponse.UnHandleException, false);
         }
-
         try {
-            HttpHeaders headers = new HttpHeaders();
-            // Step1: Save uploaded file to temporary folder.
+            // 将文件保存到临时文件夹
             String originalFilename = inputFile.getOriginalFilename();
-
-            String ProtocolSignalFolder = protocolSignalService.resolveProtocolSignalFolderPath();
-            String id =  UUID.randomUUID().toString();
-            String destinationFilePath = ProtocolSignalFolder + File.separator + id;
-            File destinationFile = new File(destinationFilePath);
-            if (!new File(destinationFilePath).exists()) {
-                new File(destinationFilePath).mkdir();
-            }
-
+            String folderPath = protocolSignalService.resolveProtocolSignalFolderPath();
+            String newId = UUID.randomUUID().toString();
+            String filePath = folderPath + File.separator + newId;
+            File destinationFile = new File(filePath);
+            destinationFile.getParentFile().mkdirs();
             inputFile.transferTo(destinationFile);
 
-            headers.add("File Storage Uploaded Successfully - ", originalFilename);
-            logger.info(String.format("File Storage Update Uploaded Successfully - originalFilename: %s, destinationFilePath: %s ", originalFilename, destinationFilePath));
-            String content = FileUtility.readLineByLineJava8(destinationFilePath);
-            ProtocolSignal protocolSignal = this.protocolSignalService.getProtocol(protocolSignalId);
-            protocolSignal.setBigdata(content);
+            logger.info(String.format("文件更新成功: %s 到 %s", originalFilename, filePath));
+
+            // 更新协议信号
+            ProtocolSignal protocolSignal = protocolSignalService.getProtocol(id);
+            protocolSignal.setBigdata(FileUtility.readLineByLineJava8(filePath));
             protocolSignal.setFileName(originalFilename);
             protocolSignal.setProtocolType(protocolType);
-            this.protocolSignalService.updateProtocolSignal(protocolSignal);
-            return new ApiResponse<Boolean>(ApiResponse.Success, true);
+            protocolSignalService.updateProtocolSignal(protocolSignal);
+            return new ApiResponse<>(ApiResponse.Success, true);
         } catch (Exception ex) {
             logger.error("updateBigdataStorage", ex);
-            return new ApiResponse<Boolean>(ApiResponse.UnHandleException, false);
+            return new ApiResponse<>(ApiResponse.UnHandleException, false);
         }
     }
 
+    /**
+     * 导入DBC协议文件并作为协议信号处理。
+     *
+     * @param dbcFile 上传的DBC文件。
+     * @return 包含ProtocolSignalInfo的ApiResponse，或错误响应。
+     */
+    public ApiResponse<ProtocolSignalInfo> importDbcProtocol(@RequestParam MultipartFile dbcFile) {
+        if (dbcFile.isEmpty()) {
+            return new ApiResponse<>(ApiResponse.UnHandleException, null);
+        }
+        try {
+            // 将文件保存到临时文件夹
+            String originalFilename = dbcFile.getOriginalFilename();
+            String folderPath = protocolSignalService.resolveProtocolSignalFolderPath();
+            String id = UUID.randomUUID().toString();
+            String filePath = folderPath + File.separator + id;
+            File destinationFile = new File(filePath);
+            destinationFile.getParentFile().mkdirs();
+            dbcFile.transferTo(destinationFile);
 
+            logger.info(String.format("DBC文件上传成功: %s 到 %s", originalFilename, filePath));
+
+            // 解析DBC文件
+            List<ProtocolSignal> protocolSignals = protocolSignalService.parseDbcFile(filePath);
+            if (protocolSignals.isEmpty()) {
+                return new ApiResponse<>(ApiResponse.UnHandleException, null);
+            }
+
+            // 保存解析后的协议信号
+            for (ProtocolSignal protocolSignal : protocolSignals) {
+                protocolSignal.setFileName(originalFilename);
+                protocolSignal.setCreatedAt(new Date());
+                protocolSignalService.addProtocolSignal(protocolSignal);
+            }
+
+            // 返回第一个解析的协议信号信息
+            ProtocolSignal firstSignal = protocolSignals.get(0);
+            ProtocolSignalInfo protocolSignalInfo = new ProtocolSignalInfo(firstSignal);
+            return new ApiResponse<>(ApiResponse.Success, protocolSignalInfo);
+        } catch (Exception ex) {
+            logger.error("importDbcProtocol", ex);
+            return new ApiResponse<>(ApiResponse.UnHandleException, null);
+        }
+    }
+
+    /**
+     * 获取支持的协议类型。
+     *
+     * @return 包含支持协议类型的ApiResponse，或错误响应。
+     */
+    @GetMapping("/supportedProtocolTypes")
+    public ApiResponse<List<String>> getSupportedProtocolTypes() {
+        try {
+            ConvertorMgr convertorMgr = new ConvertorMgr();
+            ExtNameVector extNameVector = new ExtNameVector();
+
+            // 获取支持的协议类型
+            convertorMgr.getAllSupportExtNames(ConvertorType.PROTOCOL_CONVERTOR, extNameVector);
+
+            // 将结果转换为列表
+            List<String> supportedProtocols = new ArrayList<>();
+            for (int i = 0; i < extNameVector.size(); i++) {
+                supportedProtocols.add(extNameVector.get(i));
+            }
+
+            return new ApiResponse<>(ApiResponse.Success, supportedProtocols);
+        } catch (Exception ex) {
+            logger.error("getSupportedProtocolTypes", ex);
+            return new ApiResponse<>(ApiResponse.UnHandleException, null);
+        }
+    }
 
 }

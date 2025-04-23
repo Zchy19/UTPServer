@@ -11,6 +11,10 @@ import com.macrosoft.model.ProtocolSignal;
 import com.macrosoft.service.ProtocolSignalService;
 import com.macrosoft.utilities.FeaturesUtility;
 import com.macrosoft.utilities.SystemUtil;
+import com.macrosoftsys.convertorMgr.ConvertResultItem;
+import com.macrosoftsys.convertorMgr.ConvertResultItemVector;
+import com.macrosoftsys.convertorMgr.ConvertorMgr;
+import com.macrosoftsys.convertorMgr.ConvertorType;
 import org.apache.commons.io.FileUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletContext;
 import java.io.File;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ProtocolSignalServiceImpl implements ProtocolSignalService {
@@ -243,5 +245,48 @@ public class ProtocolSignalServiceImpl implements ProtocolSignalService {
         } catch (Exception ex) {
             logger.error("uploadProtocolSignal", ex);
         }
+    }
+
+    @Override
+    public List<ProtocolSignal> parseDbcFile(String filePath) {
+        List<ProtocolSignal> protocolSignals = new ArrayList<>();
+        try {
+            // 初始化 ConvertorMgr
+            ConvertorMgr convertorMgr = new ConvertorMgr();
+            ConvertResultItemVector resultItemVector = new ConvertResultItemVector();
+
+            // 读取文件内容
+            String fileContent = FileUtils.readFileToString(new File(filePath), "UTF-8");
+
+            // 调用 convert 方法
+            boolean success = convertorMgr.convert(
+                    ConvertorType.PROTOCOL_CONVERTOR, // 假设 ConvertorType.DBC 是支持的类型
+                    "dbc",             // 文件扩展名
+                    filePath,          // 文件路径
+                    fileContent,       // 文件内容
+                    resultItemVector   // 转换结果
+            );
+
+            if (!success) {
+                logger.error("DBC 文件解析失败: " + filePath);
+                return Collections.emptyList();
+            }
+
+            // 解析转换结果
+            for (int i = 0; i < resultItemVector.size(); i++) {
+                ConvertResultItem resultItem = resultItemVector.get(i);
+                String itemName = resultItem.getResultItemName();
+                String itemContent = resultItem.getResultItemContent();
+
+                // 将结果映射为 ProtocolSignal 对象
+                ProtocolSignal protocolSignal = new ProtocolSignal();
+                protocolSignal.setBigdata(itemContent);
+                protocolSignal.setCreatedAt(new Date());
+                protocolSignals.add(protocolSignal);
+            }
+        } catch (Exception ex) {
+            logger.error("解析 DBC 文件时发生异常: " + filePath, ex);
+        }
+        return protocolSignals;
     }
 }

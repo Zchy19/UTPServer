@@ -148,14 +148,19 @@ public class TestsetExecutionTriggerMonitor implements ApplicationListener<Conte
 						String libraryPath = System.getProperty("java.library.path");
 						String utpCoreAccessLibname = SystemUtil.getInstance().getUtpCoreAccessLibName();
 						String convertorMgrName= SystemUtil.getInstance().getConvertorMgrName();
+						String dbcConvertor = SystemUtil.getInstance().getDbcConvertor();
 
 						logger.info(String.format("Try load %s from %s success.", utpCoreAccessLibname, libraryPath));
 						
 						System.loadLibrary(utpCoreAccessLibname);
+
+						System.loadLibrary(dbcConvertor);
 						
 						logger.info(String.format("Load %s success.", utpCoreAccessLibname));
 						logger.info(String.format("Try load %s from %s success.", convertorMgrName, libraryPath));
 						UtpCoreAccessLib.initUtpCoreAccess();
+
+						ConvertorMgrLib.initConvertorMgr();
 
 //						System.loadLibrary(convertorMgrName);
 
