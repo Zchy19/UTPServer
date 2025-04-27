@@ -162,6 +162,8 @@ public class TestsetExecutionTriggerMonitor implements ApplicationListener<Conte
 
 						ConvertorMgrLib.initConvertorMgr();
 
+						logger.info(String.format("Try load %s from %s success.", convertorMgrName, libraryPath));
+
 //						System.loadLibrary(convertorMgrName);
 
 //						logger.info(String.format("Load %s success.", convertorMgrName));

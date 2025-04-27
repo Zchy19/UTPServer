@@ -35,12 +35,16 @@ public class ConvertorMgr {
     }
   }
 
-  public void getAllSupportExtNames(ConvertorType type, ExtNameVector extNameArray) {
-    ConvertorMgrLibJNI.ConvertorMgr_getAllSupportExtNames(swigCPtr, this, type.swigValue(), ExtNameVector.getCPtr(extNameArray), extNameArray);
+  public static void initConvertorMgr() {
+    ConvertorMgrLibJNI.ConvertorMgr_initConvertorMgr();
   }
 
-  public boolean convert(ConvertorType type, String extName, String toConvertFileName, String toConvertContent, ConvertResultItemVector convRsltItemArray) {
-    return ConvertorMgrLibJNI.ConvertorMgr_convert(swigCPtr, this, type.swigValue(), extName, toConvertFileName, toConvertContent, ConvertResultItemVector.getCPtr(convRsltItemArray), convRsltItemArray);
+  public static void getAllSupportExtNames(ConvertorType type, ExtNameVector extNameArray) {
+    ConvertorMgrLibJNI.ConvertorMgr_getAllSupportExtNames(type.swigValue(), ExtNameVector.getCPtr(extNameArray), extNameArray);
+  }
+
+  public static boolean convert(ConvertorType type, String extName, String toConvertFileName, String toConvertContent, ConvertResultItemVector convRsltItemArray) {
+    return ConvertorMgrLibJNI.ConvertorMgr_convert(type.swigValue(), extName, toConvertFileName, toConvertContent, ConvertResultItemVector.getCPtr(convRsltItemArray), convRsltItemArray);
   }
 
   public ConvertorMgr() {

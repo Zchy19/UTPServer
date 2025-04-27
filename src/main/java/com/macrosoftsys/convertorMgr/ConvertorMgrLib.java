@@ -9,8 +9,4 @@
 package com.macrosoftsys.convertorMgr;
 
 public class ConvertorMgrLib {
-  public static void initConvertorMgr() {
-    ConvertorMgrLibJNI.initConvertorMgr();
-  }
-
 }

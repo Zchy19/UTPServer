@@ -68,6 +68,6 @@ public class SystemUtil {
     }
 
     public String getDbcConvertor() {
-        return systemConfig.getDbcConvertor();
+        return systemConfig.getRegistyConvert();
     }
 }

@@ -29,22 +29,22 @@ public class ConvertResultItemVector {
     if (swigCPtr != 0) {
       if (swigCMemOwn) {
         swigCMemOwn = false;
-        ConvertorMgrLibJNI.delete_ConvertResultItemVector(swigCPtr);
+        com.macrosoftsys.utpDbcConvertLib.ConvertorMgrLibJNI.delete_ConvertResultItemVector(swigCPtr);
       }
       swigCPtr = 0;
     }
   }
 
   public ConvertResultItemVector() {
-    this(ConvertorMgrLibJNI.new_ConvertResultItemVector(), true);
+    this(com.macrosoftsys.utpDbcConvertLib.ConvertorMgrLibJNI.new_ConvertResultItemVector(), true);
   }
 
   public long size() {
-    return ConvertorMgrLibJNI.ConvertResultItemVector_size(swigCPtr, this);
+    return com.macrosoftsys.utpDbcConvertLib.ConvertorMgrLibJNI.ConvertResultItemVector_size(swigCPtr, this);
   }
 
   public ConvertResultItem get(int i) {
-    long cPtr = ConvertorMgrLibJNI.ConvertResultItemVector_get(swigCPtr, this, i);
+    long cPtr = com.macrosoftsys.utpDbcConvertLib.ConvertorMgrLibJNI.ConvertResultItemVector_get(swigCPtr, this, i);
     return (cPtr == 0) ? null : new ConvertResultItem(cPtr, false);
   }
 

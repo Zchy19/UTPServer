@@ -248,7 +248,7 @@ public class ProtocolSignalServiceImpl implements ProtocolSignalService {
     }
 
     @Override
-    public List<ProtocolSignal> parseDbcFile(String filePath) {
+    public List<ProtocolSignal> parseDbcFile(String fileName) {
         List<ProtocolSignal> protocolSignals = new ArrayList<>();
         try {
             // 初始化 ConvertorMgr
@@ -256,19 +256,19 @@ public class ProtocolSignalServiceImpl implements ProtocolSignalService {
             ConvertResultItemVector resultItemVector = new ConvertResultItemVector();
 
             // 读取文件内容
-            String fileContent = FileUtils.readFileToString(new File(filePath), "UTF-8");
+            String fileContent = FileUtils.readFileToString(new File(resolveProtocolSignalFolderPath() + File.separator + fileName), "UTF-8");
 
             // 调用 convert 方法
             boolean success = convertorMgr.convert(
                     ConvertorType.PROTOCOL_CONVERTOR, // 假设 ConvertorType.DBC 是支持的类型
                     "dbc",             // 文件扩展名
-                    filePath,          // 文件路径
+                    fileName,          // 文件名
                     fileContent,       // 文件内容
                     resultItemVector   // 转换结果
             );
 
             if (!success) {
-                logger.error("DBC 文件解析失败: " + filePath);
+                logger.error("DBC 文件解析失败: " + fileName);
                 return Collections.emptyList();
             }
 
@@ -285,7 +285,7 @@ public class ProtocolSignalServiceImpl implements ProtocolSignalService {
                 protocolSignals.add(protocolSignal);
             }
         } catch (Exception ex) {
-            logger.error("解析 DBC 文件时发生异常: " + filePath, ex);
+            logger.error("解析 DBC 文件时发生异常: " + fileName, ex);
         }
         return protocolSignals;
     }

@@ -334,7 +334,8 @@ public class ProtocolSignalController {
      * @param dbcFile 上传的DBC文件。
      * @return 包含ProtocolSignalInfo的ApiResponse，或错误响应。
      */
-    public ApiResponse<ProtocolSignalInfo> importDbcProtocol(@RequestParam MultipartFile dbcFile) {
+    @PostMapping(value = "/importDbcProtocol", consumes = "multipart/form-data")
+    public ApiResponse<List<ProtocolSignalInfo>> importDbcProtocol(@RequestParam MultipartFile dbcFile) {
         if (dbcFile.isEmpty()) {
             return new ApiResponse<>(ApiResponse.UnHandleException, null);
         }
@@ -351,22 +352,27 @@ public class ProtocolSignalController {
             logger.info(String.format("DBC文件上传成功: %s 到 %s", originalFilename, filePath));
 
             // 解析DBC文件
-            List<ProtocolSignal> protocolSignals = protocolSignalService.parseDbcFile(filePath);
+            List<ProtocolSignal> protocolSignals = protocolSignalService.parseDbcFile(originalFilename);
             if (protocolSignals.isEmpty()) {
                 return new ApiResponse<>(ApiResponse.UnHandleException, null);
             }
 
             // 保存解析后的协议信号
+            List<ProtocolSignalInfo> protocolSignalInfos = new ArrayList<>();
             for (ProtocolSignal protocolSignal : protocolSignals) {
+                protocolSignal.setOrganizationId(StringUtility.parseLongSafely(TenantContext.getOrgId()).getResult());
+                protocolSignal.setId(UUID.randomUUID().toString());
                 protocolSignal.setFileName(originalFilename);
+                protocolSignal.setProtocolType("DBC"); // 根据实际情况设置协议类型
                 protocolSignal.setCreatedAt(new Date());
                 protocolSignalService.addProtocolSignal(protocolSignal);
+
+                // 转换为 ProtocolSignalInfo 并添加到列表
+                protocolSignalInfos.add(new ProtocolSignalInfo(protocolSignal));
             }
 
-            // 返回第一个解析的协议信号信息
-            ProtocolSignal firstSignal = protocolSignals.get(0);
-            ProtocolSignalInfo protocolSignalInfo = new ProtocolSignalInfo(firstSignal);
-            return new ApiResponse<>(ApiResponse.Success, protocolSignalInfo);
+            // 返回所有保存的协议信号信息
+            return new ApiResponse<>(ApiResponse.Success, protocolSignalInfos);
         } catch (Exception ex) {
             logger.error("importDbcProtocol", ex);
             return new ApiResponse<>(ApiResponse.UnHandleException, null);

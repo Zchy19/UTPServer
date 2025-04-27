@@ -9,7 +9,6 @@
 package com.macrosoftsys.convertorMgr;
 
 public class ConvertorMgrLibJNI {
-  public final static native void initConvertorMgr();
   public final static native long new_ExtNameVector();
   public final static native void delete_ExtNameVector(long jarg1);
   public final static native long ExtNameVector_size(long jarg1, ExtNameVector jarg1_);
@@ -22,8 +21,9 @@ public class ConvertorMgrLibJNI {
   public final static native void delete_ConvertResultItemVector(long jarg1);
   public final static native long ConvertResultItemVector_size(long jarg1, ConvertResultItemVector jarg1_);
   public final static native long ConvertResultItemVector_get(long jarg1, ConvertResultItemVector jarg1_, int jarg2);
-  public final static native void ConvertorMgr_getAllSupportExtNames(long jarg1, ConvertorMgr jarg1_, int jarg2, long jarg3, ExtNameVector jarg3_);
-  public final static native boolean ConvertorMgr_convert(long jarg1, ConvertorMgr jarg1_, int jarg2, String jarg3, String jarg4, String jarg5, long jarg6, ConvertResultItemVector jarg6_);
+  public final static native void ConvertorMgr_initConvertorMgr();
+  public final static native void ConvertorMgr_getAllSupportExtNames(int jarg1, long jarg2, ExtNameVector jarg2_);
+  public final static native boolean ConvertorMgr_convert(int jarg1, String jarg2, String jarg3, String jarg4, long jarg5, ConvertResultItemVector jarg5_);
   public final static native long new_ConvertorMgr();
   public final static native void delete_ConvertorMgr(long jarg1);
 }
